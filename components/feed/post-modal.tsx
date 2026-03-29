@@ -45,7 +45,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            </button>
         </div>
 
-        {/* Content Area */}
+         {/* Content Area */}
         <div className="flex-1 px-8 py-4 overflow-y-auto min-h-[200px]">
            <textarea 
              className="w-full h-full min-h-[180px] text-lg font-medium text-slate-800 placeholder:text-slate-300 border-none outline-none resize-none bg-transparent"
@@ -56,8 +56,22 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            />
            
            <div className="flex gap-2 mb-8">
-              <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-[#0a66c2] text-[10px] font-black uppercase tracking-widest hover:bg-blue-100 transition-colors">
-                 <Sparkles className="w-3.5 h-3.5" /> AI Draft
+              <button 
+                onClick={async () => {
+                  if (!content.trim()) return;
+                  const res = await fetch("/api/generate/tone", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: content, targetTone: "professional" }),
+                  });
+                  if (res.ok) {
+                    const data = await res.json();
+                    setContent(data.optimizedText);
+                  }
+                }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-[#0a66c2] text-[10px] font-black uppercase tracking-widest hover:bg-blue-100 transition-all active:scale-95"
+              >
+                 <Sparkles className="w-3.5 h-3.5" /> AI Draft Optimization
               </button>
            </div>
         </div>

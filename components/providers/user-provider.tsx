@@ -65,8 +65,19 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     isMounted.current = true;
     fetchUser();
+
+    // Suppress noise from specific conflicting browser extensions (e.g. Compose AI)
+    const handleError = (event: PromiseRejectionEvent) => {
+      if (event.reason?.stack?.includes('abcbjgholdjcjblkibolbppb') || 
+          event.reason?.message?.includes('permission error')) {
+        event.preventDefault(); // Ignore this error
+      }
+    };
+    window.addEventListener('unhandledrejection', handleError);
+
     return () => {
       isMounted.current = false;
+      window.removeEventListener('unhandledrejection', handleError);
     };
   }, [fetchUser]);
 
