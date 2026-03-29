@@ -28,7 +28,7 @@ export function ProfileCard() {
   };
 
   return (
-    <div className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-xl shadow-slate-200/50 group sticky top-20">
+    <div id="identity-card" className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-xl shadow-slate-200/50 group sticky top-20">
       {/* Banner */}
       <div className="h-20 relative overflow-hidden">
          <img src={user.banner} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="" />

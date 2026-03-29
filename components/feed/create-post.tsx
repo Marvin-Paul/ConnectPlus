@@ -19,7 +19,7 @@ export function CreatePost() {
 
   return (
     <>
-      <div className="bg-white rounded-[4rem] border border-slate-100 p-12 shadow-[0_50px_100px_rgba(0,0,0,0.06)] relative overflow-hidden group/main animate-in fade-in zoom-in-95 duration-1000">
+      <div id="engagement-node" className="bg-white rounded-[4rem] border border-slate-100 p-12 shadow-[0_50px_100px_rgba(0,0,0,0.06)] relative overflow-hidden group/main animate-in fade-in zoom-in-95 duration-1000">
         
         {/* UPPER CONSOLE: AVATAR & INPUT */}
         <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">

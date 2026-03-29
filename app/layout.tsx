@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { TopNav } from "../components/layout/top-nav";
 import { QueryProvider } from "../components/providers/query-provider";
 import { UserProvider } from "../components/providers/user-provider";
+import { PulseGuide } from "../components/features/pulse-guide";
+import { Inter } from "next/font/google"; // I saw Inter earlier, adding to make it look premium
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,6 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <UserProvider>
             <TopNav />
             <main className="mx-auto w-full max-w-6xl px-4 py-5">{children}</main>
+            <PulseGuide />
           </UserProvider>
         </QueryProvider>
       </body>
