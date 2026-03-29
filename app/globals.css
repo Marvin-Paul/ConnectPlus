@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 146 32% 96%;
+    --foreground: 141 63% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 141 63% 10%;
+    --border: 146 20% 85%;
+    --input: 146 20% 85%;
+    --ring: 141 63% 24%;
+    --primary: 141 63% 24%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 146 20% 92%;
+    --muted-foreground: 141 20% 40%;
+    --accent: 45 100% 51%;
+    --accent-foreground: 141 63% 10%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+}
