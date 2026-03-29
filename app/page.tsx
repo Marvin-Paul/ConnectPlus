@@ -308,6 +308,12 @@ export default function FeedPage() {
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
 
   useEffect(() => {
+    // Standardize seed data timestamps to avoid hydration mismatches
+    const baseTime = Date.now();
+    const localizedPosts = SEED_POSTS.map((p, idx) => ({ ...p, timestamp: baseTime - (idx + 1) * 3600000 }));
+    const localizedArticles = SEED_ARTICLES.map((a, idx) => ({ ...a, timestamp: baseTime - (idx + 2) * 3600000 }));
+    const localizedEvents = SEED_EVENTS.map((e, idx) => ({ ...e, timestamp: baseTime - (idx + 3) * 3600000 }));
+
     // Load user-authored articles from localStorage
     const storedArticles: FeedItem[] = (JSON.parse(localStorage.getItem("articles") || "[]") as any[]).map((a: any) => ({
       id: a.id, type: "article" as FeedItemType, timestamp: new Date(a.publishedAt).getTime(),
@@ -318,7 +324,7 @@ export default function FeedPage() {
     }));
 
     // Merge all feed items and sort newest first
-    const all = [...storedArticles, ...SEED_POSTS, ...SEED_ARTICLES, ...SEED_EVENTS]
+    const all = [...storedArticles, ...localizedPosts, ...localizedArticles, ...localizedEvents]
       .sort((a, b) => b.timestamp - a.timestamp);
 
     setFeedItems(all);

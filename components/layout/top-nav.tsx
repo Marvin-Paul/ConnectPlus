@@ -31,7 +31,8 @@ import {
   TrendingUp,
   X,
   ChevronRight,
-  ThumbsUp
+  ThumbsUp,
+  MoreHorizontal
 } from "lucide-react";
 
 const navLinks = [
@@ -124,34 +125,41 @@ export function TopNav() {
                   </button>
 
                   {isNotificationsOpen && (
-                    <div className="absolute top-[52px] right-[-100px] w-[360px] bg-white rounded-b-3xl shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
-                      <div className="p-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Recent Notifications</h4>
-                        <button className="text-[9px] font-black text-[#1B5E20] uppercase tracking-widest hover:underline">Mark all read</button>
+                    <div className="absolute top-[52px] right-[-140px] w-[400px] bg-white rounded-b-3xl shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
+                      <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-white">
+                        <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Recent Notifications</h4>
+                        <button className="text-[11px] font-black text-[#1B5E20] uppercase tracking-widest hover:underline">Mark all read</button>
                       </div>
-                      <div className="max-h-[400px] overflow-y-auto">
+                      <div className="max-h-[500px] overflow-y-auto">
                         {[
-                          { id: 1, text: "David Walusimbi and 14 others reacted to your update.", time: "2h", icon: ThumbsUp, color: "text-blue-500", bg: "bg-blue-50" },
-                          { id: 2, text: "Lead Backend Engineer role at SafeBoda matches your profile.", time: "5h", icon: Briefcase, color: "text-orange-500", bg: "bg-orange-50" },
-                          { id: 3, text: "Sarah Namayanja mentioned you in a comment.", time: "6h", icon: MessageSquare, color: "text-pink-500", bg: "bg-pink-50" },
-                          { id: 4, text: "12 people viewed your profile today. unlock Premium.", time: "10h", icon: Star, color: "text-yellow-500", bg: "bg-yellow-50" }
+                          { id: 1, text: "David Walusimbi and 14 others reacted to your update.", time: "2H", icon: ThumbsUp, color: "text-blue-500", bg: "bg-blue-50", unread: true },
+                          { id: 2, text: "Lead Backend Engineer role at SafeBoda matches your profile.", time: "5H", icon: Briefcase, color: "text-orange-500", bg: "bg-orange-50", unread: true },
+                          { id: 3, text: "Sarah Namayanja mentioned you in a comment.", time: "6H", icon: MessageSquare, color: "text-pink-500", bg: "bg-pink-50", unread: true },
+                          { id: 4, text: "12 people viewed your profile today. unlock Premium.", time: "10H", icon: Star, color: "text-yellow-500", bg: "bg-yellow-50", unread: true }
                         ].map((notif) => (
-                          <div key={notif.id} className="p-4 flex gap-3 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-50 last:border-0">
-                            <div className={`w-10 h-10 rounded-full ${notif.bg} flex items-center justify-center shrink-0`}>
-                              <notif.icon className={`h-5 w-5 ${notif.color}`} />
+                          <div key={notif.id} className="p-6 flex items-start gap-4 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-50 last:border-0 group">
+                            <div className={`w-14 h-14 rounded-full ${notif.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                              <notif.icon className={`h-7 w-7 ${notif.color}`} />
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold text-slate-700 leading-snug line-clamp-2">{notif.text}</p>
-                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1 block">{notif.time}</span>
+                            <div className="flex-1 min-w-0 pr-4">
+                              <p className="text-[15px] font-black text-slate-800 leading-[1.3] mb-1">{notif.text}</p>
+                              <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest mt-1 block italic">{notif.time}</span>
                             </div>
-                            <div className="h-2 w-2 bg-blue-600 rounded-full shrink-0" />
+                            <div className="flex items-center gap-4 shrink-0">
+                               {notif.unread && (
+                                 <div className="w-2.5 h-2.5 bg-blue-600 rounded-full" />
+                               )}
+                               <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center hover:bg-slate-100 transition-colors">
+                                  <MoreHorizontal className="h-5 w-5 text-slate-400" />
+                               </button>
+                            </div>
                           </div>
                         ))}
                       </div>
                       <Link 
                         href="/notifications" 
                         onClick={() => setIsNotificationsOpen(false)}
-                        className="w-full py-3.5 bg-slate-50 border-t border-slate-100 text-center block text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-[#1B5E20] hover:bg-slate-100 transition-all"
+                        className="w-full py-5 bg-slate-50/50 border-t border-slate-100 text-center block text-[12px] font-black uppercase tracking-widest text-slate-500 hover:text-[#1B5E20] hover:bg-slate-100 transition-all active:bg-slate-200"
                       >
                         See all notifications
                       </Link>
@@ -335,11 +343,11 @@ export function TopNav() {
                  </div>
                  
                  <div className="p-6 bg-[#1B5E20] text-center">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-green-200 mb-1">Scale your vision</p>
-                    <button className="text-sm font-black text-white hover:underline flex items-center justify-center gap-2 mx-auto">
-                       Explore Business Suite <PlusCircle className="w-4 h-4" />
-                    </button>
-                 </div>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-green-200 mb-1">Scale your vision</p>
+                     <Link href="/business-suite" onClick={() => setIsBusinessOpen(false)} className="text-sm font-black text-white hover:underline flex items-center justify-center gap-2 mx-auto">
+                        Explore Business Suite <PlusCircle className="w-4 h-4" />
+                     </Link>
+                  </div>
               </div>
             )}
           </div>

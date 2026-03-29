@@ -1,0 +1,121 @@
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
+
+async function main() {
+  console.log('--- DEPLOYING ELITE SEED DATA ---')
+
+  // 1. Create Elite Admin User
+  const admin = await prisma.user.upsert({
+    where: { username: 'marvin-muwereza' },
+    update: {},
+    create: {
+      email: 'mmuwereza@connect-plus.com',
+      username: 'marvin-muwereza',
+      passwordHash: 'elite_secure_hash',
+      firstName: 'Marvin',
+      lastName: 'Muwereza',
+      headline: 'Full-Stack Architect & AI Specialist | Global Elite Circle',
+      bio: 'Over 10 years of experience in distributed systems and AI-driven professional infrastructure across East Africa.',
+      location: 'Kampala, Uganda',
+      avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256',
+      isPremium: true,
+      verified: true,
+      roleCategory: 'Engineering'
+    }
+  })
+
+  // 2. Create Target Connection (MTN CIO)
+  const catherine = await prisma.user.upsert({
+    where: { username: 'catherine-namubiru' },
+    update: {},
+    create: {
+      email: 'cn@mtn.co.ug',
+      username: 'catherine-namubiru',
+      passwordHash: 'high_impact_hash',
+      firstName: 'Catherine',
+      lastName: 'Namubiru',
+      headline: 'CIO at MTN Uganda | Professional Tech Evangelist',
+      location: 'Kampala, Uganda',
+      avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=256&h=256',
+      isPremium: true,
+      roleCategory: 'Leadership'
+    }
+  })
+
+  // 3. Populate Experiences (Elite Ledger)
+  await prisma.experience.createMany({
+    data: [
+      {
+        userId: admin.id,
+        title: 'Chief Technology Officer',
+        company: 'Connect+ Professional',
+        location: 'Kampala, Uganda',
+        startDate: new Date('2023-01-01'),
+        isCurrent: true,
+        isElite: true,
+        description: 'Architecting the professional future of Africa through AI-driven networking nodes.'
+      },
+      {
+        userId: admin.id,
+        title: 'Senior Lead Architecture',
+        company: 'SafeBoda',
+        location: 'Kampala, Uganda',
+        startDate: new Date('2020-05-01'),
+        endDate: new Date('2022-12-01'),
+        isCurrent: false,
+        description: 'Optimized logistics and dispatch engines across multiple urban sectors.'
+      }
+    ]
+  })
+
+  // 4. Generate High-Impact Notifications (Pulse Hub)
+  await prisma.notification.createMany({
+    data: [
+      {
+        userId: admin.id,
+        type: 'REACTION',
+        content: `Catherine Namubiru and 14 others reacted to your Article: "Building the Regional Professional Engine".`,
+        isRead: false
+      },
+      {
+        userId: admin.id,
+        type: 'JOB_ALERT',
+        content: `Lead Cloud Architect position available at Chipper Cash (98% Match).`,
+        isRead: false
+      },
+      {
+        userId: admin.id,
+        type: 'MENTION',
+        content: `You were mentioned in a thread by Isaac Kato regarding the "East Africa Dev Pulse 2026" conference.`,
+        isRead: false
+      }
+    ]
+  })
+
+  // 5. Create Sample Elite Jobs
+  await prisma.job.create({
+    data: {
+      postedById: catherine.id,
+      title: 'Senior Infrastructure Lead',
+      company: 'MTN Uganda',
+      location: 'Kampala, Uganda',
+      employmentType: 'FULL_TIME',
+      description: 'Overseeing the national fiber expansion and 5G node architecture.',
+      salaryMin: 4000,
+      salaryMax: 7500,
+      matchPercentage: 94,
+      isRemote: false
+    }
+  })
+
+  console.log('--- SEEDING COMPLETE: PORTAL READY FOR DEPLOYMENT ---')
+}
+
+main()
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
