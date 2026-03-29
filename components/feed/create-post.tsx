@@ -27,21 +27,24 @@ export function CreatePost() {
              </div>
           </div>
           
-          <div className="flex-1 w-full relative group/input">
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="w-full h-24 rounded-[2.5rem] border border-slate-100 px-12 text-left bg-slate-50/30 hover:bg-white hover:border-[#1B5E20]/20 transition-all duration-500 shadow-inner group-hover/main:shadow-2xl flex flex-col justify-center gap-1 group-hover/input:pl-16"
-            >
-              <span className="text-[11px] font-black text-[#1B5E20] uppercase tracking-[0.4em] italic opacity-60 group-hover/input:opacity-100 transition-all">Elite Engagement Node</span>
-              <span className="text-2xl font-black text-slate-800 tracking-tighter italic">"What intelligence will you share?"</span>
-            </button>
+          <div className="flex-1 w-full flex flex-col gap-4">
+            <div className="relative group/input">
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="w-full h-24 rounded-[2.5rem] border border-slate-100 px-12 text-left bg-slate-50/30 hover:bg-white hover:border-[#1B5E20]/20 transition-all duration-500 shadow-inner group-hover/main:shadow-2xl flex flex-col justify-center gap-1 group-hover/input:pl-16"
+              >
+                <span className="text-[11px] font-black text-[#1B5E20] uppercase tracking-[0.4em] italic opacity-60 group-hover/input:opacity-100 transition-all">Elite Engagement Node</span>
+              </button>
+              
+              <Plus className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-200 opacity-0 group-hover/input:opacity-100 transition-all duration-500" />
+            </div>
             
-            <Plus className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-200 opacity-0 group-hover/input:opacity-100 transition-all duration-500" />
-            
-            {/* AI ASSIST PILOT - FIXED POSITIONING */}
-            <button className="absolute right-6 top-1/2 -translate-y-1/2 h-12 px-8 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl hover:bg-slate-800 transition-all active:scale-95 flex items-center gap-3">
-               <Sparkles className="w-4 h-4 text-yellow-400" /> AI PILOT
-            </button>
+            <div className="flex justify-end px-2">
+               {/* AI ASSIST PILOT - RELOCATED BELOW INPUT */}
+               <button className="h-12 px-8 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl hover:bg-slate-800 transition-all active:scale-95 flex items-center gap-3">
+                  <Sparkles className="w-4 h-4 text-yellow-400" /> AI PILOT
+               </button>
+            </div>
           </div>
         </div>
 

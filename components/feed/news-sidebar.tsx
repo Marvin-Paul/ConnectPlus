@@ -68,23 +68,60 @@ export function NewsSidebar() {
          <Sparkles className="absolute -bottom-10 -right-10 w-64 h-64 opacity-5 text-yellow-500 group-hover/ad:scale-150 group-hover/ad:rotate-45 transition-transform duration-2000" />
       </div>
 
-      {/* Modern Footer */}
-      <footer className="px-10 space-y-8 animate-in fade-in duration-1000">
-         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-            {['About', 'Accessibility', 'Help', 'Privacy', 'Legal', 'Advertising', 'Hiring', 'Apps'].map((link) => (
-              <button key={link} className="text-[10px] text-slate-400 hover:text-[#1B5E20] hover:underline transition-all font-black uppercase tracking-[0.2em] opacity-50 hover:opacity-100">
-                 {link}
-              </button>
-            ))}
-         </div>
-         
-         <div className="flex flex-col items-center gap-4 text-[10px] text-slate-400 font-black uppercase tracking-[0.3em] opacity-30 group-hover/sidebar:opacity-60 transition-opacity">
-            <div className="flex items-center gap-3">
-               <ShieldCheck className="w-4 h-4 text-[#1B5E20]" />
-               <span className="text-slate-800">Elite Platform</span>
+      {/* ELITE FOOTER ECOSYSTEM */}
+      <footer className="px-6 py-12 border-t border-slate-100/50 mt-12 bg-slate-50/20 rounded-[4rem] backdrop-blur-sm relative overflow-hidden group/footer animate-in fade-in duration-1000">
+         <div className="relative z-10 flex flex-col items-center gap-10">
+            
+            {/* LINK MESH */}
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4 px-4 w-full">
+               {[
+                 { label: 'About', href: '/about' },
+                 { label: 'Accessibility', href: '/accessibility' },
+                 { label: 'Help', href: '/help' },
+                 { label: 'Privacy', href: '/privacy' },
+                 { label: 'Legal', href: '/legal' },
+                 { label: 'Ad Choice', href: '/advertise' },
+                 { label: 'Jobs', href: '/jobs' },
+                 { label: 'Get App', href: '/apps' }
+               ].map((link) => (
+                 <Link 
+                  key={link.label} 
+                  href={link.href}
+                  className="group/link text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 hover:text-[#1B5E20] transition-all"
+                 >
+                    <div className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover/link:bg-[#1B5E20] group-hover/link:scale-125 transition-all" />
+                    <span className="opacity-60 group-hover/link:opacity-100 group-hover/link:translate-x-1 transition-all">{link.label}</span>
+                 </Link>
+               ))}
             </div>
-            <span>Connect+ Corp © 2026 · Kampala</span>
+
+            {/* BRAND SIGNATURE */}
+            <div className="flex flex-col items-center gap-6 w-full">
+               <div className="h-[1px] w-12 bg-slate-200 group-hover/footer:w-24 transition-all duration-700" />
+               <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center shadow-xl group-hover/footer:rotate-12 transition-transform duration-500">
+                     <ShieldCheck className="w-5 h-5 text-yellow-400" />
+                  </div>
+                  <div className="flex flex-col">
+                     <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-black text-slate-800 uppercase tracking-[0.4em] leading-none">Elite Platform</span>
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                     </div>
+                     <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] opacity-50 mt-1">Connect+ Corp &copy; 2026</span>
+                  </div>
+               </div>
+            </div>
+
+            {/* REGIONAL NODE */}
+            <div className="flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-100 shadow-sm opacity-40 group-hover/footer:opacity-100 transition-all hover:border-[#1B5E20]/30">
+               <MapPin className="w-3 h-3 text-[#1B5E20]" />
+               <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest leading-none">Kampala Node • Central Intelligence Core</span>
+            </div>
          </div>
+
+         {/* Backdrop Glows */}
+         <div className="absolute top-0 right-0 w-32 h-32 bg-green-600/5 rounded-full blur-3xl -z-0" />
+         <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl -z-0" />
       </footer>
     </div>
   );

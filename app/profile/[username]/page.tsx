@@ -16,22 +16,28 @@ interface ProfilePageProps {
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const { username } = await params
-  const user = await prisma.user.findUnique({
-    where: { username },
-    include: {
-      experiences: { orderBy: { startDate: 'desc' } },
-      educations: { orderBy: { startDate: 'desc' } },
-      skills: { orderBy: { createdAt: 'asc' } },
-      featuredItems: true,
-      certifications: true,
-      projects: true,
-      volunteering: true,
-      honors: true,
-      recommendationsReceived: {
-        include: { author: true }
+  let user = null;
+  try {
+    user = await prisma.user.findUnique({
+      where: { username },
+      include: {
+        experiences: { orderBy: { startDate: 'desc' } },
+        educations: { orderBy: { startDate: 'desc' } },
+        skills: { orderBy: { createdAt: 'asc' } },
+        featuredItems: true,
+        certifications: true,
+        projects: true,
+        volunteering: true,
+        honors: true,
+        recommendationsReceived: {
+          include: { author: true }
+        }
       }
-    }
-  })
+    })
+  } catch (error) {
+    console.error("Database connection failed for user profile fetch:", error);
+    // Continue execution to allowed mock data to take over for demonstration
+  }
 
   if (!user) {
     // If user not found, we'll show a mockup for demonstration purposes if desired, 
