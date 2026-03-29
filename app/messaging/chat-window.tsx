@@ -22,6 +22,10 @@ interface Message {
 }
 
 export function ChatWindow() {
+  const { user, loading } = useUser();
+  const userName = user ? `${user.firstName} ${user.lastName}` : "Marvin Muwereza";
+  const userAvatar = user?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80";
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "m1",
@@ -34,14 +38,15 @@ export function ChatWindow() {
     {
       id: "m2",
       sender: "me",
-      name: "Marvin Muwereza (You)",
+      name: `${userName} (You)`,
       text: "Hi Catherine! Thank you for reaching out. I'm a big fan of MTN's recent infrastructure upgrades. I'd be happy to discuss how AI can play a role. When would be a good time to connect?",
       time: "3:45 PM",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
+      avatar: userAvatar
     }
   ]);
 
   const [inputText, setInputText] = useState("");
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -58,10 +63,10 @@ export function ChatWindow() {
     const newMessage: Message = {
       id: `m_${Date.now()}`,
       sender: "me",
-      name: "Marvin Muwereza (You)",
+      name: `${userName} (You)`,
       text: inputText,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
+      avatar: userAvatar
     };
 
     setMessages([...messages, newMessage]);

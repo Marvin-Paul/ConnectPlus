@@ -23,13 +23,14 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const isMounted = React.useRef(true);
 
   const fetchUser = useCallback(async () => {
     try {
-      // In a real app, this would be an endpoint to get the "current" user session.
-      // For this demo, we fetch the 'demo-user' data from our profile API.
       const username = "demo-user"; 
       const res = await fetch(`/api/profile/${username}`);
+      if (!isMounted.current) return;
+
       if (res.ok) {
         const data = await res.json();
         setUser({
@@ -42,7 +43,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200"
         });
       } else {
-        // Fallback to hardcoded demo data if API fails or user not found
         setUser({
           firstName: "Marvin",
           lastName: "Muwereza",
@@ -56,12 +56,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       console.error("Failed to fetch user context:", err);
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
+    isMounted.current = true;
     fetchUser();
+    return () => {
+      isMounted.current = false;
+    };
   }, [fetchUser]);
 
   return (

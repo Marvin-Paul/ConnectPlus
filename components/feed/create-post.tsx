@@ -54,24 +54,27 @@ export function CreatePost() {
         </div>
 
         {/* UTILITY RACK */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mt-12 relative z-10 border-t border-slate-50 pt-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mt-12 relative z-10 border-t border-slate-100 pt-12">
            {[
              { label: "Visual Media", icon: Camera, color: "text-blue-600", bg: "bg-blue-50/30", sub: "Photo & Video" },
-             { label: "Elite Event", icon: Calendar, color: "text-orange-600", bg: "bg-orange-50/30", sub: "Regional Networking" },
-             { label: "Article Node", icon: Newspaper, color: "text-red-600", bg: "bg-red-50/30", sub: "Deep Industry Tech" },
+             { label: "Elite Event", icon: Calendar, color: "text-orange-600", bg: "bg-orange-50/30", sub: "Collaborate" },
+             { label: "Article Node", icon: Newspaper, color: "text-red-600", bg: "bg-red-50/30", sub: "Industry Tech" },
              { label: "Talent Brief", icon: Briefcase, color: "text-purple-600", bg: "bg-purple-50/30", sub: "Hire & Deploy" }
            ].map((item, i) => (
              <div
                key={i}
-               className="group/item cursor-pointer p-8 rounded-[3rem] bg-white border border-slate-50 hover:border-slate-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+               className="group/item cursor-pointer p-5 md:p-8 rounded-[2.5rem] bg-white border border-slate-100 hover:border-[#1B5E20]/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between min-h-[160px] md:min-h-[200px]"
                onClick={() => { if(item.label === "Visual Media") setIsModalOpen(true); }}
              >
-                <div className={`w-16 h-16 rounded-2xl ${item.bg} flex items-center justify-center mb-6 group-hover/item:rotate-12 transition-transform`}>
-                   <item.icon className={`h-8 w-8 ${item.color}`} />
+                <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl ${item.bg} flex items-center justify-center mb-4 md:mb-6 group-hover/item:rotate-12 transition-transform shadow-sm`}>
+                   <item.icon className={`h-6 w-6 md:h-8 md:w-8 ${item.color}`} />
                 </div>
-                <div className="space-y-1">
-                   <h4 className="text-[12px] font-black text-slate-800 uppercase tracking-widest italic">{item.label}</h4>
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest opacity-60 leading-none">{item.sub}</p>
+                <div className="space-y-2">
+                   <h4 className="text-[10px] md:text-[12px] font-black text-slate-800 uppercase tracking-[0.2em] italic leading-tight">{item.label}</h4>
+                   <div className="flex items-center justify-between gap-2 overflow-hidden">
+                      <p className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] opacity-60 leading-none truncate">{item.sub}</p>
+                      <ChevronRight className="w-3 h-3 text-slate-300 group-hover/item:text-[#1B5E20] group-hover/item:translate-x-1 transition-all flex-shrink-0" />
+                   </div>
                 </div>
              </div>
            ))}

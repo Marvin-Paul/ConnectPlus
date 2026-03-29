@@ -11,6 +11,8 @@ import {
   Calendar, MapPin, Users, BookOpen, Send
 } from "lucide-react";
 
+import { useUser } from "@/components/providers/user-provider";
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 type FeedItemType = "post" | "article" | "event";
 
@@ -116,9 +118,12 @@ const SEED_EVENTS: FeedItem[] = [
 
 // ─── Article Card for Feed ──────────────────────────────────────────────────
 function FeedArticleCard({ item, onUpdate }: { item: FeedItem; onUpdate: (u: FeedItem) => void }) {
+  const { user } = useUser();
   const [reaction, setReaction] = useState<"liked" | "disliked" | null>(null);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
+
+  const userName = user ? `${user.firstName} ${user.lastName}` : "Marvin Muwereza";
 
   const handleLike = () => {
     if (reaction === "liked") { setReaction(null); onUpdate({ ...item, likes: (item.likes || 0) - 1 }); }
@@ -132,7 +137,7 @@ function FeedArticleCard({ item, onUpdate }: { item: FeedItem; onUpdate: (u: Fee
   const handleComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
-    const nc = { id: `c_${Date.now()}`, author: "Marvin Muwereza", text: commentText.trim(), time: "Just now" };
+    const nc = { id: `c_${Date.now()}`, author: userName, text: commentText.trim(), time: "Just now" };
     onUpdate({ ...item, articleComments: [...(item.articleComments || []), nc] });
     setCommentText("");
   };
