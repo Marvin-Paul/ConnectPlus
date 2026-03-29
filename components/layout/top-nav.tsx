@@ -90,20 +90,20 @@ export function TopNav() {
         {/* Logo & Search */}
         <div className="flex items-center gap-2 flex-1 max-w-[400px]">
           <Link href="/" className="inline-flex items-center">
-            <div className="inline-grid h-[34px] w-[34px] place-items-center rounded-lg bg-[#1B5E20] text-white shadow-lg shadow-green-900/10">
+            <div className="inline-grid h-[34px] w-[34px] place-items-center rounded-lg bg-primary text-white shadow-lg shadow-primary/10">
                <span className="text-xl font-black leading-none tracking-tighter">c+</span>
             </div>
           </Link>
 
           <form onSubmit={handleSearch} className="hidden md:block relative flex-1 ml-4 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#1B5E20] transition-colors" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
             <Input
               id="global-search"
               type="search"
               placeholder="Search people, jobs, posts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-[34px] w-full bg-slate-100 border-none text-sm placeholder:text-slate-400 pl-10 focus-visible:ring-2 focus-visible:ring-[#1B5E20]/20 focus:w-[130%] transition-all duration-500 rounded-full"
+              className="h-[34px] w-full bg-slate-100 border-none text-sm placeholder:text-slate-400 pl-10 focus-visible:ring-2 focus-visible:ring-primary/20 focus:w-[130%] transition-all duration-500 rounded-full"
             />
           </form>
         </div>
@@ -116,7 +116,7 @@ export function TopNav() {
                 <div key={link.label} className="relative h-full" ref={notifRef}>
                   <button
                     onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                    className={`flex flex-col items-center justify-center min-w-[80px] h-full transition hover:text-[#1B5E20] relative group ${isNotificationsOpen ? 'text-[#1B5E20]' : 'text-slate-500'}`}
+                    className={`flex flex-col items-center justify-center min-w-[80px] h-full transition hover:text-primary relative group ${isNotificationsOpen ? 'text-primary' : 'text-slate-500'}`}
                   >
                     <div className="relative">
                       <link.icon className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
@@ -127,14 +127,14 @@ export function TopNav() {
                       )}
                     </div>
                     <span className="text-[11px] mt-0.5 font-bold uppercase tracking-widest hidden lg:block opacity-70 group-hover:opacity-100 transition-opacity scale-90">{link.label}</span>
-                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#1B5E20] transition-transform origin-center ${isNotificationsOpen ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${isNotificationsOpen ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
                   </button>
 
                   {isNotificationsOpen && (
                     <div className="absolute top-[52px] right-[-140px] w-[400px] bg-white rounded-b-3xl shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
                       <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-white">
                         <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Recent Notifications</h4>
-                        <button className="text-[11px] font-black text-[#1B5E20] uppercase tracking-widest hover:underline">Mark all read</button>
+                        <button className="text-[11px] font-black text-primary uppercase tracking-widest hover:underline">Mark all read</button>
                       </div>
                       <div className="max-h-[500px] overflow-y-auto">
                         {[
@@ -165,7 +165,7 @@ export function TopNav() {
                       <Link 
                         href="/notifications" 
                         onClick={() => setIsNotificationsOpen(false)}
-                        className="w-full py-5 bg-slate-50/50 border-t border-slate-100 text-center block text-[12px] font-black uppercase tracking-widest text-slate-500 hover:text-[#1B5E20] hover:bg-slate-100 transition-all active:bg-slate-200"
+                        className="w-full py-5 bg-slate-50/50 border-t border-slate-100 text-center block text-[12px] font-black uppercase tracking-widest text-slate-500 hover:text-primary hover:bg-slate-100 transition-all active:bg-slate-200"
                       >
                         See all notifications
                       </Link>
@@ -180,7 +180,7 @@ export function TopNav() {
                 <div key={link.label} className="relative h-full" ref={msgRef}>
                   <button
                     onClick={() => setIsMessagingOpen(!isMessagingOpen)}
-                    className={`flex flex-col items-center justify-center min-w-[80px] h-full transition hover:text-[#1B5E20] relative group ${isMessagingOpen ? 'text-[#1B5E20]' : 'text-slate-500'}`}
+                    className={`flex flex-col items-center justify-center min-w-[80px] h-full transition hover:text-primary relative group ${isMessagingOpen ? 'text-primary' : 'text-slate-500'}`}
                   >
                     <div className="relative">
                       <link.icon className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
@@ -191,14 +191,14 @@ export function TopNav() {
                       )}
                     </div>
                     <span className="text-[11px] mt-0.5 font-bold uppercase tracking-widest hidden lg:block opacity-70 group-hover:opacity-100 transition-opacity scale-90">{link.label}</span>
-                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#1B5E20] transition-transform origin-center ${isMessagingOpen ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${isMessagingOpen ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
                   </button>
 
                   {isMessagingOpen && (
                     <div className="absolute top-[52px] right-[-100px] w-[360px] bg-white rounded-b-3xl shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
                       <div className="p-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
                         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Direct Messages</h4>
-                        <Link href="/messaging" onClick={() => setIsMessagingOpen(false)} className="text-[9px] font-black text-[#1B5E20] uppercase tracking-widest hover:underline">New Message</Link>
+                        <Link href="/messaging" onClick={() => setIsMessagingOpen(false)} className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">New Message</Link>
                       </div>
                       <div className="max-h-[400px] overflow-y-auto">
                         {[
@@ -221,7 +221,7 @@ export function TopNav() {
                       <Link 
                         href="/messaging" 
                         onClick={() => setIsMessagingOpen(false)}
-                        className="w-full py-3.5 bg-slate-50 border-t border-slate-100 text-center block text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-[#1B5E20] hover:bg-slate-100 transition-all"
+                        className="w-full py-3.5 bg-slate-50 border-t border-slate-100 text-center block text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary hover:bg-slate-100 transition-all"
                       >
                         See all in Messaging
                       </Link>
@@ -235,7 +235,7 @@ export function TopNav() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="flex flex-col items-center justify-center min-w-[80px] h-full text-slate-500 transition hover:text-[#1B5E20] relative group"
+                className="flex flex-col items-center justify-center min-w-[80px] h-full text-slate-500 transition hover:text-primary relative group"
               >
                 <div className="relative">
                   <link.icon className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
@@ -246,7 +246,7 @@ export function TopNav() {
                   )}
                 </div>
                 <span className="text-[11px] mt-0.5 font-bold uppercase tracking-widest hidden lg:block opacity-70 group-hover:opacity-100 transition-opacity scale-90">{link.label}</span>
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1B5E20] scale-x-0 group-hover:scale-x-100 transition-transform origin-center" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-center" />
               </Link>
             );
           })}
@@ -255,16 +255,16 @@ export function TopNav() {
           <div className="relative h-full" ref={meRef}>
             <button 
               onClick={() => setIsMeOpen(!isMeOpen)}
-              className={`flex flex-col items-center justify-center min-w-[64px] h-full text-slate-500 hover:text-[#1B5E20] border-r border-slate-100 mr-2 pr-2 group transition-all ${isMeOpen ? 'text-[#1B5E20]' : ''}`}
+              className={`flex flex-col items-center justify-center min-w-[64px] h-full text-slate-500 hover:text-primary border-r border-slate-100 mr-2 pr-2 group transition-all ${isMeOpen ? 'text-primary' : ''}`}
             >
-              <div className={`w-7 h-7 rounded-full overflow-hidden mb-0.5 border-2 transition-all ${isMeOpen ? 'border-[#1B5E20]' : 'border-slate-100 group-hover:border-[#1B5E20]'}`}>
+              <div className={`w-7 h-7 rounded-full overflow-hidden mb-0.5 border-2 transition-all ${isMeOpen ? 'border-primary' : 'border-slate-100 group-hover:border-primary'}`}>
                 <img src={userAvatar} alt="Me" className="w-full h-full object-cover" />
               </div>
               <div className="flex items-center gap-0.5">
                 <span className="text-[11px] font-bold uppercase tracking-widest hidden lg:block opacity-70 scale-90">Me</span>
                 <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${isMeOpen ? 'rotate-180' : ''}`} />
               </div>
-              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#1B5E20] transition-transform origin-center ${isMeOpen ? 'scale-x-100' : 'scale-x-0'}`} />
+              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${isMeOpen ? 'scale-x-100' : 'scale-x-0'}`} />
             </button>
 
             {isMeOpen && (
@@ -302,14 +302,14 @@ export function TopNav() {
           <div className="relative h-full" ref={bizRef}>
             <button 
               onClick={() => setIsBusinessOpen(!isBusinessOpen)}
-              className={`flex flex-col items-center justify-center min-w-[80px] h-full text-slate-500 hover:text-[#1B5E20] group relative transition-all ${isBusinessOpen ? 'text-[#1B5E20]' : ''}`}
+              className={`flex flex-col items-center justify-center min-w-[80px] h-full text-slate-500 hover:text-primary group relative transition-all ${isBusinessOpen ? 'text-primary' : ''}`}
             >
               <Grid3X3 className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
               <div className="flex items-center gap-0.5">
                 <span className="text-[11px] font-bold uppercase tracking-widest hidden lg:block opacity-70 scale-90">Business</span>
                 <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${isBusinessOpen ? 'rotate-180' : ''}`} />
               </div>
-              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#1B5E20] transition-transform origin-center ${isBusinessOpen ? 'scale-x-100' : 'scale-x-0'}`} />
+              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${isBusinessOpen ? 'scale-x-100' : 'scale-x-0'}`} />
             </button>
 
             {isBusinessOpen && (
@@ -362,7 +362,7 @@ export function TopNav() {
           <div className="hidden md:relative h-full" ref={premRef}>
             <button 
               onClick={() => setIsPremiumOpen(!isPremiumOpen)}
-              className={`flex flex-col items-center justify-center min-w-[100px] h-full text-[#A57C00] font-black uppercase tracking-[0.1em] hover:text-[#8B6800] leading-[1.1] text-center transition-all group ${isPremiumOpen ? 'bg-yellow-50/50' : ''}`}
+              className={`flex flex-col items-center justify-center min-w-[100px] h-full text-accent font-black uppercase tracking-[0.1em] hover:text-accent/80 leading-[1.1] text-center transition-all group ${isPremiumOpen ? 'bg-accent/10' : ''}`}
             >
               <div className="relative">
                  <Sparkles className={`w-6 h-6 mb-0.5 transition-all duration-500 ${isPremiumOpen ? 'rotate-180 scale-125' : 'group-hover:scale-110'}`} />

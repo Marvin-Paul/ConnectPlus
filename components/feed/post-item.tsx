@@ -28,7 +28,7 @@ export function PostItem({ author, time, content, image, stats }: PostItemProps)
         <div className="flex-1 min-w-0 pt-1">
            <div className="flex justify-between items-start">
               <div className="space-y-1">
-                 <h3 className="text-xl font-black text-slate-800 hover:text-[#1B5E20] transition-colors cursor-pointer leading-none tracking-tight">
+                 <h3 className="text-xl font-black text-slate-800 hover:text-primary transition-colors cursor-pointer leading-none tracking-tight">
                    {author.name}
                  </h3>
                  <p className="text-[12px] font-bold text-slate-400 line-clamp-1 leading-tight tracking-tight italic opacity-80">{author.headline}</p>
@@ -40,7 +40,7 @@ export function PostItem({ author, time, content, image, stats }: PostItemProps)
               </div>
               <div className="flex items-center gap-2">
                  {!author.isFollowed && (
-                   <button className="flex items-center gap-2 text-[11px] font-black text-[#1B5E20] bg-green-50/50 hover:bg-green-100 px-5 py-2 rounded-full border border-green-100 transition-all uppercase tracking-widest active:scale-95 shadow-sm shadow-green-100/20">
+                   <button className="flex items-center gap-2 text-[11px] font-black text-primary bg-primary/5 hover:bg-primary/10 px-5 py-2 rounded-full border border-primary/10 transition-all uppercase tracking-widest active:scale-95 shadow-sm shadow-primary/20">
                       <Plus className="h-3.5 w-3.5" /> Follow
                    </button>
                  )}
@@ -55,7 +55,7 @@ export function PostItem({ author, time, content, image, stats }: PostItemProps)
       {/* Content */}
       <div className="px-10 pb-6">
          <p className="text-[17px] text-slate-700 leading-[1.6] whitespace-pre-line font-medium tracking-tight italic">
-           {content.split(' ').map((word, i) => word.startsWith('#') ? <span key={i} className="text-[#1B5E20] font-black cursor-pointer hover:underline">{word} </span> : word + ' ')}
+           {content.split(' ').map((word, i) => word.startsWith('#') ? <span key={i} className="text-primary font-black cursor-pointer hover:underline">{word} </span> : word + ' ')}
          </p>
       </div>
 
@@ -81,9 +81,9 @@ export function PostItem({ author, time, content, image, stats }: PostItemProps)
             <span className="text-[13px] text-slate-500 font-black tracking-tight">{stats.likes.toLocaleString()} professional reactions</span>
          </div>
          <div className="flex items-center gap-4 text-[11px] font-black text-slate-400 uppercase tracking-widest italic">
-            <span className="hover:text-[#1B5E20] hover:underline cursor-pointer">{stats.comments} comments</span>
+            <span className="hover:text-primary hover:underline cursor-pointer">{stats.comments} comments</span>
             <span>·</span>
-            <span className="hover:text-[#1B5E20] hover:underline cursor-pointer">{stats.reposts} shares</span>
+            <span className="hover:text-primary hover:underline cursor-pointer">{stats.reposts} shares</span>
          </div>
       </div>
 

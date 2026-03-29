@@ -81,7 +81,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                  {[
-                   { icon: Image, color: "text-[#4CAF50]", label: "Photo" },
+                   { icon: Image, color: "text-accent", label: "Photo" },
                    { icon: PlaySquare, color: "text-blue-500", label: "Video" },
                    { icon: FileText, color: "text-orange-500", label: "Document" },
                    { icon: Briefcase, color: "text-purple-500", label: "Job" },
@@ -102,7 +102,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
 
               <button 
                 disabled={!content.trim()}
-                className={`px-12 py-3 rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all ${content.trim() ? "bg-[#1B5E20] text-white shadow-xl shadow-green-900/20 hover:scale-105 active:scale-95" : "bg-slate-200 text-slate-400 cursor-not-allowed"}`}
+                className={`px-12 py-3 rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all ${content.trim() ? "bg-primary text-white shadow-xl shadow-primary/20 hover:scale-105 active:scale-95" : "bg-slate-200 text-slate-400 cursor-not-allowed"}`}
               >
                  Post Link
               </button>

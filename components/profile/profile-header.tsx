@@ -3,9 +3,11 @@
 import * as React from "react"
 import { useState, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Link as LinkIcon, Volume2, PenLine, UserPlus, MessageCircle, Check, Camera, Loader2, Sparkles, Star, Globe, ShieldCheck, Mail } from "lucide-react"
+import { MapPin, Link as LinkIcon, Volume2, PenLine, UserPlus, MessageCircle, Check, Camera, Loader2, Sparkles, Star, Globe, ShieldCheck, Mail, Zap, MoreHorizontal } from "lucide-react"
 import { IntroEditModal } from "./intro-edit-modal"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { useUser } from "../providers/user-provider"
 import { supabase } from "@/lib/supabase"
 
 interface ProfileHeaderProps {
@@ -23,9 +25,11 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
+  const { user: currentUser } = useUser()
+  const isOwner = currentUser?.username === user.username
   const router = useRouter()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [connectionStatus, setConnectionStatus] = useState<'IDLE' | 'PENDING' | 'ACCEPTED'>('IDLE')
+  const [connectionStatus, setConnectionStatus] = useState<'IDLE' | 'PENDING' | 'ACCEPTED' | 'CONNECTED'>('IDLE')
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl || null)
   const [avatarUploading, setAvatarUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -68,8 +72,8 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
               <img src={user.bannerUrl} alt="Banner" className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-[3000ms]" />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-20 overflow-hidden">
-                <Globe className="absolute -bottom-20 -right-20 w-[40rem] h-[40rem] opacity-10 text-blue-400 rotate-12" />
-                <Sparkles className="absolute top-10 left-10 w-24 h-24 opacity-20 text-yellow-400" />
+                <Globe className="absolute -bottom-20 -right-20 w-[40rem] h-[40rem] opacity-10 text-primary rotate-12" />
+                <Sparkles className="absolute top-10 left-10 w-24 h-24 opacity-20 text-accent" />
               </div>
             )}
             
@@ -83,7 +87,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
             </div>
 
             {/* Premium Badge */}
-            <div className="absolute top-8 left-8 p-3 px-6 rounded-2xl bg-yellow-400/90 backdrop-blur-sm border border-yellow-300 text-slate-900 shadow-2xl flex items-center gap-2">
+            <div className="absolute top-8 left-8 p-3 px-6 rounded-2xl bg-accent text-slate-900 shadow-2xl flex items-center gap-2">
                <Star className="w-4 h-4 fill-current" />
                <span className="text-[10px] font-black uppercase tracking-[0.2em]">ELITE MEMBER</span>
             </div>
@@ -102,7 +106,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                 >
                   {avatarUploading ? (
                     <div className="w-full h-full flex items-center justify-center bg-slate-50">
-                      <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
+                      <Loader2 className="h-10 w-10 text-primary animate-spin" />
                     </div>
                   ) : avatarUrl ? (
                     <img src={avatarUrl} alt={user.firstName} className="w-full h-full object-cover" />
@@ -117,7 +121,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                     <span className="text-white text-[9px] font-black uppercase tracking-widest">Update Portait</span>
                   </div>
                 </button>
-                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 rounded-2xl border-4 border-white shadow-xl flex items-center justify-center">
+                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl border-4 border-white shadow-xl flex items-center justify-center">
                    <ShieldCheck className="w-5 h-5 text-white" />
                 </div>
               </div>
@@ -128,12 +132,12 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                 <div className="space-y-2">
                   <div className="flex items-center gap-4">
                     <h1 className="text-5xl font-black text-slate-800 tracking-tighter leading-none italic">
-                      {user.firstName} <span className="text-blue-600">{user.lastName}</span>
+                      {user.firstName} <span className="text-primary">{user.lastName}</span>
                     </h1>
                     {user.pronouns && (
                       <span className="text-[12px] font-black text-slate-300 uppercase tracking-widest mt-2">{user.pronouns}</span>
                     )}
-                    <button className="p-2 rounded-xl text-slate-300 hover:text-blue-600 transition-colors mt-2">
+                    <button className="p-2 rounded-xl text-slate-300 hover:text-primary transition-colors mt-2">
                       <Volume2 className="h-5 w-5" />
                     </button>
                   </div>
@@ -145,10 +149,10 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                 <div className="flex flex-wrap items-center gap-8 pt-4">
                   {user.location && (
                     <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                      <MapPin className="h-4 h-4 text-blue-600" /> {user.location}
+                      <MapPin className="h-4 h-4 text-primary" /> {user.location}
                     </div>
                   )}
-                  <div className="flex items-center gap-2 text-[11px] font-black text-blue-600 uppercase tracking-widest cursor-pointer hover:underline">
+                  <div className="flex items-center gap-2 text-[11px] font-black text-primary uppercase tracking-widest cursor-pointer hover:underline">
                     <LinkIcon className="h-4 w-4" /> Professional Node
                   </div>
                   <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">
@@ -158,10 +162,10 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 
                 {user.isHiring && (
                   <div className="pt-4 flex items-center gap-4">
-                     <div className="px-6 py-2 rounded-xl bg-green-50 border border-green-100 text-[#1B5E20] text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2">
+                     <div className="px-6 py-2 rounded-xl bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2">
                         <span className="relative flex h-2 w-2">
-                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                           <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
                         </span>
                         Open to Deploy
                      </div>
@@ -169,35 +173,61 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-4 pt-4 w-full xl:w-auto">
-                {connectionStatus === 'IDLE' ? (
-                  <button
-                    onClick={handleConnect}
-                    className="flex-1 xl:flex-none h-14 px-10 rounded-full bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 active:scale-95"
-                  >
-                    <UserPlus className="h-5 w-5" />
-                    Deploy Link
-                  </button>
+              <div className="flex flex-wrap gap-4 pt-8 w-full xl:w-auto items-center">
+                {isOwner ? (
+                  <>
+                    <button
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="flex-1 xl:flex-none h-14 px-10 rounded-full bg-slate-900 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/30 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 active:scale-95 group"
+                    >
+                      <Zap className="h-5 w-5 text-accent group-hover:animate-pulse" />
+                      Configure Intro Node
+                    </button>
+                    <button
+                      className="flex-1 xl:flex-none h-14 px-10 rounded-full border-2 border-slate-100 text-slate-800 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-slate-50 transition-all flex items-center justify-center gap-3 active:scale-95 shadow-sm"
+                    >
+                      Add Alliance Node
+                    </button>
+                    <button
+                      className="h-14 px-6 rounded-full border border-slate-100 text-slate-400 hover:text-slate-900 transition-all flex items-center justify-center"
+                      title="More options"
+                    >
+                      <MoreHorizontal className="w-5 h-5" />
+                    </button>
+                  </>
                 ) : (
-                  <button className={`flex-1 xl:flex-none h-14 px-10 rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 ${connectionStatus === 'PENDING' ? 'bg-slate-100 text-slate-400' : 'bg-green-600 text-white shadow-xl shadow-green-100'}`}>
-                    {connectionStatus === 'PENDING' ? 'Link Pending' : <><Check className="h-5 w-5" /> Linked</>}
-                  </button>
-                )}
+                  <>
+                    {connectionStatus === 'IDLE' ? (
+                      <button
+                        onClick={handleConnect}
+                        className="flex-1 xl:flex-none h-14 px-10 rounded-full bg-primary text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center gap-3 active:scale-95"
+                      >
+                        <UserPlus className="h-5 w-5" />
+                        Deploy Alliance Link
+                      </button>
+                    ) : (
+                      <button className={`flex-1 xl:flex-none h-14 px-10 rounded-full font-black text-[11px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 ${connectionStatus === 'PENDING' ? 'bg-slate-100 text-slate-400' : 'bg-primary text-white shadow-xl shadow-primary/20'}`}>
+                        {connectionStatus === 'PENDING' ? 'Link Pending' : <><Check className="h-5 w-5" /> Linked</>}
+                      </button>
+                    )}
 
-                <button className="flex-1 xl:flex-none h-14 px-10 rounded-full border-2 border-slate-100 text-slate-800 font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-50 transition-all flex items-center justify-center gap-3 shadow-sm active:scale-95">
-                  <Mail className="h-5 w-5" />
-                  Direct Node
-                </button>
-                <button className="h-14 w-14 flex items-center justify-center rounded-full border border-slate-100 text-slate-300 hover:text-slate-600 transition-all">
-                   <Star className="w-5 h-5" />
-                </button>
+                    <Link href="/messaging" className="flex-1 xl:flex-none h-14 px-10 rounded-full border-2 border-slate-100 text-slate-800 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-slate-50 transition-all flex items-center justify-center gap-3 active:scale-95 group shadow-sm bg-white">
+                      <Mail className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
+                      Direct Node
+                    </Link>
+
+                    <button className="h-14 w-14 flex items-center justify-center rounded-full border border-slate-100 text-slate-300 hover:text-accent transition-all bg-white shadow-sm">
+                       <Star className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
 
         {/* Decorative backdrop blobs */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-500/5 rounded-full blur-[150px] -z-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/5 rounded-full blur-[150px] -z-10" />
       </div>
 
       <IntroEditModal user={user} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />

@@ -50,11 +50,20 @@ export function AccomplishmentsSection({
   honors
 }: AccomplishmentsSectionProps) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const certs = certifications && certifications.length > 0 ? certifications : (username === "demo-user" ? defaultCerts : [])
   const projs = projects && projects.length > 0 ? projects : (username === "demo-user" ? defaultProjects : [])
   const vols = volunteering && volunteering.length > 0 ? volunteering : []
   const hons = honors && honors.length > 0 ? honors : []
+
+  if (!mounted) {
+    return null // Prevent hydration mismatch by not rendering on server/first client pass
+  }
 
   return (
     <>

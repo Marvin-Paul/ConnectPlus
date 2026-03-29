@@ -150,10 +150,10 @@ function FeedArticleCard({ item, onUpdate }: { item: FeedItem; onUpdate: (u: Fee
           <img src={item.author?.avatar} alt="" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-bold text-[#1B5E20]">{item.author?.name}</p>
-          <p className="text-[11px] text-[#435348] flex items-center gap-1">
+          <p className="text-sm font-bold text-primary">{item.author?.name}</p>
+          <p className="text-[11px] text-muted-foreground flex items-center gap-1">
             <BookOpen className="h-3 w-3" /> Published an Article
-            <span className="text-[#D1D9D4]">·</span>
+            <span className="text-border">·</span>
             <Clock className="h-2.5 w-2.5" /> {Math.round((Date.now() - item.timestamp) / 3600000)}h ago
           </p>
         </div>
@@ -168,7 +168,7 @@ function FeedArticleCard({ item, onUpdate }: { item: FeedItem; onUpdate: (u: Fee
 
       <div className="px-4 pb-2">
         <Link href={`/articles/${item.id}`}>
-          <h3 className="text-base font-bold text-slate-800 hover:text-[#1B5E20] transition-colors cursor-pointer leading-snug mb-1">
+          <h3 className="text-base font-bold text-slate-800 hover:text-primary transition-colors cursor-pointer leading-snug mb-1">
             {item.title}
           </h3>
         </Link>
@@ -176,7 +176,7 @@ function FeedArticleCard({ item, onUpdate }: { item: FeedItem; onUpdate: (u: Fee
         {item.tags && item.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {item.tags.map(t => (
-              <span key={t} className="text-[10px] bg-[#F1F8F4] text-[#1B5E20] border border-[#4CAF50]/20 px-2 py-0.5 rounded-full font-medium">#{t}</span>
+              <span key={t} className="text-[10px] bg-accent/10 text-primary border border-accent/20 px-2 py-0.5 rounded-full font-medium">#{t}</span>
             ))}
           </div>
         )}
@@ -185,16 +185,16 @@ function FeedArticleCard({ item, onUpdate }: { item: FeedItem; onUpdate: (u: Fee
       {/* Actions */}
       <div className="border-t border-[#D1D9D4] mx-4" />
       <div className="flex items-center px-2 py-1 gap-1">
-        <button onClick={handleLike} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold transition-all ${reaction === "liked" ? "bg-[#1B5E20] text-white" : "text-[#435348] hover:bg-[#F1F8F4] hover:text-[#1B5E20]"}`}>
+        <button onClick={handleLike} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold transition-all ${reaction === "liked" ? "bg-primary text-white" : "text-muted-foreground hover:bg-primary/5 hover:text-primary"}`}>
           <ThumbsUp className="h-4 w-4" /> {item.likes}
         </button>
-        <button onClick={handleDislike} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold transition-all ${reaction === "disliked" ? "bg-red-500 text-white" : "text-[#435348] hover:bg-red-50 hover:text-red-500"}`}>
+        <button onClick={handleDislike} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold transition-all ${reaction === "disliked" ? "bg-red-500 text-white" : "text-muted-foreground hover:bg-red-50 hover:text-red-500"}`}>
           <ThumbsDown className="h-4 w-4" /> {item.dislikes}
         </button>
-        <button onClick={handleRepost} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold text-[#435348] hover:bg-[#F1F8F4] hover:text-[#1B5E20] transition-all">
+        <button onClick={handleRepost} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all">
           <Repeat2 className="h-4 w-4" /> {item.reposts}
         </button>
-        <button onClick={() => setShowComments(!showComments)} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold transition-all ${showComments ? "bg-[#F1F8F4] text-[#1B5E20]" : "text-[#435348] hover:bg-[#F1F8F4] hover:text-[#1B5E20]"}`}>
+        <button onClick={() => setShowComments(!showComments)} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold transition-all ${showComments ? "bg-primary/5 text-primary" : "text-muted-foreground hover:bg-primary/5 hover:text-primary"}`}>
           <MessageSquare className="h-4 w-4" /> {item.articleComments?.length || 0}
         </button>
       </div>
@@ -207,9 +207,9 @@ function FeedArticleCard({ item, onUpdate }: { item: FeedItem; onUpdate: (u: Fee
           )}
           {(item.articleComments || []).map(c => (
             <div key={c.id} className="flex gap-2 mt-2">
-              <div className="w-6 h-6 rounded-full bg-[#E5ECE8] flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-[#1B5E20]">{c.author[0]}</div>
-              <div className="flex-1 bg-[#F1F8F4] rounded-xl px-3 py-2">
-                <p className="text-[11px] font-bold text-[#1B5E20]">{c.author} <span className="font-normal text-[#435348]">· {c.time}</span></p>
+              <div className="w-6 h-6 rounded-full bg-muted flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-primary">{c.author[0]}</div>
+              <div className="flex-1 bg-muted rounded-xl px-3 py-2">
+                <p className="text-[11px] font-bold text-primary">{c.author} <span className="font-normal text-muted-foreground">· {c.time}</span></p>
                 <p className="text-sm text-slate-800">{c.text}</p>
               </div>
             </div>
@@ -218,8 +218,8 @@ function FeedArticleCard({ item, onUpdate }: { item: FeedItem; onUpdate: (u: Fee
             <div className="w-8 h-8 rounded-full overflow-hidden border border-[#D1D9D4] flex-shrink-0">
               <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80" className="w-full h-full object-cover" alt="" />
             </div>
-            <input value={commentText} onChange={e => setCommentText(e.target.value)} placeholder="Add a comment..." className="flex-1 text-sm border border-[#D1D9D4] rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-[#1B5E20]/30 placeholder:text-[#c0c8c2]" />
-            <button type="submit" disabled={!commentText.trim()} className="px-3 py-2 bg-[#1B5E20] text-white rounded-xl text-sm font-bold hover:bg-[#154d1a] disabled:opacity-40 transition-colors">
+            <input value={commentText} onChange={e => setCommentText(e.target.value)} placeholder="Add a comment..." className="flex-1 text-sm border border-border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/50" />
+            <button type="submit" disabled={!commentText.trim()} className="px-3 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 disabled:opacity-40 transition-colors">
               <Send className="h-4 w-4" />
             </button>
           </form>
@@ -242,14 +242,14 @@ function FeedEventCard({ item }: { item: FeedItem }) {
           <img src={item.organizerLogo} alt="" className="w-full h-full object-cover" />
         </div>
         <div>
-          <p className="text-sm font-bold text-[#1B5E20]">{item.organizer}</p>
-          <p className="text-[11px] text-[#435348] flex items-center gap-1">
+          <p className="text-sm font-bold text-primary">{item.organizer}</p>
+          <p className="text-[11px] text-muted-foreground flex items-center gap-1">
             <Calendar className="h-3 w-3" /> Upcoming Event
-            <span className="text-[#D1D9D4]">·</span>
+            <span className="text-border">·</span>
             <Clock className="h-2.5 w-2.5" /> {Math.round((Date.now() - item.timestamp) / 3600000)}h ago
           </p>
         </div>
-        <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${item.isOnline ? "bg-[#4CAF50] text-white" : "bg-[#F1F8F4] text-[#1B5E20] border border-[#4CAF50]/30"}`}>
+        <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${item.isOnline ? "bg-accent text-black" : "bg-accent/10 text-primary border border-accent/30"}`}>
           {item.isOnline ? "🌐 Online" : "📍 In-Person"}
         </span>
       </div>
@@ -270,17 +270,17 @@ function FeedEventCard({ item }: { item: FeedItem }) {
         </div>
         <p className="text-sm text-[#435348] line-clamp-2 mb-3">{item.description}</p>
 
-        <div className="grid grid-cols-2 gap-1 text-[11px] text-[#435348] mb-3">
-          <div className="flex items-center gap-1"><Calendar className="h-3 w-3 text-[#1B5E20]" /> {item.date}</div>
-          <div className="flex items-center gap-1"><Clock className="h-3 w-3 text-[#1B5E20]" /> {item.eventTime}</div>
-          <div className="flex items-center gap-1"><MapPin className="h-3 w-3 text-[#1B5E20]" /> {item.location}</div>
-          <div className="flex items-center gap-1"><Users className="h-3 w-3 text-[#1B5E20]" /> {item.attendees?.toLocaleString()} attending</div>
+        <div className="grid grid-cols-2 gap-1 text-[11px] text-muted-foreground mb-3">
+          <div className="flex items-center gap-1"><Calendar className="h-3 w-3 text-primary" /> {item.date}</div>
+          <div className="flex items-center gap-1"><Clock className="h-3 w-3 text-primary" /> {item.eventTime}</div>
+          <div className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {item.location}</div>
+          <div className="flex items-center gap-1"><Users className="h-3 w-3 text-primary" /> {item.attendees?.toLocaleString()} attending</div>
         </div>
 
         {item.tags && (
           <div className="flex flex-wrap gap-1.5 mb-3">
             {item.tags.map(t => (
-              <span key={t} className="text-[10px] bg-[#F1F8F4] text-[#1B5E20] border border-[#4CAF50]/20 px-2 py-0.5 rounded-full font-medium">#{t}</span>
+              <span key={t} className="text-[10px] bg-accent/10 text-primary border border-accent/20 px-2 py-0.5 rounded-full font-medium">#{t}</span>
             ))}
           </div>
         )}
@@ -290,17 +290,17 @@ function FeedEventCard({ item }: { item: FeedItem }) {
       <div className="flex gap-2 px-4 py-3">
         <button
           onClick={() => setGoing(!going)}
-          className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${going ? "bg-[#4CAF50] text-white" : "bg-[#1B5E20] text-white hover:bg-[#154d1a]"}`}
+          className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${going ? "bg-accent text-black" : "bg-primary text-white hover:bg-primary/90"}`}
         >
           {going ? "✓ Going" : "Register"}
         </button>
         <button
           onClick={() => setSaved(!saved)}
-          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${saved ? "border-[#FFC107] text-[#A57C00] bg-[#FFC107]/10" : "border-[#D1D9D4] text-[#435348] hover:bg-[#F1F8F4]"}`}
+          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${saved ? "border-[#FFC107] text-[#A57C00] bg-[#FFC107]/10" : "border-border text-muted-foreground hover:bg-primary/5"}`}
         >
           {saved ? "★ Saved" : "Save"}
         </button>
-        <Link href="/events" className="px-4 py-2 rounded-xl text-sm font-bold border border-[#D1D9D4] text-[#435348] hover:bg-[#F1F8F4] transition-colors">
+        <Link href="/events" className="px-4 py-2 rounded-xl text-sm font-bold border border-border text-muted-foreground hover:bg-primary/5 transition-colors">
           Details
         </Link>
       </div>
@@ -352,9 +352,9 @@ export default function FeedPage() {
 
         {/* Sort Bar */}
         <div className="flex items-center gap-1 py-1">
-          <div className="flex-1 h-px bg-[#D1D9D4]" />
-          <p className="text-[12px] text-[#435348] px-2">
-            Sort by: <span className="font-bold text-[#1B5E20] cursor-pointer uppercase">Recent</span>
+          <div className="flex-1 h-px bg-border" />
+          <p className="text-[12px] text-muted-foreground px-2">
+            Sort by: <span className="font-bold text-primary cursor-pointer uppercase">Recent</span>
           </p>
         </div>
 

@@ -27,7 +27,7 @@ export function CreatePost() {
              <div className="w-24 h-24 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl group-hover/main:rotate-6 transition-transform duration-700">
                 <img src={user.avatar} alt="Me" className="w-full h-full object-cover" />
              </div>
-             <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+             <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-full border-4 border-white shadow-lg flex items-center justify-center">
                 <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
              </div>
           </div>
@@ -36,9 +36,9 @@ export function CreatePost() {
             <div className="relative group/input">
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="w-full h-24 rounded-[2.5rem] border border-slate-100 px-12 text-left bg-slate-50/30 hover:bg-white hover:border-[#1B5E20]/20 transition-all duration-500 shadow-inner group-hover/main:shadow-2xl flex flex-col justify-center gap-1 group-hover/input:pl-16"
+                className="w-full h-24 rounded-[2.5rem] border border-slate-100 px-12 text-left bg-slate-50/30 hover:bg-white hover:border-primary/20 transition-all duration-500 shadow-inner group-hover/main:shadow-2xl flex flex-col justify-center gap-1 group-hover/input:pl-16"
               >
-                <span className="text-[11px] font-black text-[#1B5E20] uppercase tracking-[0.4em] italic opacity-60 group-hover/input:opacity-100 transition-all">Elite Engagement Node</span>
+                <span className="text-[11px] font-black text-primary uppercase tracking-[0.4em] italic opacity-60 group-hover/input:opacity-100 transition-all">Elite Engagement Node</span>
               </button>
               
               <Plus className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-200 opacity-0 group-hover/input:opacity-100 transition-all duration-500" />
@@ -47,7 +47,7 @@ export function CreatePost() {
             <div className="flex justify-end px-2">
                {/* AI ASSIST PILOT - RELOCATED BELOW INPUT */}
                <button className="h-12 px-8 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl hover:bg-slate-800 transition-all active:scale-95 flex items-center gap-3">
-                  <Sparkles className="w-4 h-4 text-yellow-400" /> AI PILOT
+                  <Sparkles className="w-4 h-4 text-accent" /> AI PILOT
                </button>
             </div>
           </div>
@@ -63,7 +63,7 @@ export function CreatePost() {
            ].map((item, i) => (
              <div
                key={i}
-               className="group/item cursor-pointer p-5 md:p-8 rounded-[2.5rem] bg-white border border-slate-100 hover:border-[#1B5E20]/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between min-h-[160px] md:min-h-[200px]"
+               className="group/item cursor-pointer p-5 md:p-8 rounded-[2.5rem] bg-white border border-slate-100 hover:border-primary/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between min-h-[160px] md:min-h-[200px]"
                onClick={() => { if(item.label === "Visual Media") setIsModalOpen(true); }}
              >
                 <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl ${item.bg} flex items-center justify-center mb-4 md:mb-6 group-hover/item:rotate-12 transition-transform shadow-sm`}>
@@ -73,7 +73,7 @@ export function CreatePost() {
                    <h4 className="text-[10px] md:text-[12px] font-black text-slate-800 uppercase tracking-[0.2em] italic leading-tight">{item.label}</h4>
                    <div className="flex items-center justify-between gap-2 overflow-hidden">
                       <p className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] opacity-60 leading-none truncate">{item.sub}</p>
-                      <ChevronRight className="w-3 h-3 text-slate-300 group-hover/item:text-[#1B5E20] group-hover/item:translate-x-1 transition-all flex-shrink-0" />
+                      <ChevronRight className="w-3 h-3 text-slate-300 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all flex-shrink-0" />
                    </div>
                 </div>
              </div>
@@ -82,7 +82,7 @@ export function CreatePost() {
 
         {/* Global Aura backdrops */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 rounded-full blur-[120px] -z-10" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-green-600/5 rounded-full blur-[120px] -z-10" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] -z-10" />
       </div>
 
       <PostModal 

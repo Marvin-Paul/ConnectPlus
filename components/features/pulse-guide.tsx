@@ -114,8 +114,8 @@ export function PulseGuide() {
            onClick={startGuide}
            className="fixed bottom-10 right-10 w-16 h-16 rounded-full bg-slate-900 shadow-[0_20px_60px_rgba(0,0,0,0.4)] flex items-center justify-center text-white z-[300] hover:scale-110 active:scale-95 transition-all group overflow-hidden border border-slate-700"
         >
-           <Zap className="w-6 h-6 group-hover:text-yellow-400 transition-colors" />
-           <div className="absolute inset-0 bg-gradient-to-tr from-[#1B5E20]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+           <Zap className="w-6 h-6 group-hover:text-accent transition-colors" />
+           <div className="absolute inset-0 bg-gradient-to-tr from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         </button>
      );
   }
@@ -124,15 +124,15 @@ export function PulseGuide() {
     return (
         <div className="fixed bottom-10 right-10 z-[300] animate-in slide-in-from-bottom-10 fade-in duration-700">
            <div className="bg-white p-6 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.2)] border border-slate-100 flex items-center gap-6 max-w-[400px]">
-              <div className="w-12 h-12 rounded-2xl bg-[#1B5E20]/10 flex items-center justify-center shrink-0">
-                 <Sparkles className="w-6 h-6 text-[#1B5E20] animate-pulse" />
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                 <Sparkles className="w-6 h-6 text-primary animate-pulse" />
               </div>
               <div className="flex-1">
                  <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest leading-none">Pulse AI Guide</h4>
                  <p className="text-[11px] text-slate-500 font-medium italic mt-2 leading-relaxed">System scan complete. Optimization nodes discovered. Run tour?</p>
               </div>
               <div className="flex flex-col gap-2">
-                 <button onClick={startGuide} className="px-5 py-2 rounded-full bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#1B5E20] transition-colors">Launch</button>
+                 <button onClick={startGuide} className="px-5 py-2 rounded-full bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-colors">Launch</button>
                  <button onClick={() => setShowNotification(false)} className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center hover:text-red-500 transition-colors">Dismiss</button>
               </div>
            </div>
@@ -168,7 +168,7 @@ export function PulseGuide() {
                 <div className="flex items-center justify-between mb-8">
                    <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center">
-                         <Rocket className="w-5 h-5 text-yellow-400" />
+                         <Rocket className="w-5 h-5 text-accent" />
                       </div>
                       <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] opacity-60">Step {currentStepIndex + 1} of {GUIDE_STEPS.length}</span>
                    </div>
@@ -195,7 +195,7 @@ export function PulseGuide() {
                       )}
                       <button 
                          onClick={nextStep}
-                         className="flex items-center gap-4 px-10 py-4 rounded-full bg-slate-900 text-white font-black text-[11px] uppercase tracking-widest hover:bg-[#1B5E20] transition-all active:scale-95 shadow-2xl shadow-slate-900/20"
+                         className="flex items-center gap-4 px-10 py-4 rounded-full bg-slate-900 text-white font-black text-[11px] uppercase tracking-widest hover:bg-primary transition-all active:scale-95 shadow-2xl shadow-slate-900/20"
                       >
                          {currentStepIndex === GUIDE_STEPS.length - 1 ? "Finish Sync" : "Deploy Insight"}
                          <ChevronRight className="w-5 h-5" />
@@ -204,7 +204,7 @@ export function PulseGuide() {
                 </div>
 
                 {/* Aesthetic Backdrop Glow */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#1B5E20]/5 rounded-full blur-[80px] -z-10" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[80px] -z-10" />
              </div>
           </div>
        )}

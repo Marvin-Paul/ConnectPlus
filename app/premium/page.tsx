@@ -33,7 +33,7 @@ const PLANS = [
       "Salary and market insights"
     ],
     cta: "Try Free for 1 Month",
-    color: "bg-blue-600",
+    color: "bg-primary",
     popular: false
   },
   {
@@ -50,7 +50,7 @@ const PLANS = [
       "Ad-free experience"
     ],
     cta: "Buy for my Team",
-    color: "bg-[#1B5E20]",
+    color: "bg-primary",
     popular: true
   },
   {
@@ -77,12 +77,12 @@ export default function PremiumPage() {
     <div className="max-w-7xl mx-auto py-12 px-6">
       {/* Hero Section */}
       <div className="text-center space-y-8 mb-24 animate-in fade-in slide-in-from-bottom-6 duration-1000">
-         <div className="flex items-center gap-2 px-4 py-1.5 bg-yellow-50 text-yellow-700 w-fit mx-auto rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-yellow-100 shadow-sm">
+         <div className="flex items-center gap-2 px-4 py-1.5 bg-accent/10 text-primary w-fit mx-auto rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-accent/20 shadow-sm">
             <Sparkles className="w-3.5 h-3.5 fill-current" /> the professional edge
          </div>
          <h1 className="text-7xl font-black text-slate-800 tracking-tighter leading-[0.95] max-w-4xl mx-auto">
-            Ignite your <span className="text-[#1B5E20]">Professional</span> <br /> 
-            Superpowers with <span className="text-yellow-600">Connect+</span>
+            Ignite your <span className="text-primary">Professional</span> <br /> 
+            Superpowers with <span className="text-accent">Connect+</span>
          </h1>
          <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto italic leading-relaxed opacity-80">
             Beyond networking. Unlock deep competitive data, direct access to hidden talent, and detailed profile intelligence used by regional leaders.
@@ -106,7 +106,7 @@ export default function PremiumPage() {
         ].map((benefit, idx) => (
           <div key={idx} className="p-10 bg-white rounded-[3rem] border border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-500 group">
              <div className="w-16 h-16 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-center justify-center mb-8 group-hover:rotate-12 transition-transform shadow-inner">
-                <benefit.icon className="w-8 h-8 text-[#1B5E20] opacity-40 group-hover:opacity-100 transition-opacity" />
+                <benefit.icon className="w-8 h-8 text-primary opacity-40 group-hover:opacity-100 transition-opacity" />
              </div>
              <h3 className="text-xl font-black text-slate-800 tracking-tight leading-none mb-4">{benefit.title}</h3>
              <p className="text-sm text-slate-500 font-medium leading-relaxed italic opacity-80">{benefit.desc}</p>
@@ -117,16 +117,16 @@ export default function PremiumPage() {
       {/* Pricing Section */}
       <div className="space-y-16 mb-40">
         <div className="text-center space-y-4">
-           <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-[#1B5E20]">Sustainable Investment</h2>
+           <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-primary">Sustainable Investment</h2>
            <h3 className="text-5xl font-black text-slate-800 tracking-tighter">Chosen by 5,000+ Regional Experts</h3>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
            {PLANS.map(plan => (
-             <div key={plan.id} className={`relative p-12 rounded-[4rem] flex flex-col justify-between border-2 transition-all duration-700 group ${plan.popular ? 'border-[#1B5E20] bg-[#1B5E20] h-[850px] -translate-y-8 z-20 shadow-[0_50px_120px_rgba(27,94,32,0.2)]' : 'border-slate-100 bg-white h-[780px] hover:border-slate-200 shadow-xl'}`}>
+             <div key={plan.id} className={`relative p-12 rounded-[4rem] flex flex-col justify-between border-2 transition-all duration-700 group ${plan.popular ? 'border-primary bg-primary h-[850px] -translate-y-8 z-20 shadow-[0_50px_120px_rgba(125,57,235,0.2)]' : 'border-slate-100 bg-white h-[780px] hover:border-slate-200 shadow-xl'}`}>
                 
                 {plan.popular && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-8 py-2 bg-yellow-400 text-slate-900 font-black text-[10px] uppercase tracking-widest rounded-full shadow-2xl">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-8 py-2 bg-accent text-slate-900 font-black text-[10px] uppercase tracking-widest rounded-full shadow-2xl">
                     Most Popular Growth Plan
                   </div>
                 )}
