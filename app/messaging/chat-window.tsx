@@ -10,6 +10,7 @@ import {
   ChevronDown
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { useUser } from "@/components/providers/user-provider";
 
 interface Message {
   id: string;

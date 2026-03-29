@@ -1,15 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Image, Calendar, Layout, Plus, Sparkles, Smile, PlaySquare, FileText, Briefcase, Camera, Video, Newspaper, ChevronRight } from "lucide-react";
+import { Image, Calendar, Layout, Plus, Sparkles, Smile, PlaySquare, FileText, Briefcase, Camera, Video, Newspaper, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { PostModal } from "./post-modal";
+import { useUser } from "../providers/user-provider";
 
 export function CreatePost() {
+  const { user: contextUser, loading } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  if (loading) return null;
+
   const user = {
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
-    name: "Marvin Muwereza"
+    avatar: contextUser?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+    name: contextUser ? `${contextUser.firstName} ${contextUser.lastName}` : "Marvin Muwereza"
   };
 
   return (

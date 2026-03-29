@@ -1,10 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Settings, ShieldCheck, Bell, User, Eye, Globe, Lock, Trash2, CheckCircle2, MoreHorizontal, Sparkles, ChevronRight } from "lucide-react";
+import { Settings, ShieldCheck, Bell, User, Eye, Globe, Lock, Trash2, CheckCircle2, MoreHorizontal, Sparkles, ChevronRight, Loader2 } from "lucide-react";
+import { useUser } from "@/components/providers/user-provider";
 
 export default function SettingsPage() {
+  const { user: contextUser, loading } = useUser();
   const [activeSection, setActiveSection] = useState<"account" | "privacy" | "notifications" | "security">("account");
+
+  if (loading) {
+     return (
+       <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-12 h-12 text-[#1B5E20] animate-spin" />
+       </div>
+     );
+  }
+
+  const userName = contextUser ? `${contextUser.firstName} ${contextUser.lastName}` : "Marvin Muwereza";
+  const userAvatar = contextUser?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80";
 
   const sections = [
     { id: "account", label: "Account preferences", icon: User },
@@ -30,10 +43,10 @@ export default function SettingsPage() {
         </div>
         <div className="flex items-center gap-3 p-4 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl group transition-all cursor-pointer">
            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-slate-800 group-hover:scale-110 transition-transform">
-              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80" className="w-full h-full object-cover" alt="" />
+              <img src={userAvatar} className="w-full h-full object-cover" alt="" />
            </div>
            <div>
-              <h4 className="text-[12px] font-black text-white uppercase tracking-widest leading-none">Marvin Muwereza</h4>
+              <h4 className="text-[12px] font-black text-white uppercase tracking-widest leading-none">{userName}</h4>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-60">Verified Admin</p>
            </div>
         </div>

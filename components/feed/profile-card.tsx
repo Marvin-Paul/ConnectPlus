@@ -1,14 +1,25 @@
 "use client";
 
-import { Bookmark, Sparkles, Users, TrendingUp, ShieldCheck, ChevronRight, Plus } from "lucide-react";
+import { Bookmark, Sparkles, Users, TrendingUp, ShieldCheck, ChevronRight, Plus, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useUser } from "../providers/user-provider";
 
 export function ProfileCard() {
+  const { user: contextUser, loading } = useUser();
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-[2.5rem] border border-slate-100 p-12 flex items-center justify-center shadow-xl">
+        <Loader2 className="w-8 h-8 text-slate-200 animate-spin" />
+      </div>
+    );
+  }
+
   const user = {
-    name: "Marvin Muwereza",
-    headline: "Senior Full-Stack Engineer | AI Systems Architect | Uganda Tech Alliance",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
-    banner: "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
+    name: contextUser ? `${contextUser.firstName} ${contextUser.lastName}` : "Marvin Muwereza",
+    headline: contextUser?.headline || "Senior Full-Stack Engineer | AI Systems Architect | Uganda Tech Alliance",
+    avatar: contextUser?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+    banner: contextUser?.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
     stats: {
       viewers: 1248,
       impressions: 5892,

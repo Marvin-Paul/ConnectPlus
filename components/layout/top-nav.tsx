@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { useUser } from "../providers/user-provider";
 import { 
   Home, 
   Users, 
@@ -44,6 +45,7 @@ const navLinks = [
 ];
 
 export function TopNav() {
+  const { user, loading } = useUser();
   const [isMeOpen, setIsMeOpen] = useState(false);
   const [isBusinessOpen, setIsBusinessOpen] = useState(false);
   const [isPremiumOpen, setIsPremiumOpen] = useState(false);
@@ -51,6 +53,10 @@ export function TopNav() {
   const [isMessagingOpen, setIsMessagingOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+
+  const userName = user ? `${user.firstName} ${user.lastName}` : "Marvin Muwereza";
+  const userHeadline = user?.headline || "Senior Full-Stack Engineer | AI Expert";
+  const userAvatar = user?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80";
   
   const meRef = useRef<HTMLDivElement>(null);
   const bizRef = useRef<HTMLDivElement>(null);
@@ -252,7 +258,7 @@ export function TopNav() {
               className={`flex flex-col items-center justify-center min-w-[64px] h-full text-slate-500 hover:text-[#1B5E20] border-r border-slate-100 mr-2 pr-2 group transition-all ${isMeOpen ? 'text-[#1B5E20]' : ''}`}
             >
               <div className={`w-7 h-7 rounded-full overflow-hidden mb-0.5 border-2 transition-all ${isMeOpen ? 'border-[#1B5E20]' : 'border-slate-100 group-hover:border-[#1B5E20]'}`}>
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80" alt="Me" className="w-full h-full object-cover" />
+                <img src={userAvatar} alt="Me" className="w-full h-full object-cover" />
               </div>
               <div className="flex items-center gap-0.5">
                 <span className="text-[11px] font-bold uppercase tracking-widest hidden lg:block opacity-70 scale-90">Me</span>
@@ -264,10 +270,10 @@ export function TopNav() {
             {isMeOpen && (
               <div className="absolute top-[52px] right-0 w-[280px] bg-white rounded-b-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
                  <div className="p-5 flex items-start gap-3">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80" className="w-12 h-12 rounded-full object-cover shadow-md" alt="" />
+                    <img src={userAvatar} className="w-12 h-12 rounded-full object-cover shadow-md" alt="" />
                     <div className="flex-1 min-w-0">
-                       <h4 className="font-black text-slate-800 tracking-tight leading-tight truncate">Marvin Muwereza</h4>
-                       <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5 leading-relaxed">Senior Full-Stack Engineer | AI Expert</p>
+                       <h4 className="font-black text-slate-800 tracking-tight leading-tight truncate">{userName}</h4>
+                       <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5 leading-relaxed">{userHeadline}</p>
                     </div>
                  </div>
                  <div className="px-4 pb-4">

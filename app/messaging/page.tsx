@@ -5,8 +5,9 @@ import {
   Plus, Image, Paperclip, Smile, Send as SendIcon, 
   MoreHorizontal, ChevronDown, Video, Phone, Mic, 
   Search, SlidersHorizontal, SquarePen, ShieldCheck, 
-  Sparkles, Star, CheckCircle2, MoreVertical
+  Sparkles, Star, CheckCircle2, MoreVertical, Loader2
 } from "lucide-react";
+import { useUser } from "@/components/providers/user-provider";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -103,10 +104,26 @@ function ChatItem({ chat, active, onClick }: { chat: any; active: boolean; onCli
 // ─── Main Page Component ──────────────────────────────────────────────────────
 
 export default function MessagingPage() {
+  const { user, loading } = useUser();
   const [activeChatId, setActiveChatId] = useState("c1");
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  if (loading) {
+    return (
+      <div className="h-[calc(100vh-140px)] flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-[#1B5E20] animate-spin" />
+      </div>
+    );
+  }
+
+  const userName = user ? `${user.firstName} ${user.lastName}` : "Marvin Muwereza";
+  const userAvatar = user?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80";
+
+  // Override INITIAL_MESSAGES with current user for 'me' messages if needed, 
+  // but better to just use dynamic values in the render or update INITIAL_MESSAGES once.
+
 
   const activeChat = CONVERSATIONS.find(c => c.id === activeChatId) || CONVERSATIONS[0];
 
@@ -119,10 +136,10 @@ export default function MessagingPage() {
     const newMessage = {
        id: `m_${Date.now()}`,
        sender: "me" as const,
-       name: "Marvin Muwereza (You)",
+       name: `${userName} (You)`,
        text: inputText,
        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
+       avatar: userAvatar
     };
     setMessages([...messages, newMessage]);
     setInputText("");

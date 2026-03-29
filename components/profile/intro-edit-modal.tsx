@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
+import { useUser } from "../providers/user-provider"
 
 interface IntroEditModalProps {
   user: {
@@ -29,6 +30,7 @@ interface IntroEditModalProps {
 
 export function IntroEditModal({ user, isOpen, onClose }: IntroEditModalProps) {
   const router = useRouter()
+  const { refreshUser } = useUser()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     firstName: user.firstName,
@@ -53,6 +55,7 @@ export function IntroEditModal({ user, isOpen, onClose }: IntroEditModalProps) {
       })
 
       if (res.ok) {
+        await refreshUser()
         router.refresh()
         onClose()
       } else {
