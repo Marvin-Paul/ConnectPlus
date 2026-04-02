@@ -88,7 +88,7 @@ export default function PremiumPage() {
             Beyond networking. Unlock deep competitive data, direct access to hidden talent, and detailed profile intelligence used by regional leaders.
          </p>
          <div className="pt-4">
-            <Link href="/premium/analytics" className="px-12 py-5 bg-[#1B5E20] text-white font-black text-sm rounded-full hover:scale-105 transition-all shadow-2xl shadow-green-900/20 tracking-widest uppercase flex items-center gap-3 mx-auto w-fit group">
+            <Link href="/premium/analytics" className="px-12 py-5 bg-primary text-white font-black text-sm rounded-full hover:scale-105 transition-all shadow-2xl shadow-primary/20 tracking-widest uppercase flex items-center gap-3 mx-auto w-fit group">
                Explore Intelligence Dashboard <TrendingUp className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
          </div>
@@ -132,24 +132,24 @@ export default function PremiumPage() {
                 )}
 
                 <div>
-                   <h4 className={`text-[11px] font-black uppercase tracking-[0.4em] mb-4 ${plan.popular ? 'text-green-300' : 'text-slate-400'}`}>{plan.name}</h4>
+                   <h4 className={`text-[11px] font-black uppercase tracking-[0.4em] mb-4 ${plan.popular ? 'text-accent' : 'text-slate-400'}`}>{plan.name}</h4>
                    <div className="flex items-baseline gap-2 mb-6">
                       <span className={`text-6xl font-black tracking-tighter ${plan.popular ? 'text-white' : 'text-slate-800'}`}>{plan.price}</span>
-                      <span className={`text-sm font-bold italic ${plan.popular ? 'text-green-200' : 'text-slate-400'}`}>{plan.billing}</span>
+                      <span className={`text-sm font-bold italic ${plan.popular ? 'text-accent/60' : 'text-slate-400'}`}>{plan.billing}</span>
                    </div>
-                   <p className={`text-sm font-medium leading-relaxed italic mb-10 ${plan.popular ? 'text-green-50' : 'text-slate-500 opacity-80'}`}>{plan.description}</p>
+                   <p className={`text-sm font-medium leading-relaxed italic mb-10 ${plan.popular ? 'text-white/80' : 'text-slate-500 opacity-80'}`}>{plan.description}</p>
                    
                    <div className="space-y-6">
                       {plan.features.map(feat => (
                         <div key={feat} className="flex items-start gap-4">
-                           <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 ${plan.popular ? 'text-green-300' : 'text-[#1B5E20]'}`} />
+                           <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 ${plan.popular ? 'text-accent' : 'text-primary'}`} />
                            <span className={`text-[12px] font-black uppercase tracking-widest leading-relaxed ${plan.popular ? 'text-white' : 'text-slate-700'}`}>{feat}</span>
                         </div>
                       ))}
                    </div>
                 </div>
 
-                <button className={`w-full py-5 rounded-[2.5rem] font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 ${plan.popular ? 'bg-white text-[#1B5E20] hover:scale-105' : 'bg-slate-900 text-white hover:bg-slate-800'}`}>
+                <button className={`w-full py-5 rounded-[2.5rem] font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 ${plan.popular ? 'bg-white text-primary hover:scale-105' : 'bg-slate-900 text-white hover:bg-slate-800'}`}>
                    {plan.cta}
                 </button>
              </div>
