@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { NetworkSidebar } from "../network-sidebar";
-import { Users, Search, Plus, MoreHorizontal, MessageSquare, Briefcase, Sparkles, MapPin, Globe } from "lucide-react";
-import Link from "next/link";
+import { Users, Plus, MoreHorizontal, Sparkles, Globe, X } from "lucide-react";
 
 const initialGroups = [
   { id: "g1", name: "React Developers Network", count: 12400, description: "Africa's fastest growing React community focused on Next.js and frontend excellence.", avatar: "RD", banner: "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200", joined: true },
@@ -13,9 +12,37 @@ const initialGroups = [
 
 export default function GroupsPage() {
   const [groups, setGroups] = useState(initialGroups);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newGroup, setNewGroup] = useState({ name: "", description: "" });
+  const [activeTab, setActiveTab] = useState("all");
 
   const handleJoin = (id: string) => {
     setGroups(prev => prev.map(g => g.id === id ? { ...g, joined: !g.joined } : g));
+  };
+
+  const handleCreateGroup = () => {
+    if (!newGroup.name.trim()) return;
+
+    const initials = newGroup.name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+
+    const createdGroup = {
+      id: `g${Date.now()}`,
+      name: newGroup.name,
+      count: 1,
+      description: newGroup.description || "A new professional community.",
+      avatar: initials || "GN",
+      banner: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=400&h=200",
+      joined: true
+    };
+
+    setGroups(prev => [createdGroup, ...prev]);
+    setIsModalOpen(false);
+    setNewGroup({ name: "", description: "" });
   };
 
   return (
@@ -34,7 +61,10 @@ export default function GroupsPage() {
                  </h1>
                  <p className="text-sm text-[#666666] mt-1 font-medium">Connect with professionals in specialized communities.</p>
               </div>
-              <button className="flex items-center gap-2 px-8 py-3 rounded-full bg-[#0a66c2] text-white font-black text-xs hover:bg-[#004182] transition-all shadow-blue-100 shadow-xl tracking-widest">
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center gap-2 px-8 py-3 rounded-full bg-[#0a66c2] text-white font-black text-xs hover:bg-[#004182] transition-all shadow-blue-100 shadow-xl tracking-widest"
+              >
                  <Plus className="w-4 h-4" /> Create group
               </button>
            </div>
@@ -46,7 +76,12 @@ export default function GroupsPage() {
                     <p className="text-sm font-medium opacity-80 leading-relaxed mb-8">
                        Discover professional communities tailored to your industry, skills, and professional journey.
                     </p>
-                    <button className="px-10 py-3 rounded-full bg-white text-[#0a66c2] font-black text-sm hover:scale-105 transition-all shadow-xl shadow-blue-900/40 tracking-wider">
+                    <button 
+                       onClick={() => {
+                         setActiveTab('discovery');
+                         document.getElementById('discovery-section')?.scrollIntoView({ behavior: 'smooth' });
+                       }}
+                       className="px-10 py-3 rounded-full bg-white text-[#0a66c2] font-black text-sm hover:scale-105 transition-all shadow-xl shadow-blue-900/40 tracking-wider">
                        Browse Discovery
                     </button>
                     <Sparkles className="absolute -bottom-10 -right-10 w-48 h-48 opacity-10 group-hover:scale-110 transition-transform duration-500" />
@@ -68,8 +103,23 @@ export default function GroupsPage() {
                  </div>
               </div>
 
+              <div id="discovery-section" className="flex items-center gap-4 mb-8 border-b border-slate-100 pb-6 pt-2">
+                 <button 
+                    onClick={() => setActiveTab('all')}
+                    className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'all' ? 'bg-[#0a66c2] text-white shadow-lg shadow-blue-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                 >
+                    All Communities
+                 </button>
+                 <button 
+                    onClick={() => setActiveTab('discovery')}
+                    className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'discovery' ? 'bg-[#0a66c2] text-white shadow-lg shadow-blue-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                 >
+                    Discovery
+                 </button>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20">
-                 {groups.map((group) => (
+                 {groups.filter(g => activeTab === 'all' ? true : !g.joined).map((group) => (
                    <div key={group.id} className="relative group/card bg-white rounded-[32px] overflow-hidden border border-slate-100 hover:shadow-2xl hover:border-[#0a66c2]/20 transition-all duration-500">
                       <div className="h-28 overflow-hidden relative">
                          <img src={group.banner} className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-1000 ease-out" alt="" />
@@ -102,6 +152,62 @@ export default function GroupsPage() {
            </div>
         </div>
       </main>
+
+      {/* Create Group Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-8 py-6 border-b border-[#e0e0e0] flex items-center justify-between bg-slate-50/50">
+              <h2 className="text-xl font-black text-slate-800">Create New Group</h2>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors shadow-sm"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="p-8 space-y-6">
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Group Name</label>
+                <input 
+                  type="text" 
+                  value={newGroup.name}
+                  onChange={(e) => setNewGroup({...newGroup, name: e.target.value})}
+                  className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-[#0a66c2] focus:ring-2 focus:ring-[#0a66c2]/20 transition-all font-medium text-slate-800 outline-none placeholder:text-slate-400"
+                  placeholder="e.g. Next.js Enthusiasts Africa"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Description</label>
+                <textarea 
+                  value={newGroup.description}
+                  onChange={(e) => setNewGroup({...newGroup, description: e.target.value})}
+                  className="w-full h-32 p-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-[#0a66c2] focus:ring-2 focus:ring-[#0a66c2]/20 transition-all font-medium text-slate-800 outline-none resize-none placeholder:text-slate-400"
+                  placeholder="What is this group about?"
+                />
+              </div>
+            </div>
+            
+            <div className="px-8 py-6 border-t border-[#e0e0e0] bg-slate-50/50 flex items-center justify-end gap-3">
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="px-6 py-2.5 rounded-full text-xs font-black tracking-wider text-slate-600 hover:bg-slate-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleCreateGroup}
+                disabled={!newGroup.name.trim()}
+                className="px-6 py-2.5 rounded-full text-xs font-black tracking-wider text-white bg-[#0a66c2] hover:bg-[#004182] disabled:opacity-50 disabled:hover:bg-[#0a66c2] shadow-lg shadow-blue-100 transition-all"
+              >
+                Create Community
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { NetworkSidebar } from "../network-sidebar";
-import { Hash, Search, TrendingUp, Plus, MoreHorizontal, MessageSquare, Sparkles, MapPin, Globe, CheckCircle2, Star, Clock } from "lucide-react";
+import { Hash, Search, TrendingUp, Sparkles } from "lucide-react";
 
 const initialHashtags = [
   { id: "h1", name: "#RemoteWork", followers: 124000, updates: 842, followed: true, trend: "up" },
@@ -13,6 +13,7 @@ const initialHashtags = [
 
 export default function HashtagsPage() {
   const [hashtags, setHashtags] = useState(initialHashtags);
+  const [filter, setFilter] = useState<'all' | 'trending'>('all');
 
   const handleFollow = (id: string) => {
     setHashtags(prev => prev.map(h => h.id === id ? { ...h, followed: !h.followed } : h));
@@ -49,7 +50,13 @@ export default function HashtagsPage() {
                  <div className="p-8 rounded-[3rem] bg-slate-900 text-white shadow-2xl relative overflow-hidden group">
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-4">Topic authority</h3>
                     <p className="text-xl font-black text-white leading-tight mb-8">Personalize your professional universe ✨</p>
-                    <button className="px-10 py-3 rounded-full bg-blue-500 text-white font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-colors shadow-blue-900/40 shadow-xl">
+                    <button 
+                       onClick={() => {
+                          setFilter('trending');
+                          document.getElementById('trending-section')?.scrollIntoView({ behavior: 'smooth' });
+                       }}
+                       className="px-10 py-3 rounded-full bg-blue-500 text-white font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-colors shadow-blue-900/40 shadow-xl"
+                    >
                        Explore Trending
                     </button>
                     <Sparkles className="absolute -bottom-8 -right-8 w-32 h-32 opacity-10 text-blue-400 group-hover:scale-110 transition-transform duration-500" />
@@ -65,8 +72,23 @@ export default function HashtagsPage() {
                  </div>
               </div>
 
+              <div className="flex items-center gap-4 mb-8 border-b border-slate-100 pb-6 pt-2" id="trending-section">
+                 <button 
+                    onClick={() => setFilter('all')}
+                    className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${filter === 'all' ? 'bg-[#0a66c2] text-white shadow-lg shadow-blue-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                 >
+                    All Topics
+                 </button>
+                 <button 
+                    onClick={() => setFilter('trending')}
+                    className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${filter === 'trending' ? 'bg-[#0a66c2] text-white shadow-lg shadow-blue-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                 >
+                    Trending Now
+                 </button>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-                 {hashtags.map((tag) => (
+                 {hashtags.filter(h => filter === 'all' ? true : h.trend === 'up').map((tag) => (
                    <div key={tag.id} className="p-6 rounded-[2.5rem] border border-slate-100 bg-white hover:shadow-2xl hover:border-[#0a66c2]/20 transition-all group flex flex-col justify-between">
                       <div>
                          <div className="flex items-center justify-between mb-4">

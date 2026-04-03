@@ -1,17 +1,42 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { 
-  Plus, Image, Paperclip, Smile, Send as SendIcon, 
-  MoreHorizontal, ChevronDown, Video, Phone, Mic, 
-  Search, SlidersHorizontal, SquarePen, ShieldCheck, 
-  Sparkles, Star, CheckCircle2, MoreVertical, Loader2
+import { useState, useRef, useEffect, useCallback } from "react";
+import {
+  Plus, Smile, Send as SendIcon,
+  Video, Phone, Mic,
+  Search, SlidersHorizontal, SquarePen, ShieldCheck,
+  Star, MoreVertical, Loader2, MessageSquare,
 } from "lucide-react";
 import { useUser } from "@/components/providers/user-provider";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-const CONVERSATIONS = [
+interface Conversation {
+  id: string;
+  name: string;
+  headline: string;
+  avatar: string | null;
+  isPremium: boolean;
+  lastMessage: string;
+  time: string;
+  unread: boolean;
+  isOnline: boolean;
+  isInMail?: boolean;
+  otherUserId?: string | null;
+}
+
+interface Message {
+  id: string;
+  text: string;
+  time: string;
+  sender: "me" | "them";
+  name: string;
+  avatar: string;
+}
+
+// ─── Mock Fallback Data ───────────────────────────────────────────────────────
+
+const MOCK_CONVERSATIONS: Conversation[] = [
   {
     id: "c1",
     name: "Dr. Catherine Namubiru",
@@ -21,18 +46,19 @@ const CONVERSATIONS = [
     unread: true,
     isOnline: true,
     isPremium: true,
-    headline: "CIO at MTN Uganda | Tech Leader"
+    headline: "CIO at MTN Uganda | Tech Leader",
   },
   {
     id: "c2",
     name: "Recruiter @ Chipper Cash",
     lastMessage: "Is your InMail working? We have an opening.",
     time: "1:20 PM",
-    avatar: "CC",
+    avatar: null,
     unread: false,
     isOnline: false,
     isInMail: true,
-    headline: "International Talent Acquisition"
+    isPremium: false,
+    headline: "International Talent Acquisition",
   },
   {
     id: "c3",
@@ -42,60 +68,120 @@ const CONVERSATIONS = [
     avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
     unread: false,
     isOnline: true,
-    headline: "Backend Architect"
-  }
+    isPremium: false,
+    headline: "Backend Architect",
+  },
 ];
 
-const INITIAL_MESSAGES = [
-  {
-    id: "m1",
-    sender: "them",
-    name: "Catherine Namubiru",
-    text: "Hi Marvin! I've been following your work on Connect+ particularly your recent post on AI scalability. I'd love to chat about potential collaborations at MTN.",
-    time: "3:42 PM",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
-  },
-  {
-    id: "m2",
-    sender: "me",
-    name: "Marvin Muwereza (You)",
-    text: "Hi Catherine! Thank you for reaching out. I'm a big fan of MTN's recent infrastructure upgrades. I'd be happy to discuss how AI can play a role. When would be a good time to connect?",
-    time: "3:45 PM",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
-  }
-];
+// Per-conversation mock message histories — each chat has its own isolated thread
+const MOCK_MESSAGES: Record<string, Message[]> = {
+  // each key is a conversation id; each value is its isolated message thread
+  c1: [
+    {
+      id: "m1",
+      sender: "them",
+      name: "Catherine Namubiru",
+      text: "Hi Marvin! I've been following your work on Connect+. I'd love to chat about potential collaborations at MTN.",
+      time: "3:42 PM",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+    },
+    {
+      id: "m2",
+      sender: "me",
+      name: "Marvin Muwereza (You)",
+      text: "Hi Catherine! Thank you for reaching out. I'd be happy to discuss how AI can play a role. When would be a good time to connect?",
+      time: "3:45 PM",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+    },
+    {
+      id: "m3",
+      sender: "them",
+      name: "Catherine Namubiru",
+      text: "How about Thursday at 3PM EAT? I'll send a calendar invite.",
+      time: "3:50 PM",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+    },
+  ],
+  c2: [
+    {
+      id: "m4",
+      sender: "them",
+      name: "Recruiter @ Chipper Cash",
+      text: "Hi! We have an exciting Senior Engineer opening at Chipper Cash. Your profile is a strong match. Is your InMail working?",
+      time: "1:20 PM",
+      avatar: "",
+    },
+  ],
+  c3: [
+    {
+      id: "m5",
+      sender: "me",
+      name: "Marvin Muwereza (You)",
+      text: "Isaac, can you send over the API docs for the payment module?",
+      time: "Yesterday 2:10 PM",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+    },
+    {
+      id: "m6",
+      sender: "them",
+      name: "Isaac Kato",
+      text: "Documentation sent. Check your email — I included the auth flow diagrams too.",
+      time: "Yesterday 2:45 PM",
+      avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+    },
+  ],
+};
 
 // ─── Sub-Components ────────────────────────────────────────────────────────────
 
-function ChatItem({ chat, active, onClick }: { chat: any; active: boolean; onClick: () => void }) {
+function AvatarDisplay({ avatar, name, size = "md" }: { avatar: string | null; name: string; size?: "sm" | "md" | "lg" }) {
+  const sizeMap = { sm: "w-10 h-10", md: "w-14 h-14", lg: "w-24 h-24" };
+  const cls = sizeMap[size];
+
+  if (avatar && avatar.startsWith("http")) {
+    return <img src={avatar} className={`${cls} rounded-[1.5rem] object-cover`} alt={name} />;
+  }
+  const initials = name.split(" ").map((w) => w[0]).join("").substring(0, 2).toUpperCase();
   return (
-    <div 
+    <div className={`${cls} rounded-[1.5rem] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-black text-white text-sm`}>
+      {initials}
+    </div>
+  );
+}
+
+function ChatItem({ chat, active, onClick }: { chat: Conversation; active: boolean; onClick: () => void }) {
+  return (
+    <div
       onClick={onClick}
-      className={`p-6 flex gap-4 cursor-pointer transition-all duration-300 relative group ${active ? 'bg-blue-50/40 border-l-[3px] border-[#0a66c2]' : 'hover:bg-slate-50 border-l-[3px] border-transparent'}`}
+      className={`p-6 flex gap-4 cursor-pointer transition-all duration-300 relative group ${active ? "bg-blue-50/40 border-l-[3px] border-[#0a66c2]" : "hover:bg-slate-50 border-l-[3px] border-transparent"}`}
     >
       <div className="relative shrink-0">
-         <div className={`w-14 h-14 rounded-[1.5rem] flex items-center justify-center font-black text-slate-400 overflow-hidden shadow-lg border-2 ${active ? 'border-white' : 'border-slate-50'} group-hover:scale-110 transition-transform`}>
-            {chat.avatar.startsWith('http') ? <img src={chat.avatar} className="w-full h-full object-cover" alt="" /> : chat.avatar}
-         </div>
-         {chat.isOnline && (
-           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-xl" />
-         )}
+        <div className={`w-14 h-14 rounded-[1.5rem] overflow-hidden shadow-lg border-2 ${active ? "border-white" : "border-slate-50"} group-hover:scale-105 transition-transform`}>
+          <AvatarDisplay avatar={chat.avatar} name={chat.name} />
+        </div>
+        {chat.isOnline && (
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-xl" />
+        )}
       </div>
 
       <div className="flex-1 min-w-0">
-         <div className="flex items-start justify-between mb-1">
-            <div className="flex items-center gap-1.5 min-w-0">
-               <h3 className={`text-sm tracking-tight truncate ${chat.unread || active ? 'font-black text-slate-800' : 'font-bold text-slate-600'}`}>
-                 {chat.name}
-               </h3>
-               {chat.isPremium && <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />}
-               {chat.isInMail && <span className="bg-[#0a66c2]/5 text-[#0a66c2] text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest border border-blue-100">InMail</span>}
-            </div>
-            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest shrink-0 ml-2">{chat.time}</span>
-         </div>
-         <p className={`text-[12px] leading-snug line-clamp-1 italic ${chat.unread ? 'font-black text-slate-700' : 'text-slate-400 font-medium'}`}>
-           {chat.lastMessage}
-         </p>
+        <div className="flex items-start justify-between mb-1">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <h3 className={`text-sm tracking-tight truncate ${chat.unread || active ? "font-black text-slate-800" : "font-bold text-slate-600"}`}>
+              {chat.name}
+            </h3>
+            {chat.isPremium && <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 shrink-0" />}
+            {chat.isInMail && (
+              <span className="bg-[#0a66c2]/5 text-[#0a66c2] text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest border border-blue-100 shrink-0">
+                InMail
+              </span>
+            )}
+          </div>
+          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest shrink-0 ml-2">{chat.time}</span>
+        </div>
+        <p className={`text-[12px] leading-snug line-clamp-1 italic ${chat.unread ? "font-black text-slate-700" : "text-slate-400 font-medium"}`}>
+          {chat.lastMessage}
+        </p>
       </div>
     </div>
   );
@@ -104,208 +190,362 @@ function ChatItem({ chat, active, onClick }: { chat: any; active: boolean; onCli
 // ─── Main Page Component ──────────────────────────────────────────────────────
 
 export default function MessagingPage() {
-  const { user, loading } = useUser();
-  const [activeChatId, setActiveChatId] = useState("c1");
-  const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  const { user, loading: userLoading } = useUser();
+
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [inputText, setInputText] = useState("");
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [filterUnread, setFilterUnread] = useState(false);
+  const [filterInMail, setFilterInMail] = useState(false);
+  const [loadingConvos, setLoadingConvos] = useState(true);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [usingMockData, setUsingMockData] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  if (loading) {
-    return (
-      <div className="h-[calc(100vh-140px)] flex items-center justify-center">
-        <Loader2 className="w-10 h-10 text-[#1B5E20] animate-spin" />
-      </div>
-    );
-  }
-
+  const userAvatar = user?.avatarUrl ||
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80";
   const userName = user ? `${user.firstName} ${user.lastName}` : "Marvin Muwereza";
-  const userAvatar = user?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80";
 
-  // Override INITIAL_MESSAGES with current user for 'me' messages if needed, 
-  // but better to just use dynamic values in the render or update INITIAL_MESSAGES once.
+  // ── Fetch conversations ─────────────────────────────────────────────────────
+  const fetchConversations = useCallback(async () => {
+    setLoadingConvos(true);
+    try {
+      const res = await fetch("/api/messaging/conversations");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.conversations?.length > 0) {
+          setConversations(data.conversations);
+          setActiveChatId(data.conversations[0].id);
+          setUsingMockData(false);
+        } else {
+          // No real conversations yet — use mock data
+          setConversations(MOCK_CONVERSATIONS);
+          setActiveChatId(MOCK_CONVERSATIONS[0].id);
+          setUsingMockData(true);
+        }
+      } else {
+        setConversations(MOCK_CONVERSATIONS);
+        setActiveChatId(MOCK_CONVERSATIONS[0].id);
+        setUsingMockData(true);
+      }
+    } catch {
+      setConversations(MOCK_CONVERSATIONS);
+      setActiveChatId(MOCK_CONVERSATIONS[0].id);
+      setUsingMockData(true);
+    } finally {
+      setLoadingConvos(false);
+    }
+  }, []);
 
+  // ── Fetch messages — always clears first to prevent bleed-through ────────────
+  const fetchMessages = useCallback(async (chatId: string) => {
+    // Immediately clear: ensures previous conversation's messages never linger
+    setMessages([]);
+    setInputText("");
 
-  const activeChat = CONVERSATIONS.find(c => c.id === activeChatId) || CONVERSATIONS[0];
+    if (usingMockData) {
+      // Load the specific conversation's mock history (keyed by chatId)
+      setMessages(MOCK_MESSAGES[chatId] ?? []);
+      return;
+    }
+
+    setLoadingMessages(true);
+    try {
+      const res = await fetch(`/api/messaging/conversations/${chatId}/messages`);
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(data.messages ?? []);
+      }
+    } catch {
+      setMessages([]);
+    } finally {
+      setLoadingMessages(false);
+    }
+  }, [usingMockData]);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
+
+  useEffect(() => {
+    if (activeChatId) {
+      fetchMessages(activeChatId);
+    }
+  }, [activeChatId, fetchMessages]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = () => {
-    if (!inputText.trim()) return;
-    const newMessage = {
-       id: `m_${Date.now()}`,
-       sender: "me" as const,
-       name: `${userName} (You)`,
-       text: inputText,
-       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-       avatar: userAvatar
-    };
-    setMessages([...messages, newMessage]);
+  // ── Send message ────────────────────────────────────────────────────────────
+  const handleSend = async () => {
+    if (!inputText.trim() || !activeChatId) return;
+    const text = inputText.trim();
     setInputText("");
+
+    const optimistic: Message = {
+      id: `opt_${Date.now()}`,
+      sender: "me",
+      name: `${userName} (You)`,
+      text,
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      avatar: userAvatar,
+    };
+    setMessages((prev) => [...prev, optimistic]);
+
+    if (usingMockData) {
+      // In mock mode, persist optimistic message into the mock store so it
+      // stays when you come back to this conversation
+      MOCK_MESSAGES[activeChatId] = [
+        ...(MOCK_MESSAGES[activeChatId] ?? []),
+        optimistic,
+      ];
+      return;
+    }
+
+    setSending(true);
+    try {
+      const res = await fetch(`/api/messaging/conversations/${activeChatId}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: text }),
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        // Replace optimistic with real saved message
+        setMessages((prev) =>
+          prev.map((m) => (m.id === optimistic.id ? { ...optimistic, id: saved.id } : m))
+        );
+        // Refresh conversation list to update last message
+        fetchConversations();
+      }
+    } catch {
+      // Keep optimistic message visible even on error
+    } finally {
+      setSending(false);
+    }
   };
+
+  // ── Derived state ───────────────────────────────────────────────────────────
+  const filteredConversations = conversations.filter((chat) => {
+    if (filterUnread && !chat.unread) return false;
+    if (filterInMail && !chat.isInMail) return false;
+    return true;
+  });
+
+  const activeChat = conversations.find((c) => c.id === activeChatId) ?? conversations[0];
+
+  // ── Loading state ────────────────────────────────────────────────────────────
+  if (userLoading || loadingConvos) {
+    return (
+      <div className="h-[calc(100vh-140px)] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 text-[#0a66c2] animate-spin" />
+          <p className="text-xs font-black uppercase tracking-widest text-slate-400">Loading Conversations...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto h-[calc(100vh-140px)] mt-8 bg-white rounded-[3rem] border border-slate-100 overflow-hidden shadow-2xl shadow-slate-200/50 flex">
-      
-      {/* Sidebar: Chat List */}
+
+      {/* ── Sidebar: Chat List ─────────────────────────────────────────────── */}
       <aside className="w-[380px] h-full border-r border-slate-50 flex flex-col bg-white">
-         <div className="p-8 pb-4 flex items-center justify-between">
-            <h2 className="text-xl font-black text-slate-800 tracking-tighter">Messaging</h2>
-            <div className="flex items-center gap-1">
-               <button className="p-2.5 rounded-full hover:bg-slate-50 transition-colors text-slate-400">
-                  <SlidersHorizontal className="w-5 h-5" />
-               </button>
-               <button className="p-2.5 rounded-full hover:bg-slate-50 transition-colors text-slate-400">
-                  <SquarePen className="w-5 h-5" />
-               </button>
-            </div>
-         </div>
+        <div className="p-8 pb-4 flex items-center justify-between">
+          <h2 className="text-xl font-black text-slate-800 tracking-tighter">Messaging</h2>
+          <div className="flex items-center gap-1 relative">
+            <button
+              onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+              className={`p-2.5 rounded-full transition-colors ${isFiltersOpen ? "bg-slate-100 text-[#0a66c2] shadow-inner" : "hover:bg-slate-50 text-slate-400"}`}
+            >
+              <SlidersHorizontal className="w-5 h-5" />
+            </button>
+            <button className="p-2.5 rounded-full hover:bg-slate-50 transition-colors text-slate-400">
+              <SquarePen className="w-5 h-5" />
+            </button>
 
-         <div className="px-8 mb-6">
-            <div className="relative group">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[#0a66c2] transition-colors" />
-               <input 
-                 type="text" 
-                 placeholder="Search links..."
-                 className="w-full h-11 pl-12 pr-4 bg-slate-50 border-none rounded-2xl text-[13px] font-medium outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 transition-all"
-               />
-            </div>
-         </div>
+            {isFiltersOpen && (
+              <div className="absolute top-12 right-10 w-48 bg-white rounded-2xl border border-slate-100 shadow-2xl p-4 flex flex-col gap-2 z-50">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 px-2">Filter Chats</h4>
+                <label className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors">
+                  <span className="text-xs font-bold text-slate-700">Unread Only</span>
+                  <input type="checkbox" checked={filterUnread} onChange={(e) => setFilterUnread(e.target.checked)} className="rounded text-[#0a66c2] focus:ring-[#0a66c2] w-4 h-4 border-slate-200" />
+                </label>
+                <label className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors">
+                  <span className="text-xs font-bold text-slate-700">InMail Only</span>
+                  <input type="checkbox" checked={filterInMail} onChange={(e) => setFilterInMail(e.target.checked)} className="rounded text-[#0a66c2] focus:ring-[#0a66c2] w-4 h-4 border-slate-200" />
+                </label>
+              </div>
+            )}
+          </div>
+        </div>
 
-         <div className="flex-1 overflow-y-auto divide-y divide-slate-50 scrollbar-hide">
-            {CONVERSATIONS.map(chat => (
-              <ChatItem 
-                key={chat.id} 
-                chat={chat} 
-                active={activeChatId === chat.id} 
-                onClick={() => setActiveChatId(chat.id)} 
+        <div className="px-8 mb-6">
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[#0a66c2] transition-colors" />
+            <input
+              type="text"
+              placeholder="Search conversations..."
+              className="w-full h-11 pl-12 pr-4 bg-slate-50 border-none rounded-2xl text-[13px] font-medium outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 transition-all"
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto divide-y divide-slate-50 scrollbar-hide">
+          {filteredConversations.length > 0 ? (
+            filteredConversations.map((chat) => (
+              <ChatItem
+                key={chat.id}
+                chat={chat}
+                active={activeChatId === chat.id}
+                onClick={() => setActiveChatId(chat.id)}
               />
-            ))}
-         </div>
+            ))
+          ) : (
+            <div className="p-10 text-center flex flex-col items-center opacity-60">
+              <MessageSquare className="w-8 h-8 text-slate-300 mb-3" />
+              <p className="text-xs font-bold text-slate-500">No chats match your filters.</p>
+            </div>
+          )}
+        </div>
       </aside>
 
-      {/* Main Window */}
+      {/* ── Main Chat Window ───────────────────────────────────────────────── */}
       <main className="flex-1 flex flex-col h-full bg-slate-50/20 relative">
-         
-         {/* Chat Header */}
-         <div className="px-10 py-6 border-b border-slate-50 bg-white/95 backdrop-blur-sm shadow-sm flex items-center justify-between sticky top-0 z-20">
+
+        {/* Chat Header */}
+        {activeChat && (
+          <div className="px-10 py-6 border-b border-slate-50 bg-white/95 backdrop-blur-sm shadow-sm flex items-center justify-between sticky top-0 z-20">
             <div className="flex items-center gap-5">
-               <div className="relative">
-                  <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-slate-50 shadow-xl">
-                     {activeChat.avatar.startsWith('http') ? <img src={activeChat.avatar} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full bg-slate-100 flex items-center justify-center font-black text-slate-400">{activeChat.avatar}</div>}
-                  </div>
+              <div className="relative">
+                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-slate-50 shadow-xl">
+                  <AvatarDisplay avatar={activeChat.avatar} name={activeChat.name} />
+                </div>
+                {activeChat.isOnline && (
                   <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-xl" />
-               </div>
-               <div>
-                  <div className="flex items-center gap-2">
-                     <h3 className="text-xl font-black text-slate-800 tracking-tight leading-none">{activeChat.name}</h3>
-                     {activeChat.isPremium && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
-                  </div>
-                  <p className="text-[12px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-80">{activeChat.headline}</p>
-               </div>
+                )}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-black text-slate-800 tracking-tight leading-none">{activeChat.name}</h3>
+                  {activeChat.isPremium && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
+                </div>
+                <p className="text-[12px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-80">{activeChat.headline}</p>
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
-               <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
-                  <Video className="w-5.5 h-5.5" />
-               </button>
-               <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
-                  <Phone className="w-5.5 h-5.5" />
-               </button>
-               <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
-                  <MoreVertical className="w-5.5 h-5.5" />
-               </button>
+              <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
+                <Video className="w-5 h-5" />
+              </button>
+              <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
+                <Phone className="w-5 h-5" />
+              </button>
+              <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
+                <MoreVertical className="w-5 h-5" />
+              </button>
             </div>
-         </div>
+          </div>
+        )}
 
-         {/* Message Feed */}
-         <div className="flex-1 overflow-y-auto p-10 space-y-10 scrollbar-hide">
+        {/* Message Feed */}
+        <div className="flex-1 overflow-y-auto p-10 space-y-10 scrollbar-hide">
+          {activeChat && (
             <div className="flex flex-col items-center text-center p-12 bg-white/40 rounded-[3rem] border border-slate-100 mb-12 shadow-sm">
-               <div className="w-24 h-24 rounded-[2rem] overflow-hidden mb-6 shadow-2xl border-4 border-white rotate-3">
-                  {activeChat.avatar.startsWith('http') ? <img src={activeChat.avatar} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full bg-slate-100 flex items-center justify-center font-black text-slate-400">{activeChat.avatar}</div>}
-               </div>
-               <h4 className="text-2xl font-black text-slate-800 tracking-tighter leading-none">{activeChat.name}</h4>
-               <p className="text-sm text-slate-400 font-medium max-w-sm mt-3 italic leading-relaxed opacity-80">{activeChat.headline}</p>
-               <button className="mt-8 px-10 py-3 rounded-full border border-slate-100 text-[#0a66c2] font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 transition-all hover:scale-105 active:scale-95 shadow-sm">
-                  View full professional profile
-               </button>
+              <div className="w-24 h-24 rounded-[2rem] overflow-hidden mb-6 shadow-2xl border-4 border-white rotate-3">
+                <AvatarDisplay avatar={activeChat.avatar} name={activeChat.name} size="lg" />
+              </div>
+              <h4 className="text-2xl font-black text-slate-800 tracking-tighter leading-none">{activeChat.name}</h4>
+              <p className="text-sm text-slate-400 font-medium max-w-sm mt-3 italic leading-relaxed opacity-80">{activeChat.headline}</p>
+              <button className="mt-8 px-10 py-3 rounded-full border border-slate-100 text-[#0a66c2] font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 transition-all hover:scale-105 active:scale-95 shadow-sm">
+                View full professional profile
+              </button>
             </div>
+          )}
 
+          {loadingMessages ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="w-6 h-6 text-[#0a66c2] animate-spin" />
+            </div>
+          ) : (
             <div className="space-y-12">
-               {messages.map((msg, idx) => {
-                 const isPrevSame = idx > 0 && messages[idx-1].sender === msg.sender;
-                 return (
-                   <div key={msg.id} className={`flex gap-5 ${msg.sender === "me" ? "flex-row-reverse" : ""}`}>
-                     {!isPrevSame ? (
-                        <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-lg border-2 border-white group-hover:scale-110 transition-transform">
-                           <img src={msg.avatar} className="w-full h-full object-cover shadow-inner" alt="" />
+              {messages.map((msg, idx) => {
+                const isPrevSame = idx > 0 && messages[idx - 1].sender === msg.sender;
+                return (
+                  <div key={msg.id} className={`flex gap-5 ${msg.sender === "me" ? "flex-row-reverse" : ""}`}>
+                    {!isPrevSame ? (
+                      <div className="shrink-0 shadow-lg border-2 border-white rounded-[1.5rem] overflow-hidden">
+                        <AvatarDisplay avatar={msg.avatar} name={msg.name} size="sm" />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 opacity-0 shrink-0" />
+                    )}
+                    <div className={`space-y-1.5 max-w-[65%] flex flex-col ${msg.sender === "me" ? "items-end" : "items-start"}`}>
+                      {!isPrevSame && (
+                        <div className={`flex items-baseline gap-3 mb-1 ${msg.sender === "me" ? "flex-row-reverse" : ""}`}>
+                          <span className="text-[11px] font-black text-slate-800 uppercase tracking-widest opacity-80">{msg.name}</span>
+                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-40">{msg.time}</span>
                         </div>
-                     ) : (
-                        <div className="w-10 h-10 opacity-0 shrink-0" />
-                     )}
-                     <div className={`space-y-1.5 max-w-[65%] ${msg.sender === "me" ? "items-end" : "items-start"}`}>
-                        {!isPrevSame && (
-                           <div className={`flex items-baseline gap-3 mb-1 ${msg.sender === "me" ? "flex-row-reverse" : ""}`}>
-                              <span className="text-[11px] font-black text-slate-800 tracking-tight uppercase tracking-widest opacity-80">{msg.name}</span>
-                              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-40">{msg.time}</span>
-                           </div>
-                        )}
-                        <div className={`px-8 py-5 rounded-[2.5rem] shadow-xl text-[14px] leading-relaxed font-medium transition-all duration-500 hover:scale-[1.02] ${
-                          msg.sender === "me" 
-                          ? "bg-slate-900 text-white rounded-tr-none shadow-slate-900/10" 
+                      )}
+                      <div className={`px-8 py-5 rounded-[2.5rem] shadow-xl text-[14px] leading-relaxed font-medium transition-all duration-500 hover:scale-[1.02] ${
+                        msg.sender === "me"
+                          ? "bg-slate-900 text-white rounded-tr-none shadow-slate-900/10"
                           : "bg-white text-slate-700 rounded-tl-none border border-slate-50 shadow-slate-200/20"
-                        }`}>
-                           <p className="italic">{msg.text}</p>
-                        </div>
-                     </div>
-                   </div>
-                 );
-               })}
-               <div ref={messagesEndRef} />
+                      }`}>
+                        <p className="italic">{msg.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={messagesEndRef} />
             </div>
-         </div>
+          )}
+        </div>
 
-         {/* Message Input */}
-         <div className="px-10 py-8 bg-white border-t border-slate-50">
-            <div className="relative flex items-end gap-4 p-4 border border-slate-100 rounded-[2.5rem] bg-slate-50/40 focus-within:bg-white focus-within:shadow-2xl focus-within:shadow-blue-900/5 focus-within:border-blue-200 transition-all duration-700 group">
-               <div className="flex items-center self-center gap-1.5 pl-2 opacity-40 group-focus-within:opacity-100 transition-opacity">
-                  <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400"><Plus className="w-5 h-5" /></button>
-                  <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400"><Mic className="w-5 h-5" /></button>
-               </div>
-               <textarea 
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }}}
-                  placeholder="Speak your professional mind..."
-                  className="flex-1 min-h-[56px] py-4 border-none focus:ring-0 text-[14px] resize-none bg-transparent placeholder:text-slate-300 font-medium text-slate-800 leading-relaxed"
-               />
-               <div className="flex items-center gap-1.5 pr-2">
-                  <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400 opacity-0 group-focus-within:opacity-100 transition-opacity"><Smile className="w-5 h-5" /></button>
-                  <button 
-                    onClick={handleSend}
-                    disabled={!inputText.trim()}
-                    className="p-4 rounded-full bg-slate-900 text-white hover:bg-blue-600 transition-all hover:scale-110 active:scale-90 disabled:opacity-20 shadow-2xl shadow-slate-900/20"
-                  >
-                     <SendIcon className="w-5 h-5" />
-                  </button>
-               </div>
+        {/* Message Input */}
+        <div className="px-10 py-8 bg-white border-t border-slate-50">
+          <div className="relative flex items-end gap-4 p-4 border border-slate-100 rounded-[2.5rem] bg-slate-50/40 focus-within:bg-white focus-within:shadow-2xl focus-within:shadow-blue-900/5 focus-within:border-blue-200 transition-all duration-700 group">
+            <div className="flex items-center self-center gap-1.5 pl-2 opacity-40 group-focus-within:opacity-100 transition-opacity">
+              <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400"><Plus className="w-5 h-5" /></button>
+              <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400"><Mic className="w-5 h-5" /></button>
             </div>
-            
-            <div className="flex items-center justify-between px-6 mt-4">
-               <div className="flex items-center gap-6">
-                  {['Image', 'Document', 'Video', 'Article'].map(label => (
-                    <button key={label} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-[#0a66c2] transition-colors">{label}</button>
-                  ))}
-               </div>
-               <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-[#1B5E20] opacity-40">
-                  <ShieldCheck className="w-3.5 h-3.5" /> End-to-end professional integrity
-               </div>
+            <textarea
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+              placeholder="Speak your professional mind..."
+              className="flex-1 min-h-[56px] py-4 border-none focus:ring-0 text-[14px] resize-none bg-transparent placeholder:text-slate-300 font-medium text-slate-800 leading-relaxed"
+            />
+            <div className="flex items-center gap-1.5 pr-2">
+              <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400 opacity-0 group-focus-within:opacity-100"><Smile className="w-5 h-5" /></button>
+              <button
+                onClick={handleSend}
+                disabled={!inputText.trim() || sending}
+                className="p-4 rounded-full bg-slate-900 text-white hover:bg-blue-600 transition-all hover:scale-110 active:scale-90 disabled:opacity-20 shadow-2xl shadow-slate-900/20"
+              >
+                {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <SendIcon className="w-5 h-5" />}
+              </button>
             </div>
-         </div>
+          </div>
 
+          <div className="flex items-center justify-between px-6 mt-4">
+            <div className="flex items-center gap-6">
+              {["Image", "Document", "Video", "Article"].map((label) => (
+                <button key={label} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-[#0a66c2] transition-colors">{label}</button>
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-[#1B5E20] opacity-40">
+              <ShieldCheck className="w-3.5 h-3.5" /> End-to-end professional integrity
+            </div>
+          </div>
+        </div>
       </main>
-
     </div>
   );
 }

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { 
-  Search, Users, Briefcase, FileText, Filter, MoreHorizontal, 
-  UserPlus, MapPin, Building2, Sparkles, Clock, Globe, 
-  CheckCircle2, DollarSign, Star, TrendingUp, SlidersHorizontal, ChevronRight
+  Users, Briefcase, FileText, 
+  MapPin, Building2, Sparkles, Clock, Globe, 
+  CheckCircle2, DollarSign, Star, TrendingUp, SlidersHorizontal
 } from "lucide-react";
 import Link from "next/link";
 
