@@ -4,27 +4,31 @@ import { NotificationSidebar } from "./notification-sidebar";
 import { NotificationFeed } from "./notification-feed";
 import { Award, Star, Sparkles, TrendingUp, BarChart3, ChevronRight, Eye, MousePointer2, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function NotificationsPage() {
+  const [activeFilter, setActiveFilter] = useState("All");
+
   return (
-    <div className="min-h-screen bg-[#F3F6F8] pb-24">
+    <div className="min-h-screen bg-[#F8FAFC] pb-24">
       <div className="max-w-7xl mx-auto pt-10 px-6 grid grid-cols-1 lg:grid-cols-12 gap-10">
         
         {/* LEFT COLUMN (Sidebar) */}
         <aside className="lg:col-span-3">
-          <NotificationSidebar />
+          <NotificationSidebar activeFilter={activeFilter} onFilterChange={setActiveFilter} />
         </aside>
 
         {/* CENTER COLUMN (Feed) */}
-        <main className="lg:col-span-6 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-           <div className="bg-white rounded-[3.5rem] border border-slate-100 shadow-[0_40px_100px_rgba(0,0,0,0.05)] overflow-hidden">
-              <div className="p-10 border-b border-slate-50 flex items-center justify-between">
+        <main className="lg:col-span-6 animate-in fade-in slide-in-from-bottom-2 duration-500 -mx-6 md:mx-0">
+           
+           <div className="bg-white md:rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="hidden md:flex p-10 border-b border-slate-50 items-center justify-between">
                  <h2 className="text-[13px] font-black text-slate-400 uppercase tracking-[0.4em]">Recent Notifications</h2>
                  <button className="text-[12px] font-black text-[#1B5E20] hover:underline uppercase tracking-[0.2em] decoration-2 underline-offset-4 active:scale-95 transition-transform">
                     Mark all as read
                  </button>
               </div>
-              <NotificationFeed />
+              <NotificationFeed activeFilter={activeFilter} />
            </div>
         </main>
 
@@ -32,21 +36,20 @@ export default function NotificationsPage() {
         <aside className="lg:col-span-3 space-y-8 animate-in slide-in-from-right-4 duration-700">
           
           {/* LEARNING CARD */}
-          <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl p-8 text-center space-y-6 group cursor-pointer hover:shadow-orange-100/50 transition-all active:scale-95">
-             <div className="relative h-48 rounded-[2rem] overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4 hover:shadow-md transition-all group cursor-pointer">
+             <div className="relative h-32 rounded-lg overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=400" 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
                   alt="Learning" 
                 />
-                <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors" />
              </div>
-             <div className="space-y-2">
-                <h3 className="text-[15px] font-black text-slate-800 leading-tight">Learn new skills with Connect+ <br /> Learning</h3>
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest italic opacity-70">"Master AI integration with our top courses."</p>
+             <div className="space-y-1">
+                <h3 className="text-[14px] font-bold text-slate-900 leading-tight">Elevate your career with Learning</h3>
+                <p className="text-[12px] text-slate-500 italic">"Master AI and data analysis with our expert-led courses."</p>
              </div>
-             <button className="w-full py-4 rounded-full border-2 border-blue-100 text-blue-600 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-blue-50 transition-all shadow-xl shadow-blue-50/20 active:scale-95">
-                Try 1 month for free
+             <button className="w-full py-2 rounded-full border border-[#0A66C2] text-[#0A66C2] font-semibold text-[12px] hover:bg-blue-50 transition-all">
+                View Courses
              </button>
           </div>
 
@@ -90,15 +93,6 @@ export default function NotificationsPage() {
 
         </aside>
       </div>
-      
-      {/* Floating Chat Button */}
-      <button className="fixed bottom-10 right-10 w-16 h-16 bg-slate-900 text-white rounded-full flex items-center justify-center shadow-[0_20px_60px_rgba(0,0,0,0.3)] hover:scale-110 active:scale-95 transition-all group z-[200]">
-         <span className="text-2xl font-black italic group-hover:rotate-12 transition-transform tracking-tighter">N</span>
-         <div className="absolute -top-1 -right-1 flex h-4 w-4">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
-         </div>
-      </button>
     </div>
   );
 }

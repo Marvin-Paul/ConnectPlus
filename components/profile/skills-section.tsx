@@ -2,9 +2,7 @@
 
 import * as React from "react"
 import { useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Pin, CheckCircle2 } from "lucide-react"
+import { Plus } from "lucide-react"
 import { SkillsEditModal } from "./skills-edit-modal"
 
 interface Skill {
@@ -30,56 +28,46 @@ export function SkillsSection({ username, skills }: SkillsSectionProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const items = skills && skills.length > 0 ? skills : (username === "demo-user" ? defaultSkills : [])
 
-  const pinnedSkills = (items || []).filter(s => s.isPinned)
-  const remainingSkills = (items || []).filter(s => !s.isPinned)
-
   return (
     <>
-      <Card className="mb-6 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-xl font-bold">Skills</CardTitle>
-          <button 
-            onClick={() => setIsEditModalOpen(true)}
-            className="p-1 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-primary"
-          >
-            <Plus className="h-6 w-6" />
-          </button>
-        </CardHeader>
-        <CardContent className="px-6 pb-6 pt-2 space-y-4">
-          {pinnedSkills.length > 0 && (
-            <div className="space-y-3 pb-4 border-b border-white/5">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 leading-none">
-                <Pin className="h-3 w-3 fill-current rotate-[45deg]" />
-                Top pinned skills
-              </h4>
-              <div className="flex flex-wrap gap-2 pt-1 transition-all">
-                {pinnedSkills.map((skill) => (
-                  <Badge key={skill.id} variant="secondary" className="px-4 py-1.5 text-sm font-semibold rounded-full bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors flex items-center gap-2">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    {skill.name}
-                  </Badge>
-                ))}
-              </div>
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm p-6 md:p-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <div className="flex items-center justify-between mb-6">
+           <h2 className="text-[18px] font-bold text-slate-900 tracking-tight">Skills</h2>
+           <button 
+             onClick={() => setIsEditModalOpen(true)}
+             className="p-2 hover:bg-slate-50 rounded-lg transition-all text-slate-400 hover:text-slate-600"
+           >
+             <Plus className="h-5 w-5" />
+           </button>
+        </div>
+
+        <div className="space-y-6">
+          {items && items.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {items.map((skill) => (
+                <div 
+                  key={skill.id} 
+                  className={`px-4 py-1.5 rounded-full text-[14px] font-semibold transition-all border ${
+                    skill.isPinned 
+                    ? "bg-blue-50 text-[#0A66C2] border-blue-100" 
+                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  {skill.name}
+                </div>
+              ))}
             </div>
+          ) : (
+            <p className="text-[14px] text-slate-500 font-medium italic">Add your technical and soft skills to build digital trust.</p>
           )}
-          
-          <div className="pt-2">
-            {remainingSkills.length > 0 ? (
-              <div className="flex flex-wrap gap-2 pt-1">
-                {remainingSkills.map((skill) => (
-                  <Badge key={skill.id} variant="outline" className="px-3 py-1 text-sm font-medium rounded-full text-foreground/80 hover:bg-muted/30 transition-colors">
-                    {skill.name}
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              pinnedSkills.length === 0 && (
-                <p className="py-2 text-sm text-muted-foreground italic">Add your technical and soft skills to build digital trust.</p>
-              )
-            )}
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+        
+        <div className="pt-6 mt-6 border-t border-slate-100 text-center">
+           <button className="text-[14px] font-bold text-slate-500 hover:text-slate-700 transition-colors">
+              Show all skills
+           </button>
+        </div>
+      </div>
 
       <SkillsEditModal 
         username={username}

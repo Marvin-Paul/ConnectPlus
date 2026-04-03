@@ -63,46 +63,37 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 
   return (
     <>
-      <div className="relative group/header animate-in fade-in slide-in-from-top-4 duration-1000">
-        <div className="bg-white rounded-[4rem] border border-slate-100 overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.06)] relative z-10">
+      <div className="relative group/header animate-in fade-in slide-in-from-top-2 duration-500">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm relative z-10">
           
           {/* BANNER SECTION */}
-          <div className="relative h-72 bg-slate-900 group/banner">
+          <div className="relative h-64 bg-slate-100 divide-x divide-slate-200 flex items-center justify-center">
             {user.bannerUrl ? (
-              <img src={user.bannerUrl} alt="Banner" className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-[3000ms]" />
+              <img src={user.bannerUrl} alt="Banner" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[3000ms]" />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-20 overflow-hidden">
-                <Globe className="absolute -bottom-20 -right-20 w-[40rem] h-[40rem] opacity-10 text-primary rotate-12" />
-                <Sparkles className="absolute top-10 left-10 w-24 h-24 opacity-20 text-accent" />
-              </div>
+              <div className="w-full h-full bg-slate-900 border-b border-slate-800" />
             )}
             
-            <div className="absolute top-8 right-8 flex items-center gap-3">
+            <div className="absolute top-6 right-6 flex items-center gap-3">
                <button 
                   onClick={() => setIsEditModalOpen(true)}
-                  className="p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 text-white shadow-2xl hover:bg-white/20 hover:scale-110 transition-all active:scale-95 group/edit"
+                  className="p-3 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all active:scale-95"
                >
                   <PenLine className="h-5 w-5" />
                </button>
-            </div>
-
-            {/* Premium Badge */}
-            <div className="absolute top-8 left-8 p-3 px-6 rounded-2xl bg-accent text-slate-900 shadow-2xl flex items-center gap-2">
-               <Star className="w-4 h-4 fill-current" />
-               <span className="text-[10px] font-black uppercase tracking-[0.2em]">ELITE MEMBER</span>
             </div>
           </div>
 
           <div className="relative pt-24 pb-16 px-12">
             
             {/* AVATAR OVERLAY */}
-            <div className="absolute -top-24 left-16">
+            <div className="absolute -top-16 left-8">
               <div className="relative group/avatar">
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                 <button
                   onClick={handleAvatarClick}
                   disabled={avatarUploading}
-                  className="w-48 h-48 rounded-[3.5rem] border-[10px] border-white overflow-hidden bg-white shadow-[0_30px_60px_rgba(0,0,0,0.15)] relative focus:outline-none hover:scale-105 transition-all duration-500 group-hover/avatar:-rotate-3"
+                  className="w-40 h-40 rounded-2xl border-[4px] border-white overflow-hidden bg-white shadow-sm relative focus:outline-none hover:scale-105 transition-all duration-300"
                 >
                   {avatarUploading ? (
                     <div className="w-full h-full flex items-center justify-center bg-slate-50">
@@ -128,35 +119,32 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
             </div>
 
             <div className="flex flex-col xl:flex-row justify-between items-start gap-12">
-              <div className="space-y-6 max-w-2xl">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-4">
-                    <h1 className="text-5xl font-black text-slate-800 tracking-tighter leading-none italic">
-                      {user.firstName} <span className="text-primary">{user.lastName}</span>
+              <div className="space-y-4 max-w-2xl">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+                      {user.firstName} {user.lastName}
                     </h1>
-                    {user.pronouns && (
-                      <span className="text-[12px] font-black text-slate-300 uppercase tracking-widest mt-2">{user.pronouns}</span>
-                    )}
-                    <button className="p-2 rounded-xl text-slate-300 hover:text-primary transition-colors mt-2">
-                      <Volume2 className="h-5 w-5" />
+                    <button className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
+                      <Volume2 className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="text-2xl font-black text-slate-400 leading-tight tracking-tight italic opacity-80 max-w-xl">
-                    "{user.headline || "Uncovering universal opportunities in regional tech."}"
+                  <p className="text-[18px] font-medium text-slate-600 leading-tight tracking-tight">
+                    {user.headline}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-8 pt-4">
+                <div className="flex flex-wrap items-center gap-6 pt-2">
                   {user.location && (
-                    <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                      <MapPin className="h-4 h-4 text-primary" /> {user.location}
+                    <div className="flex items-center gap-1 text-[13px] font-medium text-slate-500">
+                      <MapPin className="h-3.5 w-3.5 text-slate-400" /> {user.location}
                     </div>
                   )}
-                  <div className="flex items-center gap-2 text-[11px] font-black text-primary uppercase tracking-widest cursor-pointer hover:underline">
-                    <LinkIcon className="h-4 w-4" /> Professional Node
+                  <div className="flex items-center gap-1 text-[13px] font-bold text-[#0A66C2] hover:underline cursor-pointer">
+                    Contact info
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                    <span className="text-slate-800">{connectionStatus === 'ACCEPTED' ? '501' : '500'}+</span> Core Links
+                  <div className="flex items-center gap-1 text-[13px] font-bold text-slate-500">
+                    <span className="text-slate-900">{connectionStatus === 'ACCEPTED' ? '501' : '500'}+</span> connections
                   </div>
                 </div>
 
@@ -178,21 +166,19 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                   <>
                     <button
                       onClick={() => setIsEditModalOpen(true)}
-                      className="flex-1 xl:flex-none h-14 px-10 rounded-full bg-slate-900 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/30 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 active:scale-95 group"
+                      className="px-6 h-10 rounded-full bg-[#0A66C2] text-white font-bold text-[14px] hover:bg-[#004182] transition-all flex items-center justify-center gap-2"
                     >
-                      <Zap className="h-5 w-5 text-accent group-hover:animate-pulse" />
-                      Configure Intro Node
+                      Open to
                     </button>
                     <button
-                      className="flex-1 xl:flex-none h-14 px-10 rounded-full border-2 border-slate-100 text-slate-800 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-slate-50 transition-all flex items-center justify-center gap-3 active:scale-95 shadow-sm"
+                      className="px-6 h-10 rounded-full border border-[#0A66C2] text-[#0A66C2] font-bold text-[14px] hover:bg-blue-50 transition-all flex items-center justify-center"
                     >
-                      Add Alliance Node
+                      Add profile section
                     </button>
                     <button
-                      className="h-14 px-6 rounded-full border border-slate-100 text-slate-400 hover:text-slate-900 transition-all flex items-center justify-center"
-                      title="More options"
+                      className="px-6 h-10 rounded-full border border-slate-400 text-slate-500 font-bold text-[14px] hover:bg-slate-50 transition-all flex items-center justify-center"
                     >
-                      <MoreHorizontal className="w-5 h-5" />
+                      More
                     </button>
                   </>
                 ) : (
@@ -226,8 +212,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           </div>
         </div>
 
-        {/* Decorative backdrop blobs */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/5 rounded-full blur-[150px] -z-10" />
+
       </div>
 
       <IntroEditModal user={user} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />

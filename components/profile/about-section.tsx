@@ -21,23 +21,15 @@ export function AboutSection({ username, about }: AboutSectionProps) {
 
   return (
     <>
-      <div className="bg-white rounded-[3.5rem] border border-slate-100 overflow-hidden shadow-2xl shadow-slate-200/40 p-12 relative group/about animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="flex items-center justify-between mb-10">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center border border-blue-100 group-hover/about:rotate-6 transition-transform">
-               <Quote className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-               <h2 className="text-[14px] font-black text-slate-800 uppercase tracking-[0.3em] italic">Professional Vision</h2>
-               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-60">The core philosophy</p>
-            </div>
-          </div>
-          <button 
-            onClick={() => setIsEditModalOpen(true)}
-            className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all text-slate-400 hover:text-blue-600 hover:scale-110 active:scale-95"
-          >
-            <PenLine className="h-4 w-4" />
-          </button>
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm p-6 md:p-8 relative group/about animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <div className="flex items-center justify-between mb-6">
+           <h2 className="text-[18px] font-bold text-slate-900 tracking-tight">About</h2>
+           <button 
+             onClick={() => setIsEditModalOpen(true)}
+             className="p-2 hover:bg-slate-50 rounded-lg transition-all text-slate-400 hover:text-slate-600"
+           >
+             <PenLine className="h-4 w-4" />
+           </button>
         </div>
 
         <div className="relative">
@@ -45,7 +37,7 @@ export function AboutSection({ username, about }: AboutSectionProps) {
             "relative overflow-hidden transition-all duration-700 ease-in-out",
             !isExpanded && "max-h-48"
           )}>
-            <p className="whitespace-pre-line text-slate-600 leading-[1.8] font-black text-lg italic tracking-tight opacity-90 first-letter:text-5xl first-letter:font-black first-letter:text-blue-600 first-letter:mr-3 first-letter:float-left">
+            <p className="whitespace-pre-line text-[14px] leading-relaxed text-slate-600 font-medium">
               {bio}
             </p>
             {!isExpanded && (
@@ -55,14 +47,13 @@ export function AboutSection({ username, about }: AboutSectionProps) {
           
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-8 text-[11px] font-black uppercase tracking-[0.4em] text-blue-600 hover:text-blue-800 transition-all flex items-center gap-2 group/btn"
+            className="mt-4 text-[14px] font-bold text-[#0A66C2] hover:text-[#004182] transition-all flex items-center gap-1 group/btn"
           >
-            {isExpanded ? "Collapse Intel" : "Read Full Directive"}
-            <span className="w-6 h-px bg-blue-200 group-hover/btn:w-12 transition-all" />
+            {isExpanded ? "Show less" : "Show more"}
           </button>
         </div>
 
-        <Sparkles className="absolute bottom-10 right-10 w-24 h-24 opacity-5 text-blue-600 group-hover/about:scale-125 transition-transform duration-1000" />
+
       </div>
 
       <AboutEditModal user={{ username, bio: about }} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />

@@ -139,11 +139,11 @@ function AvatarDisplay({ avatar, name, size = "md" }: { avatar: string | null; n
   const cls = sizeMap[size];
 
   if (avatar && avatar.startsWith("http")) {
-    return <img src={avatar} className={`${cls} rounded-[1.5rem] object-cover`} alt={name} />;
+    return <img src={avatar} className={`${cls} rounded-xl object-cover border border-slate-100`} alt={name} />;
   }
   const initials = name.split(" ").map((w) => w[0]).join("").substring(0, 2).toUpperCase();
   return (
-    <div className={`${cls} rounded-[1.5rem] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-black text-white text-sm`}>
+    <div className={`${cls} rounded-xl bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-sm border border-slate-200`}>
       {initials}
     </div>
   );
@@ -352,12 +352,12 @@ export default function MessagingPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto h-[calc(100vh-140px)] mt-8 bg-white rounded-[3rem] border border-slate-100 overflow-hidden shadow-2xl shadow-slate-200/50 flex">
+    <div className="max-w-6xl mx-auto h-[calc(100vh-80px)] md:h-[calc(100vh-140px)] mt-2 md:mt-8 bg-white md:rounded-xl border border-slate-200 overflow-hidden shadow-sm flex flex-col md:flex-row">
 
       {/* ── Sidebar: Chat List ─────────────────────────────────────────────── */}
-      <aside className="w-[380px] h-full border-r border-slate-50 flex flex-col bg-white">
-        <div className="p-8 pb-4 flex items-center justify-between">
-          <h2 className="text-xl font-black text-slate-800 tracking-tighter">Messaging</h2>
+      <aside className={`w-full md:w-[320px] md:h-full border-b md:border-b-0 md:border-r border-slate-200 flex-col bg-white shrink-0 ${activeChatId ? 'hidden md:flex' : 'flex h-full'}`}>
+        <div className="p-6 pb-4 flex items-center justify-between">
+          <h2 className="text-[18px] font-bold text-slate-900 tracking-tight">Messaging</h2>
           <div className="flex items-center gap-1 relative">
             <button
               onClick={() => setIsFiltersOpen(!isFiltersOpen)}
@@ -416,31 +416,37 @@ export default function MessagingPage() {
       </aside>
 
       {/* ── Main Chat Window ───────────────────────────────────────────────── */}
-      <main className="flex-1 flex flex-col h-full bg-slate-50/20 relative">
+      <main className={`flex-1 flex flex-col h-full bg-slate-50/20 relative ${activeChatId ? 'flex' : 'hidden md:flex'}`}>
 
         {/* Chat Header */}
         {activeChat && (
-          <div className="px-10 py-6 border-b border-slate-50 bg-white/95 backdrop-blur-sm shadow-sm flex items-center justify-between sticky top-0 z-20">
-            <div className="flex items-center gap-5">
-              <div className="relative">
+          <div className="px-6 md:px-10 py-4 md:py-6 border-b border-slate-50 bg-white/95 backdrop-blur-sm shadow-sm flex items-center justify-between sticky top-0 z-20">
+            <div className="flex items-center gap-2 md:gap-5">
+              <button 
+                onClick={() => setActiveChatId(null)} 
+                className="md:hidden p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-400"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <div className="relative hidden md:block">
                 <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-slate-50 shadow-xl">
                   <AvatarDisplay avatar={activeChat.avatar} name={activeChat.name} />
                 </div>
                 {activeChat.isOnline && (
-                  <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-xl" />
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                 )}
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-black text-slate-800 tracking-tight leading-none">{activeChat.name}</h3>
-                  {activeChat.isPremium && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
+                  <h3 className="text-[18px] font-bold text-slate-900 tracking-tight leading-none">{activeChat.name}</h3>
+                  {activeChat.isPremium && <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />}
                 </div>
-                <p className="text-[12px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-80">{activeChat.headline}</p>
+                <p className="text-[12px] text-slate-500 font-medium mt-1 leading-none">{activeChat.headline}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
+            <div className="flex items-center gap-0 md:gap-2">
+              <button className="hidden md:block p-3 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2]">
                 <Video className="w-5 h-5" />
               </button>
               <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
@@ -454,16 +460,16 @@ export default function MessagingPage() {
         )}
 
         {/* Message Feed */}
-        <div className="flex-1 overflow-y-auto p-10 space-y-10 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto px-4 md:px-10 py-6 md:py-10 space-y-6 md:space-y-10 scrollbar-hide">
           {activeChat && (
-            <div className="flex flex-col items-center text-center p-12 bg-white/40 rounded-[3rem] border border-slate-100 mb-12 shadow-sm">
-              <div className="w-24 h-24 rounded-[2rem] overflow-hidden mb-6 shadow-2xl border-4 border-white rotate-3">
+            <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl border border-slate-100 mb-8 shadow-sm">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden mb-4 border border-slate-100 shadow-sm">
                 <AvatarDisplay avatar={activeChat.avatar} name={activeChat.name} size="lg" />
               </div>
-              <h4 className="text-2xl font-black text-slate-800 tracking-tighter leading-none">{activeChat.name}</h4>
-              <p className="text-sm text-slate-400 font-medium max-w-sm mt-3 italic leading-relaxed opacity-80">{activeChat.headline}</p>
-              <button className="mt-8 px-10 py-3 rounded-full border border-slate-100 text-[#0a66c2] font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 transition-all hover:scale-105 active:scale-95 shadow-sm">
-                View full professional profile
+              <h4 className="text-[20px] font-bold text-slate-900 tracking-tight leading-none">{activeChat.name}</h4>
+              <p className="text-sm text-slate-500 font-medium max-w-sm mt-2 leading-relaxed">{activeChat.headline}</p>
+              <button className="mt-6 px-6 py-2 rounded-full border border-slate-200 text-[#0A66C2] font-semibold text-[13px] hover:bg-blue-50 transition-all">
+                View Profile
               </button>
             </div>
           )}
@@ -509,8 +515,8 @@ export default function MessagingPage() {
         </div>
 
         {/* Message Input */}
-        <div className="px-10 py-8 bg-white border-t border-slate-50">
-          <div className="relative flex items-end gap-4 p-4 border border-slate-100 rounded-[2.5rem] bg-slate-50/40 focus-within:bg-white focus-within:shadow-2xl focus-within:shadow-blue-900/5 focus-within:border-blue-200 transition-all duration-700 group">
+        <div className="px-4 md:px-10 py-4 md:py-8 bg-white border-t border-slate-50">
+          <div className="relative flex items-end gap-2 md:gap-4 p-2 md:p-4 border border-slate-100 rounded-[2rem] md:rounded-[2.5rem] bg-slate-50/40 focus-within:bg-white focus-within:shadow-2xl focus-within:shadow-blue-900/5 focus-within:border-blue-200 transition-all duration-700 group">
             <div className="flex items-center self-center gap-1.5 pl-2 opacity-40 group-focus-within:opacity-100 transition-opacity">
               <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400"><Plus className="w-5 h-5" /></button>
               <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400"><Mic className="w-5 h-5" /></button>

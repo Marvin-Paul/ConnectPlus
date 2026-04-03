@@ -87,15 +87,38 @@ export function TopNav() {
     <header className="sticky top-0 z-[100] border-b bg-white/95 backdrop-blur-sm shadow-sm">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between h-[52px] px-4">
         
-        {/* Logo & Search */}
-        <div className="flex items-center gap-2 flex-1 max-w-[400px]">
+        {/* ── Mobile Top Nav (Hidden on md+) ── */}
+        <div className="flex w-full md:hidden items-center gap-3 h-full">
+           <Link href="/profile/demo-user" className="shrink-0 w-8 h-8 rounded-full overflow-hidden border border-slate-200">
+             <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
+           </Link>
+           
+           <form onSubmit={handleSearch} className="flex-1 relative h-[34px] group">
+             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+             <Input
+               type="search"
+               placeholder="Search"
+               value={searchQuery}
+               onChange={(e) => setSearchQuery(e.target.value)}
+               className="h-full w-full bg-[#edf3f8] border-none text-[14px] text-slate-900 placeholder:text-slate-600 pl-9 rounded-[4px] focus-visible:ring-0 focus-visible:ring-offset-0 focus:w-full"
+             />
+           </form>
+
+           <Link href="/messaging" className="shrink-0 text-slate-500 hover:text-slate-900 relative">
+             <MessageSquare className="h-6 w-6 fill-current" />
+             <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-600 text-white text-[9px] font-bold rounded-full flex items-center justify-center border border-white"></div>
+           </Link>
+        </div>
+
+        {/* ── Desktop Logo & Search (Hidden on mobile) ── */}
+        <div className="hidden md:flex items-center gap-2 flex-1 max-w-[400px]">
           <Link href="/" className="inline-flex items-center">
             <div className="inline-grid h-[34px] w-[34px] place-items-center rounded-lg bg-primary text-white shadow-lg shadow-primary/10">
                <span className="text-xl font-black leading-none tracking-tighter">c+</span>
             </div>
           </Link>
 
-          <form onSubmit={handleSearch} className="hidden md:block relative flex-1 ml-4 group">
+          <form onSubmit={handleSearch} className="relative flex-1 ml-4 group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
             <Input
               id="global-search"
@@ -108,15 +131,15 @@ export function TopNav() {
           </form>
         </div>
 
-        {/* Global Navigation */}
-        <nav aria-label="Main Navigation" className="flex items-center h-full">
+        {/* Global Navigation (Desktop only) */}
+        <nav aria-label="Main Navigation" className="hidden md:flex items-center h-full">
           {navLinks.map((link) => {
             if (link.label === "Notifications") {
               return (
                 <div key={link.label} className="relative h-full" ref={notifRef}>
                   <button
                     onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                    className={`flex flex-col items-center justify-center min-w-[80px] h-full transition hover:text-primary relative group ${isNotificationsOpen ? 'text-primary' : 'text-slate-500'}`}
+                    className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[80px] h-full transition hover:text-primary relative group ${isNotificationsOpen ? 'text-primary' : 'text-slate-500'}`}
                   >
                     <div className="relative">
                       <link.icon className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
@@ -180,7 +203,7 @@ export function TopNav() {
                 <div key={link.label} className="relative h-full" ref={msgRef}>
                   <button
                     onClick={() => setIsMessagingOpen(!isMessagingOpen)}
-                    className={`flex flex-col items-center justify-center min-w-[80px] h-full transition hover:text-primary relative group ${isMessagingOpen ? 'text-primary' : 'text-slate-500'}`}
+                    className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[80px] h-full transition hover:text-primary relative group ${isMessagingOpen ? 'text-primary' : 'text-slate-500'}`}
                   >
                     <div className="relative">
                       <link.icon className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
@@ -235,7 +258,7 @@ export function TopNav() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="flex flex-col items-center justify-center min-w-[80px] h-full text-slate-500 transition hover:text-primary relative group"
+                className="flex flex-col items-center justify-center min-w-[50px] md:min-w-[80px] h-full text-slate-500 transition hover:text-primary relative group"
               >
                 <div className="relative">
                   <link.icon className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
@@ -255,7 +278,7 @@ export function TopNav() {
           <div className="relative h-full" ref={meRef}>
             <button 
               onClick={() => setIsMeOpen(!isMeOpen)}
-              className={`flex flex-col items-center justify-center min-w-[64px] h-full text-slate-500 hover:text-primary border-r border-slate-100 mr-2 pr-2 group transition-all ${isMeOpen ? 'text-primary' : ''}`}
+              className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[64px] h-full text-slate-500 hover:text-primary md:border-r border-slate-100 md:mr-2 md:pr-2 group transition-all ${isMeOpen ? 'text-primary' : ''}`}
             >
               <div className={`w-7 h-7 rounded-full overflow-hidden mb-0.5 border-2 transition-all ${isMeOpen ? 'border-primary' : 'border-slate-100 group-hover:border-primary'}`}>
                 <img src={userAvatar} alt="Me" className="w-full h-full object-cover" />
@@ -302,7 +325,7 @@ export function TopNav() {
           <div className="relative h-full" ref={bizRef}>
             <button 
               onClick={() => setIsBusinessOpen(!isBusinessOpen)}
-              className={`flex flex-col items-center justify-center min-w-[80px] h-full text-slate-500 hover:text-primary group relative transition-all ${isBusinessOpen ? 'text-primary' : ''}`}
+              className={`hidden md:flex flex-col items-center justify-center min-w-[80px] h-full text-slate-500 hover:text-primary group relative transition-all ${isBusinessOpen ? 'text-primary' : ''}`}
             >
               <Grid3X3 className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
               <div className="flex items-center gap-0.5">

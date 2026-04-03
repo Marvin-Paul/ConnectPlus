@@ -2,8 +2,7 @@
 
 import * as React from "react"
 import { useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { ExternalLink, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { FeaturedAddModal } from "./featured-add-modal"
 
 interface FeaturedItem {
@@ -43,38 +42,41 @@ export function FeaturedSection({ username, items }: FeaturedSectionProps) {
 
   return (
     <>
-      <Card className="mb-6 overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-xl font-bold">Featured</CardTitle>
-          <button 
-            onClick={() => setIsAddModalOpen(true)}
-            className="text-sm font-bold text-primary hover:bg-primary/10 px-3 py-1 rounded-md transition-colors flex items-center gap-1"
-          >
-            <Plus className="h-4 w-4" />
-            Add featured
-          </button>
-        </CardHeader>
-        <CardContent className="px-6 pb-6 pt-2">
-          {featured.length > 0 ? (
-            <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar scrollbar-hide">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm p-6 md:p-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <div className="flex items-center justify-between mb-6">
+           <h2 className="text-[18px] font-bold text-slate-900 tracking-tight">Featured</h2>
+           <button 
+             onClick={() => setIsAddModalOpen(true)}
+             className="p-2 hover:bg-slate-50 rounded-lg transition-all text-slate-400 hover:text-slate-600"
+           >
+             <Plus className="h-5 w-5" />
+           </button>
+        </div>
+
+        <div className="space-y-6">
+          {featured && featured.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {featured.map((item) => (
-                <div key={item.id} className="min-w-[300px] border rounded-lg bg-background hover:shadow-md transition-shadow cursor-pointer">
+                <div key={item.id} className="border border-slate-200 rounded-lg bg-white hover:border-slate-300 transition-all cursor-pointer group shadow-sm flex flex-col overflow-hidden">
                   {item.imageUrl && (
-                    <img src={item.imageUrl} alt={item.title} className="w-full h-32 object-cover rounded-t-lg" />
+                    <div className="h-32 overflow-hidden border-b border-slate-100">
+                      <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
                   )}
-                  <div className="p-4 space-y-2">
-                    <h4 className="font-bold text-sm leading-tight line-clamp-2">
-                      {item.title}
-                    </h4>
-                    {item.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2">
-                        {item.description}
-                      </p>
-                    )}
+                  <div className="p-4 flex-1 flex flex-col justify-between">
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-[14px] text-slate-900 leading-tight line-clamp-1">
+                        {item.title}
+                      </h4>
+                      {item.description && (
+                        <p className="text-[13px] text-slate-500 line-clamp-2 leading-relaxed">
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
                     {item.linkUrl && (
-                      <div className="flex items-center text-xs text-primary font-bold gap-1 mt-2">
-                        <ExternalLink className="h-3 w-3" />
-                        View details
+                      <div className="flex items-center text-[12px] text-[#0A66C2] font-bold gap-1 mt-3">
+                        View content
                       </div>
                     )}
                   </div>
@@ -82,10 +84,10 @@ export function FeaturedSection({ username, items }: FeaturedSectionProps) {
               ))}
             </div>
           ) : (
-            <p className="py-2 text-sm text-muted-foreground italic">Add your work to showcase your best results.</p>
+            <p className="text-[14px] text-slate-500 font-medium italic">Add your work to showcase your best results.</p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <FeaturedAddModal 
         username={username} 
