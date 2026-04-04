@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "db:up": "docker compose up -d",
@@ -21,12 +22,12 @@
     "clsx": "latest",
     "lucide-react": "latest",
     "next": "latest",
+    "@prisma/client": "^5.22.0",
     "react": "latest",
     "react-dom": "latest",
     "tailwind-merge": "latest"
   },
   "devDependencies": {
-    "@prisma/client": "^5.22.0",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",

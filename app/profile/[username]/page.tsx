@@ -11,7 +11,7 @@ import { SocialProofSection } from "@/components/profile/social-proof-section"
 import { AccomplishmentsSection } from "@/components/profile/accomplishments-section"
 
 interface ProfilePageProps {
-  params: { username: string }
+  params: Promise<{ username: string }>
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
@@ -36,7 +36,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     })
   } catch (error) {
     console.error("Database connection failed for user profile fetch:", error);
-    // Continue execution to allowed mock data to take over for demonstration
+    // Continue execution to allow mock data to take over for demonstration if in demo mode
   }
 
   if (!user) {

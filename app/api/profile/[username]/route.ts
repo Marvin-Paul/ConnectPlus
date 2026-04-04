@@ -1,11 +1,11 @@
+export const dynamic = "force-dynamic";
+
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
-export async function GET(req: Request, { params }: any) {
+export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }) {
   try {
-    // Correctly handle Next.js 15 params promise
-    const awaitedParams = await params;
-    const username = awaitedParams?.username;
+    const { username } = await params;
     
     if (!username) {
       return NextResponse.json({ error: "No username provided" }, { status: 400 });

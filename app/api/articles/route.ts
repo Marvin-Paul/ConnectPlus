@@ -1,11 +1,15 @@
+export const dynamic = "force-dynamic";
+
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+
+const db = prisma as any;
 
 export async function POST(req: Request) {
   try {
     const { title, content, coverImage, tags, username } = await req.json();
 
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { username },
       select: { id: true }
     });
@@ -14,7 +18,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const post = await prisma.post.create({
+    const post = await db.post.create({
       data: {
         authorId: user.id,
         title,
@@ -26,7 +30,7 @@ export async function POST(req: Request) {
     });
 
     // Create a notification for followers (mock logic)
-    await prisma.notification.create({
+    await db.notification.create({
       data: {
         userId: user.id, // Self-notification for testing
         type: "SYSTEM",
@@ -48,7 +52,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type") || "POST";
 
-    const posts = await prisma.post.findMany({
+    const posts = await db.post.findMany({
       where: { type },
       include: {
         author: {

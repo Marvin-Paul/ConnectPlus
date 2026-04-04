@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -110,6 +111,9 @@ export function SkillsEditModal({ username, skills, isOpen, onClose }: SkillsEdi
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Skills</DialogTitle>
+          <DialogDescription>
+            Manage and reorganize your professional skills.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6 pt-4">

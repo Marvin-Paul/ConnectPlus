@@ -1,12 +1,16 @@
+export const dynamic = "force-dynamic";
+
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+
+const db = prisma as any;
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const username = searchParams.get("username") || "demo-user";
 
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { username },
       select: { id: true }
     });
@@ -15,7 +19,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const notifications = await prisma.notification.findMany({
+    const notifications = await db.notification.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
       take: 20
@@ -33,18 +37,18 @@ export async function PATCH(req: Request) {
     const { id, readAll, username } = await req.json();
 
     if (readAll && username) {
-      const user = await prisma.user.findUnique({
+      const user = await db.user.findUnique({
         where: { username },
         select: { id: true }
       });
       if (user) {
-        await prisma.notification.updateMany({
+        await db.notification.updateMany({
           where: { userId: user.id, isRead: false },
           data: { isRead: true }
         });
       }
     } else if (id) {
-      await prisma.notification.update({
+      await db.notification.update({
         where: { id },
         data: { isRead: true }
       });
