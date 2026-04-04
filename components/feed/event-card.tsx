@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, MapPin, Users as UsersIcon, Globe, Ticket, Clock, Share2, MoreHorizontal, Bookmark, CheckCircle2 } from "lucide-react";
+import { Calendar, MapPin, Users as UsersIcon, Globe, Ticket, Clock, Share2, MoreHorizontal, Bookmark, CheckCircle2, MessageSquare } from "lucide-react";
+import { CommentSection } from "./comment-section";
 
 interface EventCardProps {
   item: {
@@ -25,6 +26,7 @@ interface EventCardProps {
 
 export function EventCard({ item }: EventCardProps) {
   const [isGoing, setIsGoing] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   return (
     <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl shadow-slate-200/50 overflow-hidden mb-8 group/event hover:border-primary/30 transition-all duration-700 animate-in fade-in slide-in-from-bottom-6">
@@ -56,6 +58,12 @@ export function EventCard({ item }: EventCardProps) {
                {item.title}
             </h2>
             <div className="flex gap-2">
+               <button 
+                onClick={() => setShowComments(!showComments)}
+                className={`p-3 rounded-2xl hover:bg-slate-50 transition-all active:scale-90 ${showComments ? 'text-primary bg-primary/5' : 'text-slate-400'}`}
+               >
+                  <MessageSquare className="w-5 h-5" />
+               </button>
                <button className="p-3 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-primary transition-all active:scale-90">
                   <Bookmark className="w-5 h-5" />
                </button>
@@ -121,6 +129,13 @@ export function EventCard({ item }: EventCardProps) {
             </button>
          </div>
       </div>
+
+      {showComments && (
+        <CommentSection 
+          postId={item.id} 
+          onCommentAdded={() => {}}
+        />
+      )}
     </div>
   );
 }

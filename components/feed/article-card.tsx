@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ThumbsUp, MessageSquare, Repeat2, Send, BookOpen, MoreHorizontal, Bookmark, Share2 } from "lucide-react";
 import { useUser } from "../providers/user-provider";
+import { CommentSection } from "./comment-section";
 
 interface ArticleCardProps {
   item: {
@@ -28,6 +29,7 @@ export function ArticleCard({ item }: ArticleCardProps) {
   const { user } = useUser();
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(item.likes);
+  const [showComments, setShowComments] = useState(false);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -111,7 +113,10 @@ export function ArticleCard({ item }: ArticleCardProps) {
                <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : 'group-hover/btn:scale-110'} transition-transform`} />
                <span className="text-[12px] font-black">{likesCount.toLocaleString()}</span>
             </button>
-            <button className="flex items-center gap-2 group/btn text-slate-400 hover:text-slate-600 transition-all">
+            <button 
+              onClick={() => setShowComments(!showComments)}
+              className="flex items-center gap-2 group/btn text-slate-400 hover:text-slate-600 transition-all"
+            >
                <MessageSquare className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                <span className="text-[12px] font-black">{(item.comments_count || 0).toLocaleString()}</span>
             </button>
@@ -124,6 +129,13 @@ export function ArticleCard({ item }: ArticleCardProps) {
             <Bookmark className="w-5 h-5" />
          </button>
       </div>
+
+      {showComments && (
+        <CommentSection 
+          postId={item.id} 
+          onCommentAdded={() => {}}
+        />
+      )}
     </div>
   );
 }
