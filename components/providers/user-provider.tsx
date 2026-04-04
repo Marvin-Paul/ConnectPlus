@@ -11,6 +11,8 @@ interface UserProfile {
   location: string;
   avatarUrl: string;
   bannerUrl: string;
+  isPremium: boolean;
+  verified: boolean;
 }
 
 interface UserContextType {
@@ -42,7 +44,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           headline: data.headline || "",
           location: data.location || "",
           avatarUrl: data.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
-          bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200"
+          bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
+          isPremium: !!data.isPremium,
+          verified: !!data.verified
         });
       } else {
         setUser({
@@ -53,7 +57,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           headline: "Senior Full-Stack Engineer | AI Systems Architect | Uganda Tech Alliance",
           avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
           bannerUrl: "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
-          location: "Kampala, Uganda"
+          location: "Kampala, Uganda",
+          isPremium: true,
+          verified: true
         });
       }
     } catch (err) {

@@ -35,11 +35,28 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleConnect = async () => {
-    if (connectionStatus !== 'IDLE') return
-    setConnectionStatus('PENDING')
-    // Simulate API call
-    setTimeout(() => setConnectionStatus('ACCEPTED'), 1500)
-  }
+    if (!currentUser || connectionStatus !== 'IDLE') return;
+    setConnectionStatus('PENDING');
+    
+    try {
+      // Find the user ID of the profile we're viewing
+      const resUser = await fetch(`/api/profile/${user.username}`);
+      if (!resUser.ok) throw new Error("User not found");
+      const targetUser = await resUser.json();
+
+      await fetch('/api/connections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requesterId: currentUser.id,
+          addresseeId: targetUser.id
+        })
+      });
+    } catch (err) {
+      console.error("Connect error:", err);
+      setConnectionStatus('IDLE');
+    }
+  };
 
   const handleAvatarClick = () => fileInputRef.current?.click()
 

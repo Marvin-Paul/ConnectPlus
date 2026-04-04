@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, Sparkles, Users, TrendingUp, ShieldCheck, ChevronRight, Plus, Loader2 } from "lucide-react";
+import { Bookmark, Sparkles, Users, TrendingUp, ShieldCheck, ChevronRight, Plus, Loader2, Zap } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "../providers/user-provider";
 
@@ -17,9 +17,12 @@ export function ProfileCard() {
 
   const user = {
     name: contextUser ? `${contextUser.firstName} ${contextUser.lastName}` : "Marvin Muwereza",
+    username: contextUser?.username || "demo-user",
     headline: contextUser?.headline || "Senior Full-Stack Engineer | AI Systems Architect | Uganda Tech Alliance",
     avatar: contextUser?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
     banner: contextUser?.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
+    isPremium: contextUser?.isPremium || false,
+    verified: contextUser?.verified || false,
     stats: {
       viewers: 1248,
       impressions: 5892,
@@ -28,61 +31,71 @@ export function ProfileCard() {
   };
 
   return (
-    <div id="identity-card" className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-xl shadow-slate-200/50 group sticky top-20">
+    <div id="identity-card" className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-xl shadow-bg-slate-200/50 group sticky top-20 animate-in fade-in slide-in-from-left-4 duration-1000">
       {/* Banner */}
-      <div className="h-20 relative overflow-hidden">
-         <img src={user.banner} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="" />
-         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+      <div className="h-24 relative overflow-hidden">
+         <img src={user.banner} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-2000" alt="" />
+         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+         {user.isPremium && (
+            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-yellow-400 text-slate-900 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-2xl">
+               <Sparkles className="w-3 h-3" /> Premium Member
+            </div>
+         )}
       </div>
 
-      <div className="px-6 pb-8">
+      <div className="px-8 pb-10">
         {/* Avatar */}
-        <div className="relative -mt-10 mb-6 flex justify-center">
-          <Link href="/profile/demo-user">
-             <div className="w-20 h-20 rounded-[2.5rem] border-4 border-white overflow-hidden bg-white shadow-2xl hover:rotate-6 transition-all duration-500">
+        <div className="relative -mt-12 mb-6 flex justify-center">
+          <Link href={`/profile/${user.username}`}>
+             <div className="w-24 h-24 rounded-[2.5rem] border-[6px] border-white overflow-hidden bg-white shadow-2xl hover:scale-105 transition-all duration-500 group-hover:rotate-3">
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
              </div>
           </Link>
-          <div className="absolute top-0 right-1/2 translate-x-12 translate-y-2 bg-primary p-1 rounded-full border-2 border-white shadow-xl">
-             <ShieldCheck className="w-3.5 h-3.5 text-white" />
-          </div>
+          {user.verified && (
+            <div className="absolute top-2 right-1/2 translate-x-14 bg-primary p-1.5 rounded-full border-4 border-white shadow-2xl animate-bounce-subtle">
+               <ShieldCheck className="w-4 h-4 text-white" />
+            </div>
+          )}
         </div>
         
         {/* User Info */}
-        <div className="text-center border-b border-slate-50 pb-6">
-          <Link href="/profile/demo-user" className="group/name">
-             <h2 className="text-xl font-black text-slate-800 group-hover/name:text-primary transition-colors leading-none tracking-tight">
+        <div className="text-center border-b border-slate-50/50 pb-8">
+          <Link href={`/profile/${user.username}`} className="group/name">
+             <h2 className="text-2xl font-black text-slate-900 group-hover/name:text-primary transition-colors leading-none tracking-tighter italic">
                {user.name}
              </h2>
           </Link>
-          <p className="text-[11px] text-slate-500 mt-2 leading-relaxed px-4 font-medium italic opacity-80">
+          <p className="text-[12px] text-slate-500 mt-3 leading-relaxed px-2 font-medium italic opacity-80 line-clamp-2">
             {user.headline}
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="py-6 border-b border-slate-50 space-y-4">
-          <div className="flex justify-between items-center px-2 hover:bg-slate-50 rounded-xl py-2 transition-all cursor-pointer group/stat">
-            <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 group-hover/stat:text-slate-600">Profile viewers</span>
-            <span className="text-[12px] font-black text-primary">{user.stats.viewers.toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between items-center px-2 hover:bg-slate-50 rounded-xl py-2 transition-all cursor-pointer group/stat">
-            <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 group-hover/stat:text-slate-600">Impressions</span>
-            <span className="text-[12px] font-black text-primary">{user.stats.impressions.toLocaleString()}</span>
-          </div>
+        {/* Stats Section */}
+        <div className="py-8 border-b border-slate-50/50 space-y-5">
+          <Link href="/premium/analytics" className="flex justify-between items-center px-2 hover:translate-x-1 transition-transform group/stat">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover/stat:text-primary">Profile analytics</span>
+            <div className="flex items-center gap-1.5">
+               <TrendingUp className="w-3.5 h-3.5 text-green-500" />
+               <span className="text-[13px] font-black text-slate-900 tracking-tight">+{user.stats.viewers.toLocaleString()}</span>
+            </div>
+          </Link>
+          <Link href="/network" className="flex justify-between items-center px-2 hover:translate-x-1 transition-transform group/stat">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover/stat:text-primary">Professional Link</span>
+            <div className="flex items-center gap-1.5">
+               <Users className="w-3.5 h-3.5 text-blue-500" />
+               <span className="text-[13px] font-black text-slate-900 tracking-tight">{user.stats.connections.toLocaleString()}</span>
+            </div>
+          </Link>
         </div>
 
-        {/* Premium Upgrade */}
-        <div className="px-2 pt-6">
-           <div className="flex items-center gap-2 mb-4">
-              <div className="p-1.5 bg-yellow-50 rounded-lg">
-                 <Sparkles className="w-3.5 h-3.5 text-accent" />
-              </div>
-              <p className="text-[10px] font-medium text-slate-500 leading-tight">Strengthen your professional profile with AI insights</p>
-           </div>
-           <button className="w-full py-3 rounded-full bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 group/prem flex items-center justify-center gap-2">
-              Unleash Premium <Plus className="w-3.5 h-3.5 text-accent group-hover/prem:rotate-90 transition-transform" />
-           </button>
+        {/* Elite CTA */}
+        <div className="pt-8 text-center space-y-4">
+           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-loose">"Master your professional narrative with LinkedIn AI Insights."</p>
+           {!user.isPremium && (
+              <button className="w-full py-4 rounded-full bg-slate-900 text-white font-black text-[11px] uppercase tracking-[0.2em] hover:bg-black transition-all shadow-2xl shadow-slate-900/20 active:scale-95 flex items-center justify-center gap-3 group/cta">
+                 Get Linked Premium <Zap className="w-4 h-4 text-yellow-400 group-hover/cta:scale-125 transition-transform" />
+              </button>
+           )}
         </div>
       </div>
 
