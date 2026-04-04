@@ -6,6 +6,7 @@ import { QueryProvider } from "../components/providers/query-provider";
 import { UserProvider } from "../components/providers/user-provider";
 import { PulseGuide } from "../components/features/pulse-guide";
 import { Inter } from "next/font/google"; 
+import { SplashScreen } from "../components/ui/splash-screen";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.className}>
       <body className="antialiased bg-[#F8FAFC] text-slate-900">
+        <SplashScreen />
         <QueryProvider>
           <UserProvider>
             <TopNav />
