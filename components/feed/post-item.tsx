@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ThumbsUp, MessageSquare, Repeat2, Send, Globe, Plus, Heart, MoreHorizontal, Share2 } from "lucide-react";
 
 interface PostItemProps {
@@ -18,6 +19,14 @@ interface PostItemProps {
 }
 
 export function PostItem({ author, time, content, image, stats }: PostItemProps) {
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(stats.likes);
+
+  const toggleLike = () => {
+    setIsLiked(!isLiked);
+    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
   return (
     <div className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-100 shadow-xl md:shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-1000 group/card">
       {/* Header */}
@@ -71,14 +80,14 @@ export function PostItem({ author, time, content, image, stats }: PostItemProps)
       <div className="px-4 md:px-10 py-4 md:py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-t border-slate-50 bg-slate-50/20">
          <div className="flex items-center gap-4">
             <div className="flex items-center -space-x-2">
-               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 border-2 border-white flex items-center justify-center shadow-lg transform -rotate-12 group-hover/card:rotate-0 transition-transform">
+               <div className={`w-8 h-8 rounded-full ${isLiked ? 'bg-blue-600' : 'bg-blue-500'} border-2 border-white flex items-center justify-center shadow-lg transform -rotate-12 group-hover/card:rotate-0 transition-all`}>
                   <ThumbsUp className="h-3.5 w-3.5 text-white" />
                </div>
                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-pink-500 border-2 border-white flex items-center justify-center shadow-lg transform rotate-12 group-hover/card:rotate-0 transition-transform">
                   <Heart className="h-3.5 w-3.5 text-white" />
                </div>
             </div>
-            <span className="text-[13px] text-slate-500 font-black tracking-tight">{stats.likes.toLocaleString()} professional reactions</span>
+            <span className="text-[13px] text-slate-500 font-black tracking-tight">{likeCount.toLocaleString()} professional reactions</span>
          </div>
          <div className="flex items-center gap-4 text-[11px] font-black text-slate-400 uppercase tracking-widest italic">
             <span className="hover:text-primary hover:underline cursor-pointer">{stats.comments} comments</span>
@@ -89,9 +98,12 @@ export function PostItem({ author, time, content, image, stats }: PostItemProps)
 
       {/* Action Bar */}
       <div className="flex items-center justify-between px-2 md:px-6 py-2 md:py-4 border-t border-slate-50 bg-white shadow-inner">
-         <button className="flex-1 flex items-center justify-center gap-2 md:gap-3 py-3 md:py-4 px-1 md:px-2 rounded-xl md:rounded-2xl hover:bg-slate-50 transition-all group/btn active:scale-95">
-            <ThumbsUp className="h-5 w-5 md:h-6 md:w-6 text-slate-400 group-hover/btn:text-blue-500 group-hover/btn:scale-110 transition-all" />
-            <span className="hidden md:block text-[11px] font-black text-slate-400 group-hover/btn:text-slate-800 uppercase tracking-widest">Like</span>
+         <button 
+           onClick={toggleLike}
+           className={`flex-1 flex items-center justify-center gap-2 md:gap-3 py-3 md:py-4 px-1 md:px-2 rounded-xl md:rounded-2xl transition-all group/btn active:scale-95 ${isLiked ? 'bg-blue-50/50' : 'hover:bg-slate-50'}`}
+         >
+            <ThumbsUp className={`h-5 w-5 md:h-6 md:w-6 transition-all ${isLiked ? 'text-blue-600 fill-blue-600 scale-110' : 'text-slate-400 group-hover/btn:text-blue-500 group-hover/btn:scale-110'}`} />
+            <span className={`hidden md:block text-[11px] font-black uppercase tracking-widest ${isLiked ? 'text-blue-600' : 'text-slate-400 group-hover/btn:text-slate-800'}`}>Like</span>
          </button>
          <button className="flex-1 flex items-center justify-center gap-2 md:gap-3 py-3 md:py-4 px-1 md:px-2 rounded-xl md:rounded-2xl hover:bg-slate-50 transition-all group/btn active:scale-95">
             <MessageSquare className="h-5 w-5 md:h-6 md:w-6 text-slate-400 group-hover/btn:text-green-500 group-hover/btn:scale-110 transition-all" />

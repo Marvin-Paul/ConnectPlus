@@ -178,19 +178,28 @@ function FeedEventCard({ item }: { item: FeedItem }) {
   );
 }
 
+import { PostSkeleton } from "@/components/feed/post-skeleton";
+
 export default function FeedPage() {
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const baseTime = Date.now();
-    const localizedPosts = SEED_POSTS.map((p, idx) => ({ ...p, timestamp: baseTime - (idx + 1) * 3600000 }));
-    const localizedArticles = SEED_ARTICLES.map((a, idx) => ({ ...a, timestamp: baseTime - (idx + 2) * 3600000 }));
-    const localizedEvents = SEED_EVENTS.map((e, idx) => ({ ...e, timestamp: baseTime - (idx + 3) * 3600000 }));
+    // Artificial delay for that professional "data fetch" feel
+    const timer = setTimeout(() => {
+      const baseTime = Date.now();
+      const localizedPosts = SEED_POSTS.map((p, idx) => ({ ...p, timestamp: baseTime - (idx + 1) * 3600000 }));
+      const localizedArticles = SEED_ARTICLES.map((a, idx) => ({ ...a, timestamp: baseTime - (idx + 2) * 3600000 }));
+      const localizedEvents = SEED_EVENTS.map((e, idx) => ({ ...e, timestamp: baseTime - (idx + 3) * 3600000 }));
 
-    const all = [...localizedPosts, ...localizedArticles, ...localizedEvents]
-      .sort((a, b) => b.timestamp - a.timestamp);
+      const all = [...localizedPosts, ...localizedArticles, ...localizedEvents]
+        .sort((a, b) => b.timestamp - a.timestamp);
 
-    setFeedItems(all);
+      setFeedItems(all);
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const updateItem = (updated: FeedItem) => {
@@ -215,12 +224,20 @@ export default function FeedPage() {
           </div>
 
           <div className="space-y-4">
-            {feedItems.map(item => {
-               if (item.type === "post") return <PostItem key={item.id} {...(item as any)} />;
-               if (item.type === "article") return <FeedArticleCard key={item.id} item={item} onUpdate={updateItem} />;
-               if (item.type === "event") return <FeedEventCard key={item.id} item={item} />;
-               return null;
-            })}
+            {isLoading ? (
+              <>
+                <PostSkeleton />
+                <PostSkeleton />
+                <PostSkeleton />
+              </>
+            ) : (
+              feedItems.map(item => {
+                 if (item.type === "post") return <PostItem key={item.id} {...(item as any)} />;
+                 if (item.type === "article") return <FeedArticleCard key={item.id} item={item} onUpdate={updateItem} />;
+                 if (item.type === "event") return <FeedEventCard key={item.id} item={item} />;
+                 return null;
+              })
+            )}
           </div>
         </main>
 
