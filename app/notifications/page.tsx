@@ -48,41 +48,41 @@ export default function NotificationsPage() {
                 <h3 className="text-[14px] font-bold text-slate-900 leading-tight">Elevate your career with Learning</h3>
                 <p className="text-[12px] text-slate-500 italic">"Master AI and data analysis with our expert-led courses."</p>
              </div>
-             <button className="w-full py-2 rounded-full border border-[#0A66C2] text-[#0A66C2] font-semibold text-[12px] hover:bg-blue-50 transition-all">
+              <Link href="/learning" className="w-full py-2 rounded-full border border-[#0A66C2] text-[#0A66C2] font-semibold text-[12px] hover:bg-blue-50 transition-all flex items-center justify-center">
                 View Courses
-             </button>
-          </div>
+              </Link>
+           </div>
 
-          {/* PROFILE INSIGHTS CARD */}
-          <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl p-10 space-y-10 group overflow-hidden relative active:scale-95 transition-transform">
-             <div className="flex items-center justify-between">
-                <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">Profile Insights</h3>
-                <span className="text-[10px] font-black text-blue-600 bg-blue-50/50 px-3 py-1 rounded-full border border-blue-100/50">WEEKLY</span>
-             </div>
-             
-             <div className="space-y-8">
-                <div className="flex items-center justify-between group/stat">
-                   <div className="flex items-center gap-3">
-                      <Eye className="w-4 h-4 text-blue-400 group-hover/stat:scale-110 transition-transform" />
-                      <span className="text-[13px] font-bold text-slate-600">Profile views</span>
-                   </div>
-                   <span className="text-xl font-black text-blue-600 tracking-tighter group-hover/stat:translate-x-[-4px] transition-transform">42</span>
-                </div>
-                
-                <div className="flex items-center justify-between group/stat">
-                   <div className="flex items-center gap-3">
-                      <Sparkles className="w-4 h-4 text-orange-400 group-hover/stat:rotate-12 transition-transform" />
-                      <span className="text-[13px] font-bold text-slate-600">Post impressions</span>
-                   </div>
-                   <span className="text-xl font-black text-blue-600 tracking-tighter group-hover/stat:translate-x-[-4px] transition-transform">1,284</span>
-                </div>
-             </div>
+           {/* PROFILE INSIGHTS CARD */}
+           <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl p-10 space-y-10 group overflow-hidden relative active:scale-95 transition-transform">
+              <div className="flex items-center justify-between">
+                 <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">Profile Insights</h3>
+                 <span className="text-[10px] font-black text-blue-600 bg-blue-50/50 px-3 py-1 rounded-full border border-blue-100/50">WEEKLY</span>
+              </div>
+              
+              <div className="space-y-8">
+                 <div className="flex items-center justify-between group/stat">
+                    <div className="flex items-center gap-3">
+                       <Eye className="w-4 h-4 text-blue-400 group-hover/stat:scale-110 transition-transform" />
+                       <span className="text-[13px] font-bold text-slate-600">Profile views</span>
+                    </div>
+                    <span className="text-xl font-black text-blue-600 tracking-tighter group-hover/stat:translate-x-[-4px] transition-transform">42</span>
+                 </div>
+                 
+                 <div className="flex items-center justify-between group/stat">
+                    <div className="flex items-center gap-3">
+                       <Sparkles className="w-4 h-4 text-orange-400 group-hover/stat:rotate-12 transition-transform" />
+                       <span className="text-[13px] font-bold text-slate-600">Post impressions</span>
+                    </div>
+                    <span className="text-xl font-black text-blue-600 tracking-tighter group-hover/stat:translate-x-[-4px] transition-transform">1,284</span>
+                 </div>
+              </div>
 
-             <div className="pt-8 border-t border-slate-50 text-center">
-                <button className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-all uppercase tracking-[0.3em] flex items-center justify-center gap-2 mx-auto">
-                   View all analytics <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-             </div>
+              <div className="pt-8 border-t border-slate-50 text-center">
+                 <Link href="/premium/analytics" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-all uppercase tracking-[0.3em] flex items-center justify-center gap-2 mx-auto">
+                    View all analytics <ChevronRight className="w-3.5 h-3.5" />
+                 </Link>
+              </div>
              <ShieldCheck className="absolute -bottom-10 -right-10 w-24 h-24 opacity-5 text-blue-600 group-hover:scale-125 transition-transform duration-1000" />
           </div>
 

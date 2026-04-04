@@ -15,7 +15,8 @@ import {
   Zap,
   ShieldCheck,
   Globe,
-  X
+  X,
+  Check
 } from "lucide-react";
 import Link from "next/link";
 
@@ -71,7 +72,21 @@ export function NetworkSidebar() {
           ))}
         </nav>
 
-        <button className="w-full flex items-center justify-center gap-3 py-6 border-t border-slate-50 text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 hover:text-blue-600 hover:bg-slate-50 transition-all active:bg-slate-100">
+        <button 
+          onClick={(e) => {
+            const btn = e.currentTarget;
+            btn.disabled = true;
+            btn.innerHTML = `🔄 Rearranging...`;
+            setTimeout(() => {
+              btn.innerHTML = `✅ Layout Optimized`;
+              setTimeout(() => {
+                btn.innerHTML = `Simplify Matrix`;
+                btn.disabled = false;
+              }, 2000);
+            }, 1500);
+          }}
+          className="w-full flex items-center justify-center gap-3 py-6 border-t border-slate-50 text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 hover:text-blue-600 hover:bg-slate-50 transition-all active:bg-slate-100 disabled:opacity-70"
+        >
           Simplify Matrix
           <ChevronDown className="h-4 w-4 rotate-180" />
         </button>

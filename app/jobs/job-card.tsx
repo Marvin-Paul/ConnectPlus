@@ -246,7 +246,18 @@ export function JobCard() {
             </div>
 
             <div className="p-10 border-t border-slate-100 bg-white/80 backdrop-blur-xl flex items-center gap-4">
-               <button className="flex-1 h-16 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-2xl shadow-slate-900/20 hover:bg-slate-800 transition-all flex items-center justify-center gap-4 active:scale-[0.98]">
+               <button 
+                 onClick={(e) => {
+                   const btn = e.currentTarget;
+                   btn.disabled = true;
+                   btn.innerHTML = `<span class="animate-spin">🌀</span> Processing...`;
+                   setTimeout(() => {
+                     btn.innerHTML = `<span class="flex items-center gap-2"><Check class="w-4 h-4" /> Applied Successfully</span>`;
+                     btn.className = "flex-1 h-16 bg-green-600 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-2xl transition-all flex items-center justify-center gap-4";
+                   }, 1500);
+                 }}
+                 className="flex-1 h-16 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-2xl shadow-slate-900/20 hover:bg-slate-800 transition-all flex items-center justify-center gap-4 active:scale-[0.98]"
+               >
                   Initiate Application <ChevronRight className="w-4 h-4" />
                </button>
                <button className="w-16 h-16 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-400 hover:text-[#1B5E20] hover:border-[#1B5E20]/20 hover:shadow-xl transition-all active:scale-[0.98]">

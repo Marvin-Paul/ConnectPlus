@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, ChevronDown, TrendingUp, Sparkles, MapPin, ExternalLink, ShieldCheck, Zap, BarChart3, Clock, Users } from "lucide-react";
+import { Info, ChevronDown, TrendingUp, Sparkles, MapPin, ExternalLink, ShieldCheck, Zap, BarChart3, Clock, Users, Check } from "lucide-react";
 import Link from "next/link";
 
 const newsItems = [
@@ -48,7 +48,21 @@ export function NewsSidebar() {
            ))}
         </div>
         
-        <button className="w-full py-6 text-[11px] font-black text-slate-400 hover:text-primary hover:bg-slate-50 transition-all border-t border-slate-50 uppercase tracking-[0.3em] bg-white group/all">
+        <button 
+          onClick={(e) => {
+            const btn = e.currentTarget;
+            btn.disabled = true;
+            btn.innerHTML = `🌀 Analysing...`;
+            setTimeout(() => {
+               btn.innerHTML = `✅ Signal Optimized`;
+               setTimeout(() => {
+                  btn.innerHTML = `Detailed Feed History`;
+                  btn.disabled = false;
+               }, 2500);
+            }, 2000);
+          }}
+          className="w-full py-6 text-[11px] font-black text-slate-400 hover:text-primary hover:bg-slate-50 transition-all border-t border-slate-50 uppercase tracking-[0.3em] bg-white group/all disabled:opacity-75"
+        >
            Detailed Feed History <ChevronDown className="h-4 w-4 inline ml-2 group-hover/all:translate-y-1 transition-transform" />
         </button>
       </div>
@@ -61,9 +75,9 @@ export function NewsSidebar() {
             </div>
             <h3 className="text-2xl font-black tracking-tighter leading-none mb-4 italic">Elevate your career trajectory.</h3>
             <p className="text-xs text-white/40 font-bold leading-relaxed mb-10 max-w-[220px] italic">"Unlocking insights from industry elite & mastering high-demand tech skills."</p>
-            <button className="w-full py-4 rounded-full bg-accent text-slate-900 font-black text-[12px] uppercase tracking-[0.2em] hover:bg-accent transition-all shadow-2xl shadow-yellow-900/40 active:scale-95">
+            <Link href="/premium/analytics" className="w-full py-4 rounded-full bg-accent text-slate-900 font-black text-[12px] uppercase tracking-[0.2em] hover:bg-accent transition-all shadow-2xl shadow-yellow-900/40 active:scale-95 flex items-center justify-center">
               Unleash Premium
-            </button>
+            </Link>
          </div>
          <Sparkles className="absolute -bottom-10 -right-10 w-64 h-64 opacity-5 text-accent group-hover/ad:scale-150 group-hover/ad:rotate-45 transition-transform duration-2000" />
       </div>

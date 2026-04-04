@@ -57,9 +57,9 @@ export default function NetworkPage() {
                       "Follow people with similar professional interests to unlock exclusive insights and high-value opportunities."
                     </p>
                  </div>
-                 <button className="h-11 px-8 rounded-full bg-slate-900 text-white font-bold text-[13px] hover:bg-slate-800 transition-all shadow-sm active:scale-95 flex items-center gap-2 mx-auto">
+                 <Link href="/network/hashtags" className="h-11 px-8 rounded-full bg-slate-900 text-white font-bold text-[13px] hover:bg-slate-800 transition-all shadow-sm active:scale-95 flex items-center gap-2 mx-auto justify-center">
                     Explore Popular Topics <ChevronRight className="w-4 h-4" />
-                 </button>
+                 </Link>
               </div>
            </div>
 
@@ -76,9 +76,9 @@ export default function NetworkPage() {
                          "Upgrade and see who's viewing your profile to connect with elite industry leaders instantly."
                        </p>
                     </div>
-                    <button className="h-11 px-8 rounded-full bg-yellow-400 text-slate-900 font-bold text-[13px] hover:bg-yellow-500 transition-all active:scale-95 shadow-sm">
+                    <Link href="/premium/analytics" className="inline-block h-11 px-8 rounded-full bg-yellow-400 text-slate-900 font-bold text-[13px] hover:bg-yellow-500 transition-all active:scale-95 shadow-sm text-center content-center">
                        Unleash Professional Link
-                    </button>
+                    </Link>
                  </div>
                  <div className="hidden lg:block w-48 h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl group-hover/prem:rotate-12 transition-transform duration-[2000ms] border-4 border-white/5 shadow-2xl opacity-10" />
               </div>

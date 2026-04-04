@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ProfileHeader } from "@/components/profile/profile-header"
 import { AboutSection } from "@/components/profile/about-section"
@@ -137,9 +138,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 <span className="text-primary">✨</span> Ad: Remote Work Guru
              </h3>
              <p className="text-sm text-muted-foreground font-medium">Looking for a Senior Developer to lead your remote team? Visit our jobs section.</p>
-             <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-full font-bold text-sm transition-colors">
+             <Link href="/jobs" className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-full font-bold text-sm transition-colors text-center">
                 Explore Jobs
-             </button>
+             </Link>
            </div>
 
            <div className="bg-card border rounded-lg p-6 space-y-4 shadow-sm">

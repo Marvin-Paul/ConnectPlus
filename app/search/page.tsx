@@ -132,9 +132,13 @@ function SearchContent() {
                     {PEOPLE_RESULTS.map(person => (
                       <div key={person.id} className="relative p-12 bg-white rounded-[3.5rem] border border-slate-100 hover:shadow-2xl hover:border-[#1B5E20]/10 transition-all duration-700 group flex flex-col md:flex-row items-center gap-10">
                          <div className="relative shrink-0">
-                            <img src={person.avatar} className="w-28 h-28 rounded-[2rem] border-4 border-white shadow-2xl object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
+                            <div className="absolute -inset-4 bg-[#1B5E20]/20 rounded-full blur-2xl group-hover:bg-[#1B5E20]/40 transition-all duration-1000 opacity-0 group-hover:opacity-100" />
+                            <img src={person.avatar} className="w-28 h-28 rounded-[2rem] border-4 border-white shadow-2xl object-cover group-hover:scale-110 transition-transform duration-500 relative z-10" alt="" />
+                            <div className="absolute -bottom-2 -right-2 bg-[#1B5E20] text-white px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest z-20 shadow-xl border-2 border-white animate-pulse">
+                               98% match
+                            </div>
                             {person.isPremium && (
-                              <div className="absolute -top-3 -right-3 bg-yellow-400 p-2.5 rounded-2xl shadow-xl shadow-yellow-900/20 border-4 border-white rotate-12">
+                              <div className="absolute -top-3 -right-3 bg-yellow-400 p-2.5 rounded-2xl shadow-xl shadow-yellow-900/20 border-4 border-white rotate-12 z-20">
                                  <Star className="w-4 h-4 text-white fill-current" />
                               </div>
                             )}

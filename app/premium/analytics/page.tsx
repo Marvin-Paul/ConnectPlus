@@ -40,11 +40,11 @@ export default function PremiumAnalyticsPage() {
                   <span className="text-[10px] font-black uppercase tracking-widest text-[#0a66c2] bg-blue-50 px-3 py-1 rounded-full">90-Day History</span>
                </div>
                
-               <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   {VISITORS.map(vis => (
-                    <div key={vis.id} className="p-8 bg-white rounded-[2.5rem] border border-slate-100 hover:shadow-2xl transition-all duration-500 group flex items-center justify-between">
+                    <div key={vis.id} className="p-8 bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-white hover:shadow-2xl transition-all duration-500 group flex items-center justify-between">
                        <div className="flex gap-6 items-center">
-                          <div className="w-16 h-16 rounded-[2rem] bg-slate-50 border border-slate-100 flex items-center justify-center font-black text-slate-400 group-hover:rotate-6 transition-transform">
+                          <div className="w-16 h-16 rounded-[2rem] bg-white border border-slate-100 flex items-center justify-center font-black text-slate-800 shadow-sm group-hover:rotate-6 transition-transform">
                              {vis.avatar}
                           </div>
                           <div>
@@ -53,7 +53,22 @@ export default function PremiumAnalyticsPage() {
                              <p className="text-[9px] text-[#0a66c2] font-black uppercase tracking-widest mt-2">{vis.time}</p>
                           </div>
                        </div>
-                       <button className="px-10 py-3 rounded-full border border-[#0a66c2] text-[#0a66c2] font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 transition-colors">
+                       <button 
+                        onClick={(e) => {
+                          const btn = e.currentTarget;
+                          btn.disabled = true;
+                          btn.innerHTML = `Sending...`;
+                          setTimeout(() => {
+                             btn.innerHTML = `Sent ✨`;
+                             btn.classList.add('bg-blue-100');
+                             setTimeout(() => {
+                               btn.innerHTML = `InMail History`;
+                               btn.disabled = false;
+                             }, 3000);
+                          }, 1500);
+                        }}
+                        className="px-10 py-3 rounded-full border border-[#0a66c2] text-[#0a66c2] font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 transition-all disabled:opacity-75"
+                       >
                           Send InMail
                        </button>
                     </div>
@@ -92,7 +107,21 @@ export default function PremiumAnalyticsPage() {
                         </div>
                      </div>
 
-                     <button className="w-full py-4 rounded-full bg-white text-slate-900 font-black text-xs uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-xl shadow-white/10">
+                     <button 
+                      onClick={(e) => {
+                        const btn = e.currentTarget;
+                        btn.disabled = true;
+                        btn.innerHTML = `🌀 Calculating Delta...`;
+                        setTimeout(() => {
+                           btn.innerHTML = `Detailed Report Exported ✅`;
+                           setTimeout(() => {
+                              btn.innerHTML = `View Detailed Rankings`;
+                              btn.disabled = false;
+                           }, 3000);
+                        }, 2000);
+                      }}
+                      className="w-full py-4 rounded-full bg-white text-slate-900 font-black text-xs uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-xl shadow-white/10 disabled:opacity-80"
+                     >
                         View Detailed Rankings
                      </button>
                   </div>
@@ -115,7 +144,18 @@ export default function PremiumAnalyticsPage() {
                      <p className="text-[11px] font-medium opacity-80 leading-relaxed italic">"Premium members are 3x more likely to be interviewed."</p>
                   </div>
                </div>
-               <button className="w-full py-3.5 rounded-full bg-white text-[#1B5E20] font-black text-[10px] uppercase tracking-widest hover:bg-green-50 transition-all shadow-xl shadow-green-900/40 active:scale-95">
+               <button 
+                onClick={(e) => {
+                  const btn = e.currentTarget;
+                  btn.disabled = true;
+                  btn.innerHTML = `🔄 Securing Priority...`;
+                  setTimeout(() => {
+                    btn.innerHTML = `✨ Priority Ranking ACTIVE`;
+                    btn.classList.add('bg-green-100', 'text-green-900');
+                  }, 2000);
+                }}
+                className="w-full py-3.5 rounded-full bg-white text-[#1B5E20] font-black text-[10px] uppercase tracking-widest hover:bg-green-50 transition-all shadow-xl shadow-green-900/40 active:scale-95 disabled:opacity-80"
+               >
                   Activate Priority Ranking
                </button>
                <Sparkles className="absolute -bottom-10 -right-10 w-48 h-48 opacity-10 text-green-400 group-hover:scale-110 transition-transform duration-500" />
@@ -129,7 +169,21 @@ export default function PremiumAnalyticsPage() {
                <p className="text-xs text-slate-500 font-medium leading-relaxed italic opacity-80">
                  Negotiate from a position of power with precise salary bands for the top companies in your region.
                </p>
-               <button className="w-full py-3 rounded-full border border-slate-100 text-[#A57C00] font-black text-[10px] uppercase tracking-widest hover:bg-yellow-50 transition-all">
+               <button 
+                onClick={(e) => {
+                  const btn = e.currentTarget;
+                  btn.disabled = true;
+                  btn.innerHTML = `🔍 Decrypting Bands...`;
+                  setTimeout(() => {
+                     btn.innerHTML = `Bands Decoded ✅`;
+                     setTimeout(() => {
+                        btn.innerHTML = `Open Band Exploration`;
+                        btn.disabled = false;
+                     }, 3000);
+                  }, 2000);
+                }}
+                className="w-full py-3 rounded-full border border-slate-100 text-[#A57C00] font-black text-[10px] uppercase tracking-widest hover:bg-yellow-50 transition-all disabled:opacity-75"
+               >
                   Open Band Exploration
                </button>
             </div>
