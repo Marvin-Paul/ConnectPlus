@@ -5,8 +5,19 @@ import { JobsSearch } from "./jobs-search";
 import { JobCard } from "./job-card";
 import { Sparkles, Star, Target, ChevronRight, Zap } from "lucide-react";
 import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { JobSkeleton } from "./job-skeleton";
 
 export default function JobsPage() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-24">
       <div className="max-w-7xl mx-auto pt-10 px-6 grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -43,7 +54,15 @@ export default function JobsPage() {
               </div>
               
               <div className="grid grid-cols-1 gap-6">
-                {[1, 2, 3].map((i) => <JobCard key={i} />)}
+                 {isLoading ? (
+                    <>
+                       <JobSkeleton />
+                       <JobSkeleton />
+                       <JobSkeleton />
+                    </>
+                 ) : (
+                    [1, 2, 3].map((i) => <JobCard key={i} />)
+                 )}
               </div>
            </div>
            
