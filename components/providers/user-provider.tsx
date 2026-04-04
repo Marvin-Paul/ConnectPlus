@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 interface UserProfile {
+  id: string;
   firstName: string;
   lastName: string;
   username: string;
@@ -34,6 +35,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       if (res.ok) {
         const data = await res.json();
         setUser({
+          id: data.id,
           firstName: data.firstName,
           lastName: data.lastName,
           username: data.username,
@@ -44,6 +46,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         });
       } else {
         setUser({
+          id: "demo-user-id",
           firstName: "Marvin",
           lastName: "Muwereza",
           username: "demo-user",

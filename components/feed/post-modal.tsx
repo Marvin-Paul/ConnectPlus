@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, Image, FileText, Calendar, Smile, Globe, Users, Briefcase, PlaySquare, Settings, Sparkles, PlusSquare } from "lucide-react";
+import { useFeed } from "../providers/feed-provider";
 
 interface PostModalProps {
   isOpen: boolean;
@@ -15,8 +16,24 @@ interface PostModalProps {
 export function PostModal({ isOpen, onClose, user }: PostModalProps) {
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState<"anyone" | "connections">("anyone");
+  const [isPosting, setIsPosting] = useState(false);
+  const { createPost } = useFeed();
 
   if (!isOpen) return null;
+
+  const handlePost = async () => {
+    if (!content.trim() || isPosting) return;
+    setIsPosting(true);
+    try {
+      await createPost(content);
+      setContent("");
+      onClose();
+    } catch (error) {
+      console.error("Failed to post:", error);
+    } finally {
+      setIsPosting(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
@@ -25,7 +42,11 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
         {/* Modern Header */}
         <div className="px-5 pt-4 pb-2 flex items-center justify-between border-b border-slate-50">
            <div className="flex items-center gap-4">
-              <button onClick={onClose} className="p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-600 transition-all">
+              <button 
+                onClick={onClose} 
+                disabled={isPosting}
+                className="p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-600 transition-all disabled:opacity-50"
+              >
                 <X className="w-6 h-6" />
               </button>
               <div className="flex items-center gap-3">
@@ -45,10 +66,11 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
                  <Calendar className="w-6 h-6" />
               </button>
               <button 
-                disabled={!content.trim()}
-                className={`px-6 py-1.5 rounded-full font-bold text-[14px] transition-all ${content.trim() ? "bg-[#0A66C2] text-white shadow-md active:scale-95" : "bg-slate-100 text-slate-400 cursor-not-allowed"}`}
+                onClick={handlePost}
+                disabled={!content.trim() || isPosting}
+                className={`px-6 py-1.5 rounded-full font-bold text-[14px] transition-all ${content.trim() && !isPosting ? "bg-[#0A66C2] text-white shadow-md active:scale-95" : "bg-slate-100 text-slate-400 cursor-not-allowed"}`}
               >
-                 Post
+                 {isPosting ? "Posting..." : "Post"}
               </button>
            </div>
         </div>
@@ -61,6 +83,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
              value={content}
              onChange={(e) => setContent(e.target.value)}
              autoFocus
+             disabled={isPosting}
            />
         </div>
 
@@ -68,6 +91,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
         <div className="px-5 py-4 border-t border-slate-100 bg-white safe-area-bottom">
            <div className="flex items-center justify-between">
               <button 
+                disabled={isPosting || !content.trim()}
                 onClick={async () => {
                   if (!content.trim()) return;
                   const res = await fetch("/api/generate/tone", {
@@ -80,7 +104,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
                     setContent(data.optimizedText);
                   }
                 }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-slate-200 text-slate-700 text-[14px] font-semibold hover:bg-slate-50 transition-all active:scale-95 shadow-sm group"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-slate-200 text-slate-700 text-[14px] font-semibold hover:bg-slate-50 transition-all active:scale-95 shadow-sm group disabled:opacity-50"
               >
                  <Sparkles className="w-4 h-4 text-orange-500 group-hover:rotate-12 transition-transform" />
                  Rewrite with AI

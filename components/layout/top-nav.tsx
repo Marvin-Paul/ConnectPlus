@@ -64,6 +64,9 @@ export function TopNav() {
   const notifRef = useRef<HTMLDivElement>(null);
   const msgRef = useRef<HTMLDivElement>(null);
 
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (meRef.current && !meRef.current.contains(event.target as Node)) setIsMeOpen(false);
@@ -71,6 +74,7 @@ export function TopNav() {
       if (premRef.current && !premRef.current.contains(event.target as Node)) setIsPremiumOpen(false);
       if (notifRef.current && !notifRef.current.contains(event.target as Node)) setIsNotificationsOpen(false);
       if (msgRef.current && !msgRef.current.contains(event.target as Node)) setIsMessagingOpen(false);
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) setShowSearchSuggestions(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -80,8 +84,16 @@ export function TopNav() {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowSearchSuggestions(false);
     }
   };
+
+  const suggestions = [
+    { type: 'person', label: 'Dr. Catherine Namubiru', sub: 'CIO at MTN Uganda', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80' },
+    { type: 'job', label: 'Senior Backend Engineer', sub: 'SafeBoda • Kampala • Remote', icon: Briefcase },
+    { type: 'person', label: 'Isaac Kato', sub: 'Tech Lead @ Chipper Cash', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80' },
+    { type: 'post', label: 'Next.js 15 & React 19 Trends', sub: 'Trending in Uganda Tech', icon: TrendingUp }
+  ].filter(s => s.label.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
     <header className="sticky top-0 z-[100] border-b bg-white/95 backdrop-blur-sm shadow-sm">
@@ -94,14 +106,15 @@ export function TopNav() {
            </Link>
            
            <form onSubmit={handleSearch} className="flex-1 relative h-[34px] group">
-             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
-             <Input
-               type="search"
-               placeholder="Search"
-               value={searchQuery}
-               onChange={(e) => setSearchQuery(e.target.value)}
-               className="h-full w-full bg-[#edf3f8] border-none text-[14px] text-slate-900 placeholder:text-slate-600 pl-9 rounded-[4px] focus-visible:ring-0 focus-visible:ring-offset-0 focus:w-full"
-             />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" />
+              <Input
+                type="search"
+                placeholder="Search"
+                value={searchQuery}
+                onFocus={() => setShowSearchSuggestions(true)}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-full w-full bg-[#edf3f8] border-none text-[14px] text-slate-900 placeholder:text-slate-600 pl-9 rounded-[4px] focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
            </form>
 
            <Link href="/messaging" className="shrink-0 text-slate-500 hover:text-slate-900 relative">
@@ -111,24 +124,65 @@ export function TopNav() {
         </div>
 
         {/* ── Desktop Logo & Search (Hidden on mobile) ── */}
-        <div className="hidden md:flex items-center gap-2 flex-1 max-w-[400px]">
+        <div className="hidden md:flex items-center gap-2 flex-1 max-w-[400px] relative" ref={searchRef}>
           <Link href="/" className="inline-flex items-center">
             <div className="inline-grid h-[34px] w-[34px] place-items-center rounded-lg bg-primary text-white shadow-lg shadow-primary/10">
                <span className="text-xl font-black leading-none tracking-tighter">c+</span>
             </div>
           </Link>
 
-          <form onSubmit={handleSearch} className="relative flex-1 ml-4 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
-            <Input
-              id="global-search"
-              type="search"
-              placeholder="Search people, jobs, posts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-[34px] w-full bg-slate-100 border-none text-sm placeholder:text-slate-400 pl-10 focus-visible:ring-2 focus-visible:ring-primary/20 focus:w-[130%] transition-all duration-500 rounded-full"
-            />
-          </form>
+          <div className="relative flex-1 ml-4 group">
+            <form onSubmit={handleSearch}>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+              <Input
+                id="global-search"
+                type="search"
+                placeholder="Search people, jobs, posts..."
+                value={searchQuery}
+                autoComplete="off"
+                onFocus={() => setShowSearchSuggestions(true)}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-[34px] w-full bg-slate-100 border-none text-sm placeholder:text-slate-400 pl-10 focus-visible:ring-2 focus-visible:ring-primary/20 focus:w-[130%] transition-all duration-500 rounded-full z-20"
+              />
+            </form>
+
+            {/* Search Suggestions Dropdown */}
+            {showSearchSuggestions && (searchQuery.length > 0 || suggestions.length > 0) && (
+              <div className="absolute top-[calc(100%+8px)] left-0 w-[480px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden animate-in slide-in-from-top-2 duration-300 z-50">
+                 <div className="p-4 border-b border-slate-50 bg-slate-50/50">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Professional Suggestions</h4>
+                 </div>
+                 <div className="max-h-[400px] overflow-y-auto">
+                    {suggestions.map((s, i) => (
+                      <div 
+                        key={i} 
+                        onClick={() => {
+                          setSearchQuery(s.label);
+                          setShowSearchSuggestions(false);
+                          router.push(`/search?q=${encodeURIComponent(s.label)}`);
+                        }}
+                        className="px-6 py-4 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-50 last:border-0 group flex items-center gap-4"
+                      >
+                         <div className="shrink-0 w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
+                            {'avatar' in s ? <img src={s.avatar} className="w-full h-full object-cover" /> : <s.icon className="w-5 h-5 text-slate-400" />}
+                         </div>
+                         <div className="flex-1 min-w-0">
+                            <h5 className="text-[13px] font-black text-slate-800 tracking-tight leading-none group-hover:text-primary transition-colors italic">{s.label}</h5>
+                            <p className="text-[11px] text-slate-400 font-bold mt-1 line-clamp-1 italic">{s.sub}</p>
+                         </div>
+                         <ChevronRight className="w-4 h-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                      </div>
+                    ))}
+                 </div>
+                 <button 
+                  onClick={handleSearch}
+                  className="w-full py-4 text-center text-[11px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 transition-all outline-none"
+                 >
+                   View all Link Results
+                 </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Global Navigation (Desktop only) */}

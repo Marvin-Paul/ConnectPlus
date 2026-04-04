@@ -15,6 +15,14 @@ enum ConnectionStatus {
   BLOCKED
 }
 
+enum ReactionType {
+  LIKE
+  LOVE
+  CELEBRATE
+  INSIGHTFUL
+  CURIOUS
+}
+
 enum EmploymentType {
   FULL_TIME
   PART_TIME
@@ -31,6 +39,7 @@ enum NotificationType {
   JOB_ALERT
   MENTION
   SYSTEM
+  REPOST
 }
 
 enum JobApplicationStatus {
@@ -68,6 +77,8 @@ model User {
   skills        Skill[]
   posts         Post[]
   comments      Comment[]
+  reactions     Reaction[]
+  reposts       Repost[]
   jobsPosted    Job[]           @relation("JobPoster")
   applications  JobApplication[]
 
@@ -270,11 +281,49 @@ model Post {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments Comment[]
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments   Comment[]
+  reactions  Reaction[]
+  reposts    Repost[]   @relation("OriginalPost")
+  repostedBy Repost[]   @relation("RepostedPost")
+
+  // Event specific fields (if Post can be an event)
+  isEvent       Boolean    @default(false)
+  eventDate     DateTime?
+  eventLocation String?
+  attendeeCount Int        @default(0)
 
   @@index([authorId, createdAt])
   @@index([createdAt])
+}
+
+model Reaction {
+  id        String       @id @default(cuid())
+  type      ReactionType
+  userId    String
+  postId    String
+  createdAt DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+}
+
+model Repost {
+  id             String   @id @default(cuid())
+  userId         String
+  originalPostId String
+  repostPostId   String?  @unique // The new post created by reposting
+  createdAt      DateTime @default(now())
+
+  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalPost Post @relation("OriginalPost", fields: [originalPostId], references: [id], onDelete: Cascade)
+  repostPost   Post? @relation("RepostedPost", fields: [repostPostId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([originalPostId])
 }
 
 model Comment {

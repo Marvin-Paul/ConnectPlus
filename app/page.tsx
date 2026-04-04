@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ProfileCard } from "@/components/feed/profile-card";
 import { CreatePost } from "@/components/feed/create-post";
 import { PostItem } from "@/components/feed/post-item";
@@ -8,7 +8,7 @@ import { NewsSidebar } from "@/components/feed/news-sidebar";
 import Link from "next/link";
 import {
   ThumbsUp, ThumbsDown, MessageSquare, Repeat2, Clock,
-  Calendar, MapPin, Users, BookOpen, Send
+  Calendar, MapPin, Users, BookOpen, Send, Globe
 } from "lucide-react";
 
 import { useUser } from "@/components/providers/user-provider";
@@ -178,33 +178,50 @@ function FeedEventCard({ item }: { item: FeedItem }) {
   );
 }
 
+import { FeedProvider, useFeed } from "@/components/providers/feed-provider";
 import { PostSkeleton } from "@/components/feed/post-skeleton";
 
-export default function FeedPage() {
-  const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Artificial delay for that professional "data fetch" feel
-    const timer = setTimeout(() => {
-      const baseTime = Date.now();
-      const localizedPosts = SEED_POSTS.map((p, idx) => ({ ...p, timestamp: baseTime - (idx + 1) * 3600000 }));
-      const localizedArticles = SEED_ARTICLES.map((a, idx) => ({ ...a, timestamp: baseTime - (idx + 2) * 3600000 }));
-      const localizedEvents = SEED_EVENTS.map((e, idx) => ({ ...e, timestamp: baseTime - (idx + 3) * 3600000 }));
+import { ArticleCard } from "@/components/feed/article-card";
+import { EventCard } from "@/components/feed/event-card";
 
-      const all = [...localizedPosts, ...localizedArticles, ...localizedEvents]
-        .sort((a, b) => b.timestamp - a.timestamp);
+const MIXED_ARTICLES: any[] = [
+  {
+    id: "art1", type: "article", timestamp: Date.now() - 3600000 * 2,
+    author: { name: "Dr. Catherine Namubiru", headline: "CIO at MTN Uganda", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", isFollowed: false },
+    title: "AI Resilience in African Markets",
+    coverImage: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800&h=450",
+    content: "Building resilient AI systems requires a deep understanding of local infrastructure and data nuances...",
+    tags: ["Tech", "AI", "Africa"], likes: 452, reposts: 124, comments_count: 56
+  }
+];
 
-      setFeedItems(all);
-      setIsLoading(false);
-    }, 1500);
+const MIXED_EVENTS: any[] = [
+  {
+    id: "eve1", type: "event", timestamp: Date.now() - 3600000 * 4,
+    organizer: "Link Uganda", organizerLogo: "https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+    title: "Link Summit 2026: The Digital Pivot",
+    image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800&h=450",
+    date: "May 24, 2026", eventTime: "10:00 AM", location: "Serena Hotel, Kampala", isOnline: false,
+    attendees: 520, category: "Tech", price: "Free", isFree: true, description: "Uniting the brightest minds in East African innovation."
+  }
+];
 
-    return () => clearTimeout(timer);
-  }, []);
+function FeedContent() {
+  const { posts, loading, hasMore, fetchPosts } = useFeed();
+  const observer = useRef<IntersectionObserver | null>(null);
 
-  const updateItem = (updated: FeedItem) => {
-    setFeedItems(prev => prev.map(i => i.id === updated.id ? updated : i));
-  };
+  const lastPostRef = useCallback((node: HTMLDivElement) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        const nextPage = Math.floor(posts.length / 10) + 1;
+        fetchPosts(nextPage);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore, posts.length, fetchPosts]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-24">
@@ -219,24 +236,56 @@ export default function FeedPage() {
           <div className="flex items-center gap-2 py-2">
             <div className="flex-1 h-px bg-slate-200" />
             <p className="text-[12px] text-slate-400 font-bold uppercase tracking-widest">
-              Sort by: <span className="text-[#0A66C2] cursor-pointer">Recent</span>
+              Sort by: <span className="text-[#0A66C2] cursor-pointer" onClick={() => fetchPosts(1)}>Recent</span>
             </p>
           </div>
 
           <div className="space-y-4">
-            {isLoading ? (
+            {posts.map((post, index) => {
+              const elements = [];
+              
+              // Intersperse Article after 2nd post
+              if (index === 1 && MIXED_ARTICLES[0]) {
+                elements.push(<ArticleCard key="mixed-art-1" item={MIXED_ARTICLES[0]} />);
+              }
+              
+              // Intersperse Event after 4th post
+              if (index === 3 && MIXED_EVENTS[0]) {
+                elements.push(<EventCard key="mixed-eve-1" item={MIXED_EVENTS[0]} />);
+              }
+
+              if (posts.length === index + 1) {
+                elements.push(
+                  <div key={post.id} ref={lastPostRef}>
+                    <PostItem post={post} />
+                  </div>
+                );
+              } else {
+                elements.push(<PostItem key={post.id} post={post} />);
+              }
+              
+              return elements;
+            })}
+
+            {loading && (
               <>
                 <PostSkeleton />
                 <PostSkeleton />
-                <PostSkeleton />
               </>
-            ) : (
-              feedItems.map(item => {
-                 if (item.type === "post") return <PostItem key={item.id} {...(item as any)} />;
-                 if (item.type === "article") return <FeedArticleCard key={item.id} item={item} onUpdate={updateItem} />;
-                 if (item.type === "event") return <FeedEventCard key={item.id} item={item} />;
-                 return null;
-              })
+            )}
+
+            {!loading && hasMore && (
+              <div className="py-8 flex justify-center">
+                 <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+              </div>
+            )}
+
+            {!loading && posts.length === 0 && (
+              <div className="p-12 text-center bg-white rounded-3xl border border-slate-100 shadow-xl">
+                 <Globe className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+                 <h3 className="text-xl font-black text-slate-800">Your Feed is Empty</h3>
+                 <p className="text-slate-400 font-medium italic mt-2">Start following people to see their updates!</p>
+              </div>
             )}
           </div>
         </main>
@@ -246,5 +295,13 @@ export default function FeedPage() {
         </aside>
       </div>
     </div>
+  );
+}
+
+export default function FeedPage() {
+  return (
+    <FeedProvider>
+      <FeedContent />
+    </FeedProvider>
   );
 }
