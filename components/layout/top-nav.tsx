@@ -9,12 +9,9 @@ import {
   Search, 
   ChevronDown, 
   Grid3X3,
-  Settings,
   LogOut,
   Bell,
-  Menu,
   MessageCircle,
-  HelpCircle
 } from "lucide-react";
 
 export function TopNav() {
@@ -26,7 +23,7 @@ export function TopNav() {
   const pathname = usePathname();
 
   const meRef = useRef<HTMLDivElement>(null);
-  const bizRef = useRef<HTMLDivElement>(null);
+  const bizRef = useRef<HTMLButtonElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -53,7 +50,8 @@ export function TopNav() {
     if (!user) return "GU";
     const first = user.firstName?.[0] || "";
     const last = user.lastName?.[0] || "";
-    return `${first}${last}`.toUpperCase() || "ME";
+    if (!last) return first.toUpperCase() || "U";
+    return `${first}${last}`.toUpperCase();
   };
 
   return (
@@ -72,7 +70,7 @@ export function TopNav() {
           </Link>
         </div>
 
-        {/* Center: Search (Desktop and Tablet+) */}
+        {/* Center: Search */}
         <div className="flex-1 relative hidden md:block max-w-[400px]" ref={searchRef}>
             <form onSubmit={(e) => { e.preventDefault(); router.push(`/search?q=${searchQuery}`); }} className="relative group">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280] group-focus-within:text-[#0A66C2] transition-colors" />
@@ -85,7 +83,7 @@ export function TopNav() {
             </form>
         </div>
 
-        {/* Right: Actions & Identity */}
+        {/* Right: Actions */}
         <div className="flex items-center gap-0.5 sm:gap-2 h-full shrink-0">
           
           <div className="flex items-center">
@@ -100,7 +98,6 @@ export function TopNav() {
 
           <div className="w-[1px] h-8 bg-[#E5E7EB] mx-1 hidden sm:block" />
 
-          {/* User Identity - Fixed for Mobile Shrinking */}
           {!loading && user ? (
             <div className="flex items-center relative h-full" ref={meRef}>
                <button 
@@ -123,7 +120,6 @@ export function TopNav() {
                   <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${activeDropdown === 'me' ? 'rotate-180 text-[#0A66C2]' : ''}`} />
                </button>
 
-               {/* Dropdown Menu - Standardized Shadow */}
                {activeDropdown === 'me' && (
                   <div className="absolute top-[calc(100%+4px)] right-0 w-[240px] bg-white rounded-[12px] shadow-dropdown border border-[#E5E7EB] overflow-hidden animate-fade-in z-[110]">
                     <div className="p-4 flex items-center gap-3 bg-[#F3F6F8]/30">
@@ -162,7 +158,6 @@ export function TopNav() {
             </div>
           )}
 
-          {/* Business Grid Menu */}
           {user && (
             <button 
               onClick={() => setActiveDropdown(activeDropdown === 'biz' ? null : 'biz')}

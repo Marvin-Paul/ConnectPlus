@@ -105,7 +105,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            </div>
            
            <div className="flex items-center gap-2">
-              <button className="h-9 px-3 rounded-full hover:bg-[#F3F6F8] text-[#6B7280] flex items-center justify-center transition-colors">
+              <button className="h-9 px-3 rounded-full hover:bg-[#F3F6F8] text-[#6B7280] flex items-center justify-center transition-colors" title="Schedule post">
                  <Calendar className="w-6 h-6" />
               </button>
               <button 
