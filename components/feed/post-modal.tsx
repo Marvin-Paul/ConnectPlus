@@ -18,6 +18,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
   const [uploading, setUploading] = useState(false);
   const [visibility, setVisibility] = useState<"anyone" | "connections">("anyone");
   const [isPosting, setIsPosting] = useState(false);
+  const [postError, setPostError] = useState<string | null>(null);
   const { createPost } = useFeed();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -44,13 +45,16 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
   const handlePost = async () => {
     if ((!content.trim() && !image) || isPosting) return;
     setIsPosting(true);
+    setPostError(null);
     try {
       await createPost(content, image || undefined);
       setContent("");
       setImage(null);
+      setPostError(null);
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to post:", error);
+      setPostError(error?.message || "Something went wrong. Please try again.");
     } finally {
       setIsPosting(false);
     }
@@ -98,11 +102,19 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
 
         {/* Content Area */}
         <div className="flex-1 px-5 py-6 overflow-y-auto min-h-[250px]">
+           {postError && (
+             <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+               <p className="text-[13px] font-semibold text-red-600">{postError}</p>
+               <button onClick={() => setPostError(null)} className="p-1 rounded-full hover:bg-red-100 text-red-400 transition-colors shrink-0">
+                 <X className="w-4 h-4" />
+               </button>
+             </div>
+           )}
            <textarea 
              className="w-full text-[18px] font-medium text-slate-800 placeholder:text-slate-400 border-none outline-none resize-none bg-transparent"
              placeholder="What's your professional insight today?"
              value={content}
-             onChange={(e) => setContent(e.target.value)}
+             onChange={(e) => { setContent(e.target.value); if (postError) setPostError(null); }}
              autoFocus
              disabled={isPosting}
              rows={4}

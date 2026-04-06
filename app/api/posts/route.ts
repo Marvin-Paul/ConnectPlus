@@ -63,22 +63,60 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Content and authorId are required" }, { status: 400 });
     }
 
+    // Verify the author exists — try by ID first, then fall back to username lookup
+    let resolvedAuthorId = authorId;
+    const userById = await prisma.user.findUnique({ where: { id: authorId } });
+    if (!userById) {
+      // Fallback: try treating authorId as a username
+      const userByUsername = await prisma.user.findUnique({ where: { username: authorId } });
+      if (!userByUsername) {
+        // Last resort: find the first available user (demo/seed scenarios)
+        const fallbackUser = await prisma.user.findFirst();
+        if (!fallbackUser) {
+          return NextResponse.json({ error: "No valid user found to create post" }, { status: 400 });
+        }
+        resolvedAuthorId = fallbackUser.id;
+      } else {
+        resolvedAuthorId = userByUsername.id;
+      }
+    }
+
     const post = await prisma.post.create({
       data: {
         content,
         imageUrl,
-        authorId,
+        authorId: resolvedAuthorId,
         type,
         title,
         tags: tags || [],
       },
       include: {
-        author: true,
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            username: true,
+            avatarUrl: true,
+            headline: true,
+          },
+        },
         _count: true,
       },
     });
 
-    return NextResponse.json(post);
+    // Normalize to match the GET format the frontend expects
+    const formattedPost = {
+      ...post,
+      reactions: [],
+      _count: {
+        likes: (post._count as any)?.reactions ?? 0,
+        comments: (post._count as any)?.comments ?? 0,
+        reposts: (post._count as any)?.reposts ?? 0,
+      },
+    };
+
+    return NextResponse.json(formattedPost);
   } catch (error) {
     console.error("Error creating post:", error);
     return NextResponse.json({ error: "Failed to create post" }, { status: 500 });

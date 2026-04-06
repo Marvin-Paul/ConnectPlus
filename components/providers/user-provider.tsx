@@ -30,30 +30,49 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUser = useCallback(async () => {
     try {
-      const username = "demo-user"; 
-      const res = await fetch(`/api/profile/${username}`);
+      // Try the seeded username first, fall back to demo-user
+      let res = await fetch(`/api/profile/marvin-muwereza`);
+      if (!res.ok) {
+        res = await fetch(`/api/profile/demo-user`);
+      }
       if (!isMounted.current) return;
 
       if (res.ok) {
         const data = await res.json();
-        setUser({
-          id: data.id,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          username: data.username,
-          headline: data.headline || "",
-          location: data.location || "",
-          avatarUrl: data.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
-          bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
-          isPremium: !!data.isPremium,
-          verified: !!data.verified
-        });
+        if (data.id) {
+          setUser({
+            id: data.id,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            username: data.username,
+            headline: data.headline || "",
+            location: data.location || "",
+            avatarUrl: data.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+            bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
+            isPremium: !!data.isPremium,
+            verified: !!data.verified
+          });
+        } else {
+          // API returned a user without an ID — use fallback
+          setUser({
+            id: "marvin-muwereza",
+            firstName: data.firstName || "Marvin",
+            lastName: data.lastName || "Muwereza",
+            username: data.username || "marvin-muwereza",
+            headline: data.headline || "Senior Full-Stack Engineer | AI Systems Architect | Uganda Tech Alliance",
+            location: data.location || "Kampala, Uganda",
+            avatarUrl: data.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+            bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
+            isPremium: !!data.isPremium,
+            verified: !!data.verified
+          });
+        }
       } else {
         setUser({
-          id: "demo-user-id",
+          id: "marvin-muwereza",
           firstName: "Marvin",
           lastName: "Muwereza",
-          username: "demo-user",
+          username: "marvin-muwereza",
           headline: "Senior Full-Stack Engineer | AI Systems Architect | Uganda Tech Alliance",
           avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
           bannerUrl: "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",

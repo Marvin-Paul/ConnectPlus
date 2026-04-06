@@ -98,24 +98,47 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
   };
 
   const createPost = async (content: string, imageUrl?: string) => {
-    if (!user) return;
-    try {
-      const res = await fetch("/api/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content,
-          imageUrl,
-          authorId: user.id,
-        }),
-      });
-      const newPost = await res.json();
-      if (res.ok && newPost && typeof newPost === "object") {
-        setPosts(prev => [newPost, ...prev]);
-      }
-    } catch (error) {
-      console.error("Error creating post:", error);
+    if (!user) throw new Error("User not authenticated");
+    const res = await fetch("/api/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content,
+        imageUrl,
+        authorId: user.id,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data?.error || "Failed to create post");
     }
+    // Normalize the response as a safety net
+    const newPost: Post = {
+      id: data.id,
+      authorId: data.authorId,
+      content: data.content,
+      imageUrl: data.imageUrl || null,
+      type: data.type || "POST",
+      title: data.title || null,
+      tags: data.tags || [],
+      createdAt: data.createdAt,
+      author: data.author || {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        avatarUrl: user.avatarUrl,
+        headline: user.headline,
+      },
+      _count: {
+        likes: data._count?.likes ?? data._count?.reactions ?? 0,
+        comments: data._count?.comments ?? 0,
+        reposts: data._count?.reposts ?? 0,
+      },
+      reactions: data.reactions || [],
+      isSaved: false,
+    };
+    setPosts(prev => [newPost, ...prev]);
   };
 
   const reactToPost = async (postId: string, type: string) => {
