@@ -13,7 +13,6 @@ export async function GET(request: Request) {
     let orderBy: any = { createdAt: "desc" };
     if (sort === "top") {
       orderBy = [
-        { reactions: { _count: "desc" } },
         { comments: { _count: "desc" } },
         { createdAt: "desc" }
       ];
@@ -34,24 +33,15 @@ export async function GET(request: Request) {
             headline: true,
           },
         },
-        _count: {
-          select: {
-            comments: true,
-            reactions: true,
-            reposts: true,
-          },
-        },
-        reactions: {
-          where: { userId: userId },
-          select: { type: true },
-        },
+        _count: true,
       },
     });
 
     const formattedPosts = (posts as any).map((post: any) => ({
       ...post,
+      reactions: [],
       _count: {
-        likes: post._count?.reactions || 0,
+        likes: post._count?.reactions ?? post._count?.likes ?? 0,
         comments: post._count?.comments || 0,
         reposts: post._count?.reposts || 0
       }

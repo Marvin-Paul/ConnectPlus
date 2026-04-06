@@ -42,6 +42,8 @@ interface FeedContextType {
   reactToPost: (postId: string, type: string) => Promise<void>;
   commentOnPost: (postId: string, content: string) => Promise<void>;
   sharePost: (postId: string, content?: string) => Promise<void>;
+  savePost: (postId: string) => Promise<void>;
+  hidePost: (postId: string) => void;
   unfollowUser: (authorId: string) => void;
   reportPost: (postId: string) => void;
   sort: string;
@@ -63,13 +65,18 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       const res = await fetch(`/api/posts?page=${pageNum}&limit=10&userId=${user?.id || 'demo-user'}&sort=${currentSort}`);
       const data = await res.json();
+      const nextPosts = Array.isArray(data) ? data : [];
+
+      if (!res.ok && !Array.isArray(data)) {
+        console.error("Unexpected /api/posts response:", data);
+      }
       
       if (pageNum === 1) {
-        setPosts(data);
-        setHasMore(data.length === 10);
+        setPosts(nextPosts);
+        setHasMore(nextPosts.length === 10);
       } else {
-        setPosts(prev => [...prev, ...data]);
-        if (data.length < 10) setHasMore(false);
+        setPosts(prev => [...prev, ...nextPosts]);
+        if (nextPosts.length < 10) setHasMore(false);
       }
       
       setPage(pageNum);
@@ -103,7 +110,9 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
         }),
       });
       const newPost = await res.json();
-      setPosts(prev => [newPost, ...prev]);
+      if (res.ok && newPost && typeof newPost === "object") {
+        setPosts(prev => [newPost, ...prev]);
+      }
     } catch (error) {
       console.error("Error creating post:", error);
     }

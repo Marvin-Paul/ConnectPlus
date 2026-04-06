@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const comments = await prisma.comment.findMany({
-      where: { postId: params.id },
+      where: { postId: id },
       orderBy: { createdAt: "desc" },
       include: {
         author: {
@@ -31,10 +32,11 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const body = await request.json();
     const { userId, content, parentCommentId } = body;
 
@@ -42,7 +44,7 @@ export async function POST(
       return NextResponse.json({ error: "userId and content are required" }, { status: 400 });
     }
 
-    const postId = params.id;
+    const postId = id;
 
     const comment = await prisma.comment.create({
       data: {

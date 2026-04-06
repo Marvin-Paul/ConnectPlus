@@ -1,11 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const body = await request.json();
     const { userId, content } = body; // Reposting can have optional new content/repost text
 
@@ -13,7 +14,7 @@ export async function POST(
       return NextResponse.json({ error: "userId is required" }, { status: 400 });
     }
 
-    const originalPostId = params.id;
+    const originalPostId = id;
 
     // Create a new post that is the repost
     const originalPost = await prisma.post.findUnique({ where: { id: originalPostId } });

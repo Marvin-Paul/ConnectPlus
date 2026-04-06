@@ -1,12 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ReactionType } from "@prisma/client";
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const body = await request.json();
     const { userId, type } = body; // type is ReactionType like 'LIKE', 'LOVE', etc.
 
@@ -14,7 +15,7 @@ export async function POST(
       return NextResponse.json({ error: "userId and type are required" }, { status: 400 });
     }
 
-    const postId = params.id;
+    const postId = id;
 
     // Check if reaction exists
     const existingReaction = await prisma.reaction.findUnique({

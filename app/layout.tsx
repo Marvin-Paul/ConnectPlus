@@ -4,6 +4,7 @@ import { TopNav } from "../components/layout/top-nav";
 import { MobileBottomNav } from "../components/layout/mobile-bottom-nav";
 import { QueryProvider } from "../components/providers/query-provider";
 import { UserProvider } from "../components/providers/user-provider";
+import { FeedProvider } from "../components/providers/feed-provider";
 import { PulseGuide } from "../components/features/pulse-guide";
 import { Inter } from "next/font/google"; 
 import { SplashScreen } from "../components/ui/splash-screen";
@@ -30,12 +31,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <SplashScreen />
         <QueryProvider>
           <UserProvider>
-            <TopNav />
-            <main className="md:pt-[72px] min-h-screen">
-               {children}
-            </main>
-            <MobileBottomNav />
-            <PulseGuide />
+            <FeedProvider>
+              <TopNav />
+              <main className="md:pt-[72px] min-h-screen">
+                 {children}
+              </main>
+              <MobileBottomNav />
+              <PulseGuide />
+            </FeedProvider>
           </UserProvider>
         </QueryProvider>
       </body>
