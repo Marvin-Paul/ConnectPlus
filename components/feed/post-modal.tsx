@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { X, Image as ImageIcon, FileText, Calendar, Smile, Globe, Users, Briefcase, PlaySquare, Settings, Sparkles, PlusSquare, Camera, Loader2, Trash2 } from "lucide-react";
+import { X, Image as ImageIcon, FileText, Calendar, Smile, Globe, Users, Briefcase, PlaySquare, Settings, Sparkles, PlusSquare, Camera, Loader2, Trash2, ChevronDown } from "lucide-react";
 import { useFeed } from "../providers/feed-provider";
 import { supabase } from "@/lib/supabase";
 
@@ -66,81 +66,92 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white w-full h-full md:h-auto md:max-w-[600px] md:rounded-[2rem] shadow-2xl flex flex-col md:max-h-[95vh] overflow-hidden">
+    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-[#1F2937]/75 backdrop-blur-sm animate-fade-in px-4">
+      <div 
+        className="bg-white w-full h-[90vh] md:h-auto md:max-w-[560px] md:rounded-[16px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         
-        {/* Modern Header */}
-        <div className="px-5 pt-4 pb-2 flex items-center justify-between border-b border-slate-50">
+        {/* Professional Header - Spaced following 8px system */}
+        <div className="px-5 pt-5 pb-3 flex items-center justify-between border-b border-[#E5E7EB]">
            <div className="flex items-center gap-4">
               <button 
                 onClick={onClose} 
                 disabled={isPosting}
-                aria-label="Close post modal"
-                className="p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-600 transition-all disabled:opacity-50"
+                aria-label="Close"
+                className="p-1.5 -ml-1 rounded-full hover:bg-[#F3F6F8] text-[#6B7280] transition-colors disabled:opacity-50"
               >
                 <X className="w-6 h-6" />
               </button>
               <div className="flex items-center gap-3">
-                 <img src={user.avatar} className="w-10 h-10 rounded-full border-2 border-slate-50" alt={user.name} />
-                 <button 
-                   onClick={() => setVisibility(visibility === "anyone" ? "connections" : "anyone")}
-                   aria-label={`Visibility: ${visibility}`}
-                   className="flex items-center gap-1.5 text-[14px] font-semibold text-slate-700 hover:bg-slate-50 px-2 py-0.5 rounded-lg transition-all"
-                 >
-                    {visibility === "anyone" ? "Anyone" : "Connections"}
-                    <Globe className="w-3.5 h-3.5 text-slate-400" />
-                 </button>
+                 <div className="w-10 h-10 rounded-full border border-[#E5E7EB] overflow-hidden">
+                   <img src={user.avatar} className="w-full h-full object-cover" alt="" />
+                 </div>
+                 <div className="flex flex-col">
+                    <button 
+                      onClick={() => setVisibility(visibility === "anyone" ? "connections" : "anyone")}
+                      aria-label="Visibility"
+                      className="flex items-center gap-1.5 text-[14px] font-bold text-[#1F2937] hover:bg-[#F3F6F8] px-2 py-0.5 -ml-2 rounded-lg transition-all"
+                    >
+                       {user.name}
+                       <ChevronDown className="w-4 h-4 text-[#6B7280]" />
+                    </button>
+                    <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[#6B7280] px-px">
+                       <Globe className="w-3.5 h-3.5" />
+                       <span>{visibility === "anyone" ? "Anyone" : "Connections"}</span>
+                    </div>
+                 </div>
               </div>
            </div>
            
-           <div className="flex items-center gap-3">
-              <button aria-label="Schedule post" className="p-2 rounded-full hover:bg-slate-50 text-slate-500">
+           <div className="flex items-center gap-2">
+              <button className="h-9 px-3 rounded-full hover:bg-[#F3F6F8] text-[#6B7280] flex items-center justify-center transition-colors">
                  <Calendar className="w-6 h-6" />
               </button>
               <button 
                 onClick={handlePost}
                 disabled={(!content.trim() && !image) || isPosting || uploading}
-                className={`px-6 py-1.5 rounded-full font-bold text-[14px] transition-all ${(content.trim() || image) && !isPosting && !uploading ? "bg-[#0A66C2] text-white shadow-md active:scale-95" : "bg-slate-100 text-slate-400 cursor-not-allowed"}`}
+                className={`h-9 px-6 rounded-full font-bold text-[14px] transition-all shadow-sm ${(content.trim() || image) && !isPosting && !uploading ? "bg-[#0A66C2] text-white hover:bg-[#004182] active:scale-95" : "bg-[#F3F6F8] text-[#6B7280] cursor-not-allowed"}`}
               >
                  {isPosting ? "Posting..." : "Post"}
               </button>
            </div>
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 px-5 py-6 overflow-y-auto min-h-[250px]">
+        {/* Dynamic Content Area - Breathing whitespace */}
+        <div className="flex-1 px-8 py-6 overflow-y-auto min-h-[300px]">
            {postError && (
              <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-               <p className="text-[13px] font-semibold text-red-600">{postError}</p>
+               <p className="text-[14px] font-semibold text-red-600 leading-snug">{postError}</p>
                <button onClick={() => setPostError(null)} aria-label="Dismiss error" className="p-1 rounded-full hover:bg-red-100 text-red-400 transition-colors shrink-0">
                  <X className="w-4 h-4" />
                </button>
              </div>
            )}
            <textarea 
-             className="w-full text-[18px] font-medium text-slate-800 placeholder:text-slate-400 border-none outline-none resize-none bg-transparent"
+             className="w-full text-[18px] font-medium text-[#1F2937] placeholder:text-[#6B7280] border-none outline-none resize-none bg-transparent leading-relaxed"
              placeholder="What's your professional insight today?"
              value={content}
              onChange={(e) => { setContent(e.target.value); if (postError) setPostError(null); }}
              autoFocus
              disabled={isPosting}
-             rows={4}
+             rows={6}
            />
 
            {uploading && (
-             <div className="w-full aspect-video rounded-2xl bg-slate-50 flex flex-col items-center justify-center gap-4 border-2 border-dashed border-slate-200">
-               <Loader2 className="w-10 h-10 text-[#0A66C2] animate-spin" />
-               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Processing visual node...</p>
+             <div className="w-full aspect-video rounded-2xl bg-[#F3F6F8] flex flex-col items-center justify-center gap-4 border-2 border-dashed border-[#E5E7EB] mt-4 animate-pulse">
+               <Loader2 className="w-8 h-8 text-[#0A66C2] animate-spin" />
+               <p className="text-[12px] font-bold uppercase tracking-widest text-[#6B7280]">Uploading media...</p>
              </div>
            )}
 
            {image && !uploading && (
-             <div className="relative rounded-2xl overflow-hidden group/img mt-4 animate-in zoom-in-95 duration-500">
-                <img src={image} className="w-full h-auto object-cover max-h-[400px]" alt="Preview" />
+             <div className="relative rounded-xl overflow-hidden group mt-6 animate-in zoom-in-95 duration-500 shadow-lg ring-1 ring-[#E5E7EB]">
+                <img src={image} className="w-full h-auto object-cover max-h-[450px]" alt="Visual Insight" />
                 <button 
                   onClick={() => setImage(null)}
                   aria-label="Remove image"
-                  className="absolute top-4 right-4 p-2 bg-black/60 backdrop-blur-md text-white rounded-full hover:bg-red-500 transition-all active:scale-90"
+                  className="absolute top-4 right-4 p-2.5 bg-[#1F2937]/80 backdrop-blur-md text-white rounded-full hover:bg-red-600 transition-all active:scale-90 shadow-xl opacity-0 group-hover:opacity-100"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -150,15 +161,15 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            <input 
              type="file" 
              ref={fileInputRef} 
-             title="Upload image"
+             title="Select image resource"
              className="hidden" 
              accept="image/*" 
              onChange={handleImageUpload} 
            />
         </div>
 
-        {/* Action Toolbar (Bottom Sticky) */}
-        <div className="px-5 py-4 border-t border-slate-100 bg-white safe-area-bottom">
+        {/* Premium Tool Dock - 8px-based elements */}
+        <div className="px-6 py-4 border-t border-[#E5E7EB] bg-white">
            <div className="flex items-center justify-between">
               <button 
                 disabled={isPosting || !content.trim()}
@@ -174,23 +185,24 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
                     setContent(data.optimizedText);
                   }
                 }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-slate-200 text-slate-700 text-[14px] font-semibold hover:bg-slate-50 transition-all active:scale-95 shadow-sm group disabled:opacity-50"
+                className="flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-[#E5E7EB] text-[#1F2937] text-[15px] font-bold hover:bg-[#F3F6F8] transition-all active:scale-95 shadow-sm group disabled:opacity-50"
               >
-                 <Sparkles className="w-4 h-4 text-orange-500 group-hover:rotate-12 transition-transform" />
+                 <Sparkles className="w-4 h-4 text-[#0A66C2] group-hover:animate-pulse" />
                  Professional Rewrite
               </button>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                  <button 
                    onClick={() => fileInputRef.current?.click()}
                    disabled={uploading || isPosting}
                    aria-label="Upload photo"
-                   className="p-2.5 rounded-xl hover:bg-slate-50 text-slate-500 transition-all active:scale-90"
+                   title="Add media"
+                   className="p-3 rounded-xl hover:bg-[#F3F6F8] text-[#0A66C2] transition-all active:scale-90"
                  >
-                    <Camera className="w-6 h-6 text-[#378FE9]" />
+                    <Camera className="w-7 h-7" />
                  </button>
-                 <button aria-label="More options" className="p-2.5 rounded-xl hover:bg-slate-50 text-slate-500 transition-all">
-                    <PlusSquare className="w-6 h-6 text-[#70B5F9]" />
+                 <button className="p-3 rounded-xl hover:bg-[#F3F6F8] text-[#6B7280] transition-all" title="More options">
+                    <PlusSquare className="w-7 h-7" />
                  </button>
               </div>
            </div>

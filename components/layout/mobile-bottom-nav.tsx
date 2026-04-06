@@ -24,18 +24,26 @@ export function MobileBottomNav() {
     { href: "/jobs", label: "Jobs", icon: Briefcase },
   ];
 
+  const isActivePath = (href?: string) => {
+    if (!href) return false;
+    if (href === '/') return pathname === '/';
+    return pathname?.startsWith(href);
+  };
+
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-slate-200 flex items-center justify-around h-[52px] pb-1 safe-area-bottom shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-[#E5E7EB] flex items-center justify-around h-[56px] pb-[4px] safe-area-bottom shadow-[0_-4px_16px_rgba(0,0,0,0.03)] backdrop-blur-md">
         {navItems.map((item) => {
-          const isActive = item.href ? (pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href))) : false;
+          const isActive = isActivePath(item.href);
           
           const iconContent = (
             <div className="relative">
-              <item.icon className={`h-[22px] w-[22px] ${isActive ? 'text-[#0A66C2]' : 'text-slate-500'}`} strokeWidth={isActive ? 2.5 : 2} />
+              <item.icon 
+                className={`h-[24px] w-[24px] transition-all duration-200 ${isActive ? 'text-[#0A66C2] scale-110 stroke-[2.2px]' : 'text-[#6B7280] stroke-[1.8px] hover:text-[#1F2937]'}`} 
+              />
               {item.badge && (
-                <span className="absolute -top-1 -right-2 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full min-w-[16px] h-[16px] flex items-center justify-center border border-white">
-                  {item.badge}
+                <span className="absolute -top-1.5 -right-2.5 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full min-w-[16px] h-[16px] flex items-center justify-center border-2 border-white shadow-sm">
+                  {Math.min(item.badge, 99)}
                 </span>
               )}
             </div>
@@ -47,30 +55,34 @@ export function MobileBottomNav() {
                 key={item.label} 
                 onClick={item.onClick}
                 aria-label={`Open ${item.label} modal`}
-                className="flex flex-col items-center justify-center w-full h-full gap-[2px] text-slate-500 active:scale-95 transition-transform"
+                className="flex flex-col items-center justify-center w-full h-full gap-0.5 text-[#6B7280] transition-transform active:scale-90 group"
               >
                 {iconContent}
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[11px] font-bold tracking-tight opacity-70 group-hover:opacity-100">{item.label}</span>
               </button>
             );
           }
 
           return (
-            <Link key={item.label} href={item.href || "#"} className={`flex flex-col items-center justify-center w-full h-full gap-[2px] ${isActive ? 'text-[#0A66C2]' : 'text-slate-500'}`}>
+            <Link 
+              key={item.label} 
+              href={item.href || "#"} 
+              className={`flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all active:scale-95 ${isActive ? 'text-[#0A66C2]' : 'text-[#6B7280]'}`}
+            >
                {iconContent}
-               <span className={`text-[10px] ${isActive ? 'font-semibold' : 'font-medium'}`}>{item.label}</span>
+               <span className={`text-[11px] tracking-tight ${isActive ? 'font-black' : 'font-bold opacity-70'}`}>{item.label}</span>
             </Link>
           )
         })}
       </nav>
 
-      {/* Post Modal Portal Integration */}
+      {/* Modern Post Modal Integration */}
       <PostModal 
         isOpen={isPostModalOpen} 
         onClose={() => setIsPostModalOpen(false)}
         user={{
-          name: user ? `${user.firstName} ${user.lastName}` : "Marvin Muwereza",
-          avatar: user?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
+          name: user ? `${user.firstName} ${user.lastName}` : "Professional User",
+          avatar: user?.avatarUrl || "https://api.dicebear.com/7.x/initials/svg?seed=U"
         }}
       />
     </>

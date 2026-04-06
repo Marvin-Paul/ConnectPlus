@@ -27,13 +27,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.className}>
-      <body className="antialiased bg-[#F8FAFC] text-slate-900">
+      <body className="antialiased selection:bg-primary/10 selection:text-primary">
         <SplashScreen />
         <QueryProvider>
           <UserProvider>
             <FeedProvider>
               <TopNav />
-              <main className="md:pt-[72px] min-h-screen">
+              <main className="md:pt-[56px] min-h-screen">
                  {children}
               </main>
               <MobileBottomNav />

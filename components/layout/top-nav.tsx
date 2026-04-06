@@ -11,10 +11,10 @@ import {
   Grid3X3,
   Settings,
   LogOut,
-  PlusCircle,
-  Target,
-  TrendingUp,
-  MessageCircle
+  Bell,
+  Menu,
+  MessageCircle,
+  HelpCircle
 } from "lucide-react";
 
 export function TopNav() {
@@ -55,82 +55,104 @@ export function TopNav() {
   };
 
   return (
-    <header className="sticky top-0 z-[100] border-b bg-white backdrop-blur-md shadow-sm h-[52px]">
-      <div className="mx-auto flex h-full max-w-6xl items-center px-4 justify-between">
+    <header className="sticky top-0 z-[100] border-b border-[#E5E7EB] bg-white h-[56px] shadow-[0_2px_10px_rgba(0,0,0,0.03)] transition-all duration-200">
+      <div className="mx-auto flex h-full max-w-6xl items-center px-4 justify-between gap-4">
         
-        {/* Left Side: Logo and Search */}
-        <div className="flex items-center gap-4 flex-1">
-          <Link href="/" className="shrink-0 flex items-center">
-            <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-primary text-white shadow-lg transition-transform hover:scale-105 active:scale-95">
-               <span className="text-xl font-bold tracking-tighter leading-none">c+</span>
+        {/* Left: Branding & Search */}
+        <div className="flex items-center gap-6 flex-1 max-w-[500px]">
+          <Link href="/" className="shrink-0 flex items-center transition-transform active:scale-95">
+            <div className="h-[34px] w-[34px] flex items-center justify-center rounded-lg bg-[#0A66C2] text-white shadow-sm ring-2 ring-white ring-offset-2 ring-offset-slate-50 overflow-hidden">
+               <span className="text-xl font-bold tracking-tighter leading-none italic">c+</span>
             </div>
-            <span className="hidden sm:block ml-3 text-xl font-black tracking-tight text-slate-800">
-              Connect<span className="text-primary">+</span>
+            <span className="hidden md:block ml-2.5 text-[22px] font-bold tracking-tight text-[#1F2937] leading-none font-sans">
+              Connect<span className="text-[#0A66C2]">Plus</span>
             </span>
           </Link>
 
-          {/* Search Bar - Responsive */}
-          <div className="flex-1 max-w-[400px] relative ml-2" ref={searchRef}>
+          {/* Search bar with Fokus highlights */}
+          <div className="flex-1 relative hidden sm:block" ref={searchRef}>
               <form onSubmit={(e) => { e.preventDefault(); router.push(`/search?q=${searchQuery}`); }} className="relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280] group-focus-within:text-[#0A66C2] transition-colors" />
                 <Input
-                  placeholder={pathname === '/search' ? "Filter results..." : "Search..."}
+                  placeholder="Search professionals, insights..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 w-full bg-slate-100 border-none text-sm pl-10 focus-visible:ring-2 focus-visible:ring-primary/20 rounded-full transition-all"
+                  className="h-10 w-full bg-[#F3F6F8] border border-transparent text-[15px] pl-11 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#0A66C2]/20 focus-visible:border-[#0A66C2] rounded-[8px] transition-all"
                 />
               </form>
           </div>
         </div>
 
-        {/* Right Side: User Profile Only (Nav icons removed) */}
-        <div className="flex items-center gap-2 h-full ml-4">
+        {/* Right: Actions & Profile */}
+        <div className="flex items-center gap-1 md:gap-2 h-full">
           
-          {/* User Section (Profile Menu) */}
+          {/* Quick Actions for Professional Engagement */}
+          <div className="flex items-center gap-1 md:gap-2">
+             <button className="p-2.5 rounded-[8px] text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F6F8] transition-all" aria-label="Messages">
+                <MessageCircle className="h-[22px] w-[22px] stroke-[1.8px]" />
+             </button>
+             <button className="p-2.5 rounded-[8px] text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F6F8] transition-all relative" aria-label="Notifications">
+                <Bell className="h-[22px] w-[22px] stroke-[1.8px]" />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-red-600 rounded-full ring-2 ring-white" />
+             </button>
+          </div>
+
+          <div className="w-[1px] h-8 bg-[#E5E7EB] mx-1 hidden md:block" />
+
+          {/* User Identity - Refined 'Me' Dropdown */}
           {!loading && user ? (
             <div className="flex items-center relative h-full" ref={meRef}>
                <button 
                   onClick={() => setActiveDropdown(activeDropdown === 'me' ? null : 'me')}
-                  title="Profile Menu"
+                  title="Profile and Settings"
                   aria-label="Toggle profile menu"
-                  className={`flex items-center justify-center gap-1 sm:gap-2 h-[40px] px-2 rounded-full transition-all hover:bg-slate-50 ${activeDropdown === 'me' ? 'bg-slate-50 text-primary' : 'text-slate-500'}`}
+                  className={`flex items-center gap-2 h-11 px-2.5 rounded-[8px] transition-all hover:bg-[#F3F6F8] ${activeDropdown === 'me' ? 'text-[#0A66C2]' : 'text-[#6B7280]'}`}
                >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-primary text-white font-black text-xs border-2 shadow-sm transition-all ${activeDropdown === 'me' ? 'border-primary' : 'border-slate-50 group-hover:border-primary'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-[#0A66C2] text-white font-bold text-[13px] border-2 transition-all overflow-hidden ${activeDropdown === 'me' ? 'border-[#0A66C2] shadow-sm' : 'border-white'}`}>
                     {user.avatarUrl ? (
-                      <img src={user.avatarUrl} alt="Me" className="w-full h-full rounded-full object-cover" />
+                      <img src={user.avatarUrl} alt="Me" className="w-full h-full object-cover" />
                     ) : (
                       <span className="leading-none">{getUserInitials()}</span>
                     )}
                   </div>
-                  <div className="hidden md:flex flex-col items-start mr-1">
-                     <span className="text-[11px] font-bold text-slate-800 leading-none">{user.firstName}</span>
-                     <span className="text-[9px] font-medium text-slate-500 mt-0.5">Me</span>
+                  <div className="hidden lg:flex flex-col items-start mr-0.5 pointer-events-none">
+                     <span className="text-[13px] font-bold text-[#1F2937] leading-none">{user.firstName}</span>
+                     <span className="text-[11px] font-medium text-[#6B7280] mt-0.5">Me</span>
                   </div>
-                  <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${activeDropdown === 'me' ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${activeDropdown === 'me' ? 'rotate-180 text-[#0A66C2]' : ''}`} />
                </button>
 
-               {/* Dropdown Menu */}
+               {/* Dropdown Menu - Notion-style spacing and LinkedIn aesthetics */}
                {activeDropdown === 'me' && (
-                  <div className="absolute top-full right-0 w-[280px] bg-white rounded-b-3xl shadow-[0_20px_70px_rgba(0,0,0,0.2)] border border-slate-100 overflow-hidden mt-1 animate-in slide-in-from-top-2 duration-400 z-[110]">
-                    <div className="p-5 flex items-start gap-4 bg-slate-50/50">
-                        <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-black text-lg shadow-inner shrink-0">
-                           {user.avatarUrl ? <img src={user.avatarUrl} className="w-full h-full rounded-2xl object-cover" alt="" /> : <span>{getUserInitials()}</span>}
+                  <div className="absolute top-[calc(100%+4px)] right-0 w-[240px] bg-white rounded-[12px] shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-[#E5E7EB] overflow-hidden animate-fade-in z-[110]">
+                    <div className="p-4 flex items-center gap-3 bg-[#F3F6F8]/30">
+                        <div className="w-10 h-10 rounded-full bg-[#0A66C2] flex items-center justify-center text-white font-bold text-[14px] shadow-sm transform transition-hover hover:scale-105">
+                           {user.avatarUrl ? <img src={user.avatarUrl} className="w-full h-full rounded-full object-cover" alt="" /> : <span>{getUserInitials()}</span>}
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-black text-slate-800 tracking-tight leading-tight truncate text-base">{user.firstName} {user.lastName}</h4>
-                          <p className="text-[12px] text-slate-500 font-medium truncate mt-1 leading-relaxed opacity-80">{user.headline}</p>
+                          <h4 className="font-bold text-[#1F2937] tracking-tight truncate leading-none text-[15px]">{user.firstName} {user.lastName}</h4>
+                          <p className="text-[12px] text-[#6B7280] font-medium truncate mt-1 leading-tight">{user.headline}</p>
                         </div>
                     </div>
-                    <div className="px-5 py-3 border-t border-slate-100">
-                        <Link href={`/profile/${user.username}`} onClick={() => setActiveDropdown(null)} className="block py-2.5 text-sm font-bold text-slate-700 hover:text-primary hover:translate-x-1 transition-all">View Identity</Link>
-                        <Link href="/settings" onClick={() => setActiveDropdown(null)} className="block py-2.5 text-sm font-bold text-slate-700 hover:text-primary hover:translate-x-1 transition-all">Privacy Controls</Link>
+                    
+                    <div className="px-2 py-2 border-t border-[#E5E7EB]">
+                        <Link href={`/profile/${user.username}`} onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2 text-[14px] font-medium text-[#1F2937] hover:bg-[#F3F6F8] rounded-[6px] transition-colors">
+                           View Identity
+                        </Link>
+                        <Link href="/settings" onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2 text-[14px] font-medium text-[#1F2937] hover:bg-[#F3F6F8] rounded-[6px] transition-colors">
+                           Privacy & Settings
+                        </Link>
+                        <button className="flex items-center gap-3 w-full px-3 py-2 text-[14px] font-medium text-[#1F2937] hover:bg-[#F3F6F8] rounded-[6px] transition-colors text-left">
+                           Help Center
+                        </button>
                     </div>
-                    <div className="border-t border-slate-100 p-3 bg-white">
+                    
+                    <div className="border-t border-[#E5E7EB] p-2 bg-[#F9FAFB]/50">
                         <button 
                           onClick={async () => { await fetch("/api/logout", { method: "POST" }); window.location.href = "/login"; }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
+                          className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-[#6B7280] hover:text-red-600 hover:bg-red-50 rounded-[6px] transition-all"
                         >
-                          <LogOut className="w-4 h-4" /> Sign Out from Station
+                          <LogOut className="w-4 h-4" /> Sign Out
                         </button>
                     </div>
                   </div>
@@ -138,21 +160,21 @@ export function TopNav() {
             </div>
           ) : !loading && (
             <div className="flex items-center gap-2">
-               <Link href="/login" className="px-5 h-9 flex items-center justify-center rounded-full border-2 border-primary text-primary font-black text-[11px] uppercase tracking-widest hover:bg-primary/5 transition-all active:scale-95">Sign In</Link>
+               <Link href="/login" className="h-10 px-6 flex items-center justify-center rounded-[8px] border border-[#0A66C2] text-[#0A66C2] font-bold text-[14px] hover:bg-[#0A66C2]/5 transition-all active:scale-95">Sign In</Link>
+               <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-[8px] bg-[#0A66C2] text-white font-bold text-[14px] hover:bg-[#004182] transition-all shadow-sm active:scale-95">Join now</Link>
             </div>
           )}
 
-          {/* Tools Grid (Desktop only) */}
+          {/* Business Grid Menu */}
           {user && (
-            <div className="hidden lg:flex items-center h-full ml-1" ref={bizRef}>
-               <button 
-                  onClick={() => setActiveDropdown(activeDropdown === 'biz' ? null : 'biz')}
-                  title="Business Tools"
-                  className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-primary transition-colors"
-               >
-                 <Grid3X3 className="w-6 h-6" />
-               </button>
-            </div>
+            <button 
+              onClick={() => setActiveDropdown(activeDropdown === 'biz' ? null : 'biz')}
+              className="p-2.5 rounded-[8px] text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F6F8] transition-all ml-1 hidden sm:block"
+              aria-label="Business tools"
+              ref={bizRef}
+            >
+              <Grid3X3 className="h-6 w-6 stroke-[1.5px]" />
+            </button>
           )}
         </div>
       </div>
