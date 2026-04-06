@@ -12,6 +12,10 @@ export function MobileBottomNav() {
   const { user } = useUser();
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   
+  // Hide on Auth/Onboarding pages
+  const isAuthPage = pathname === "/login" || pathname === "/signup" || pathname?.startsWith("/onboarding");
+  if (isAuthPage) return null;
+
   const navItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/network", label: "My Network", icon: Users },
@@ -42,6 +46,7 @@ export function MobileBottomNav() {
               <button 
                 key={item.label} 
                 onClick={item.onClick}
+                aria-label={`Open ${item.label} modal`}
                 className="flex flex-col items-center justify-center w-full h-full gap-[2px] text-slate-500 active:scale-95 transition-transform"
               >
                 {iconContent}

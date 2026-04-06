@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef } from "react";
 import { X, Image as ImageIcon, FileText, Calendar, Smile, Globe, Users, Briefcase, PlaySquare, Settings, Sparkles, PlusSquare, Camera, Loader2, Trash2 } from "lucide-react";
 import { useFeed } from "../providers/feed-provider";
@@ -31,12 +33,15 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
     try {
       const ext = file.name.split(".").pop();
       const fileName = `posts/${Date.now()}.${ext}`;
-      const { data, error } = await supabase.storage.from("post-images").upload(fileName, file);
+      const [emailPart] = user.name.split(" ");
+      const userPath = emailPart || "anon";
+      const { data, error } = await supabase.storage.from("post-images").upload(`${userPath}/${fileName}`, file);
       if (error) throw error;
       const { data: urlData } = supabase.storage.from("post-images").getPublicUrl(data.path);
       setImage(urlData.publicUrl);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setPostError(err.message || "Upload failed");
     } finally {
       setUploading(false);
     }
@@ -70,14 +75,16 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
               <button 
                 onClick={onClose} 
                 disabled={isPosting}
+                aria-label="Close post modal"
                 className="p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-600 transition-all disabled:opacity-50"
               >
                 <X className="w-6 h-6" />
               </button>
               <div className="flex items-center gap-3">
-                 <img src={user.avatar} className="w-10 h-10 rounded-full border-2 border-slate-50" alt="" />
+                 <img src={user.avatar} className="w-10 h-10 rounded-full border-2 border-slate-50" alt={user.name} />
                  <button 
                    onClick={() => setVisibility(visibility === "anyone" ? "connections" : "anyone")}
+                   aria-label={`Visibility: ${visibility}`}
                    className="flex items-center gap-1.5 text-[14px] font-semibold text-slate-700 hover:bg-slate-50 px-2 py-0.5 rounded-lg transition-all"
                  >
                     {visibility === "anyone" ? "Anyone" : "Connections"}
@@ -87,7 +94,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            </div>
            
            <div className="flex items-center gap-3">
-              <button className="p-2 rounded-full hover:bg-slate-50 text-slate-500">
+              <button aria-label="Schedule post" className="p-2 rounded-full hover:bg-slate-50 text-slate-500">
                  <Calendar className="w-6 h-6" />
               </button>
               <button 
@@ -105,7 +112,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            {postError && (
              <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
                <p className="text-[13px] font-semibold text-red-600">{postError}</p>
-               <button onClick={() => setPostError(null)} className="p-1 rounded-full hover:bg-red-100 text-red-400 transition-colors shrink-0">
+               <button onClick={() => setPostError(null)} aria-label="Dismiss error" className="p-1 rounded-full hover:bg-red-100 text-red-400 transition-colors shrink-0">
                  <X className="w-4 h-4" />
                </button>
              </div>
@@ -132,6 +139,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
                 <img src={image} className="w-full h-auto object-cover max-h-[400px]" alt="Preview" />
                 <button 
                   onClick={() => setImage(null)}
+                  aria-label="Remove image"
                   className="absolute top-4 right-4 p-2 bg-black/60 backdrop-blur-md text-white rounded-full hover:bg-red-500 transition-all active:scale-90"
                 >
                   <X className="w-5 h-5" />
@@ -142,6 +150,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            <input 
              type="file" 
              ref={fileInputRef} 
+             title="Upload image"
              className="hidden" 
              accept="image/*" 
              onChange={handleImageUpload} 
@@ -175,11 +184,12 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
                  <button 
                    onClick={() => fileInputRef.current?.click()}
                    disabled={uploading || isPosting}
+                   aria-label="Upload photo"
                    className="p-2.5 rounded-xl hover:bg-slate-50 text-slate-500 transition-all active:scale-90"
                  >
                     <Camera className="w-6 h-6 text-[#378FE9]" />
                  </button>
-                 <button className="p-2.5 rounded-xl hover:bg-slate-50 text-slate-500 transition-all">
+                 <button aria-label="More options" className="p-2.5 rounded-xl hover:bg-slate-50 text-slate-500 transition-all">
                     <PlusSquare className="w-6 h-6 text-[#70B5F9]" />
                  </button>
               </div>

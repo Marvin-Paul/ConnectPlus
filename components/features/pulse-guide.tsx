@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { usePathname } from "next/navigation";
+import { useUser } from "../providers/user-provider";
 import { Sparkles, X, ChevronRight, ChevronLeft, Lightbulb, Zap, Rocket } from "lucide-react";
 
 interface GuideStep {
@@ -43,10 +45,16 @@ const GUIDE_STEPS: GuideStep[] = [
 ];
 
 export function PulseGuide() {
+  const pathname = usePathname();
+  const { user } = useUser();
   const [isActive, setIsActive] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(-1);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [showNotification, setShowNotification] = useState(false);
+
+  // Hide on Auth/Onboarding pages
+  const isAuthPage = pathname === "/login" || pathname === "/signup" || pathname?.startsWith("/onboarding");
+  if (isAuthPage) return null;
 
   // Show a "New feature" notification after 3 seconds
   useEffect(() => {
@@ -112,6 +120,7 @@ export function PulseGuide() {
      return (
         <button 
            onClick={startGuide}
+           aria-label="Start AI Guide"
            className="fixed bottom-10 right-10 w-16 h-16 rounded-full bg-slate-900 shadow-[0_20px_60px_rgba(0,0,0,0.4)] flex items-center justify-center text-white z-[300] hover:scale-110 active:scale-95 transition-all group overflow-hidden border border-slate-700"
         >
            <Zap className="w-6 h-6 group-hover:text-accent transition-colors" />
@@ -142,14 +151,41 @@ export function PulseGuide() {
 
   const currentStep = GUIDE_STEPS[currentStepIndex];
 
+  // Dynamic values for the spotlight and tooltip
+  const spotlightStyle = isActive && targetRect ? {
+    '--mask-w': `${targetRect.width/1.5 + 40}px`,
+    '--mask-h': `${targetRect.height/1.5 + 40}px`,
+    '--mask-x': `${targetRect.left + targetRect.width/2}px`,
+    '--mask-y': `${targetRect.top + targetRect.height/2}px`,
+  } : {};
+
+  const tooltipStyle = isActive && targetRect ? {
+    '--tip-x': `${targetRect.left + targetRect.width / 2}px`,
+    '--tip-y': currentStep.position === 'bottom' ? `${targetRect.bottom + 20}px` : `${targetRect.top - 20}px`,
+    '--tip-transform': `translateX(-50%) ${currentStep.position === 'top' ? 'translateY(-100%)' : ''}`,
+  } : {};
+
   return (
     <div className="fixed inset-0 z-[400] pointer-events-none overflow-hidden">
+       {/* Use a style block to avoid direct inline style attribute warnings for highly dynamic values */}
+       <style>{`
+          .pulse-spotlight {
+            mask-image: radial-gradient(ellipse var(--mask-w) var(--mask-h) at var(--mask-x) var(--mask-y), transparent 100%, black 100%);
+            -webkit-mask-image: radial-gradient(ellipse var(--mask-w) var(--mask-h) at var(--mask-x) var(--mask-y), transparent 100%, black 100%);
+          }
+          .pulse-tooltip {
+            left: var(--tip-x);
+            top: var(--tip-y);
+            transform: var(--tip-transform);
+          }
+       `}</style>
+
        {/* Background Dimmer with Highlight Hole */}
        {isActive && targetRect && (
-         <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] pointer-events-auto transition-all duration-700 animate-in fade-in" style={{
-            maskImage: `radial-gradient(ellipse ${targetRect.width/1.5 + 40}px ${targetRect.height/1.5 + 40}px at ${targetRect.left + targetRect.width/2}px ${targetRect.top + targetRect.height/2}px, transparent 100%, black 100%)`,
-            WebkitMaskImage: `radial-gradient(ellipse ${targetRect.width/1.5 + 40}px ${targetRect.height/1.5 + 40}px at ${targetRect.left + targetRect.width/2}px ${targetRect.top + targetRect.height/2}px, transparent 100%, black 100%)`
-         }}>
+         <div 
+           className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] pointer-events-auto transition-all duration-700 animate-in fade-in pulse-spotlight"
+           style={spotlightStyle as React.CSSProperties}
+         >
              <div onClick={closeGuide} className="absolute inset-0" />
          </div>
        )}
@@ -157,12 +193,8 @@ export function PulseGuide() {
        {/* Guide Tooltip */}
        {isActive && targetRect && (
           <div 
-            className="absolute z-[500] pointer-events-auto transition-all duration-500 animate-in zoom-in-95 fade-in ease-out"
-            style={{
-              left: `${targetRect.left + targetRect.width / 2}px`,
-              top: currentStep.position === 'bottom' ? `${targetRect.bottom + 20}px` : `${targetRect.top - 20}px`,
-              transform: `translateX(-50%) ${currentStep.position === 'top' ? 'translateY(-100%)' : ''}`
-            }}
+            className="absolute z-[500] pointer-events-auto transition-all duration-500 animate-in zoom-in-95 fade-in ease-out pulse-tooltip"
+            style={tooltipStyle as React.CSSProperties}
           >
              <div className="bg-white p-10 rounded-[4rem] shadow-[0_50px_150px_rgba(0,0,0,0.3)] border border-slate-100 w-[420px] relative">
                 <div className="flex items-center justify-between mb-8">
@@ -172,10 +204,10 @@ export function PulseGuide() {
                       </div>
                       <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] opacity-60">Step {currentStepIndex + 1} of {GUIDE_STEPS.length}</span>
                    </div>
-                   <button onClick={closeGuide} className="p-2 hover:bg-slate-50 rounded-full transition-colors"><X className="w-5 h-5 text-slate-300 hover:text-red-500" /></button>
+                   <button onClick={closeGuide} aria-label="Close guide" className="p-2 hover:bg-slate-50 rounded-full transition-colors"><X className="w-5 h-5 text-slate-300 hover:text-red-500" /></button>
                 </div>
 
-                <h3 className="text-3xl font-black text-slate-800 tracking-tighter leading-none mb-4 italic italic">{currentStep.title}</h3>
+                <h3 className="text-3xl font-black text-slate-800 tracking-tighter leading-none mb-4 italic">{currentStep.title}</h3>
                 <p className="text-[14px] text-slate-500 font-medium italic leading-relaxed mb-10 opacity-80">{currentStep.content}</p>
 
                 <div className="flex items-center justify-between mt-auto">
@@ -188,6 +220,7 @@ export function PulseGuide() {
                       {currentStepIndex > 0 && (
                         <button 
                           onClick={prevStep}
+                          aria-label="Previous step"
                           className="p-4 rounded-full border border-slate-100 text-slate-400 hover:bg-slate-50 transition-all active:scale-95"
                         >
                            <ChevronLeft className="w-5 h-5" />
@@ -195,6 +228,7 @@ export function PulseGuide() {
                       )}
                       <button 
                          onClick={nextStep}
+                         aria-label="Next step"
                          className="flex items-center gap-4 px-10 py-4 rounded-full bg-slate-900 text-white font-black text-[11px] uppercase tracking-widest hover:bg-primary transition-all active:scale-95 shadow-2xl shadow-slate-900/20"
                       >
                          {currentStepIndex === GUIDE_STEPS.length - 1 ? "Finish Sync" : "Deploy Insight"}
