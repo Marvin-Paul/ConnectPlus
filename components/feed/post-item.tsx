@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ThumbsUp, MessageSquare, Repeat2, Send, Globe, Plus, Heart, MoreHorizontal, Smile, Award, Lightbulb, Search, X } from "lucide-react";
+import { ThumbsUp, MessageSquare, Repeat2, Send, Globe, Plus, Heart, MoreHorizontal, Smile, Award, Lightbulb, Search, X, Bookmark, Share2, EyeOff, XCircle, Flag } from "lucide-react";
 import { Post, useFeed } from "../providers/feed-provider";
 import { useUser } from "../providers/user-provider";
 import { CommentSection } from "./comment-section";
@@ -19,12 +19,26 @@ const REACTION_TYPES = [
 ];
 
 export function PostItem({ post }: PostItemProps) {
-  const { reactToPost, commentOnPost, sharePost } = useFeed();
+  const { reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost } = useFeed();
   const { user } = useUser();
   const [showReactions, setShowReactions] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const optionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (optionsRef.current && !optionsRef.current.contains(event.target as Node)) {
+        setShowOptions(false);
+      }
+    }
+    if (showOptions) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showOptions]);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const userReaction = post.reactions?.[0]?.type;
@@ -84,9 +98,49 @@ export function PostItem({ post }: PostItemProps) {
                     <Globe className="h-3 w-3" />
                  </div>
               </div>
-              <button className="p-3 rounded-full hover:bg-slate-50 text-slate-300 hover:text-slate-500 transition-all">
-                 <MoreHorizontal className="w-5 h-5" />
-              </button>
+              <div className="relative" ref={optionsRef}>
+                 <button 
+                   onClick={() => setShowOptions(!showOptions)}
+                   className={`p-3 rounded-full transition-all ${showOptions ? 'bg-slate-100 text-slate-700' : 'hover:bg-slate-50 text-slate-300 hover:text-slate-500'}`}
+                 >
+                    <MoreHorizontal className="w-5 h-5" />
+                 </button>
+   
+                 {showOptions && (
+                    <div className="absolute top-[calc(100%+8px)] right-0 w-[300px] bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 py-3 z-[100] animate-in zoom-in-95 duration-200">
+                       <button onClick={() => { savePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
+                          <Bookmark className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
+                          <div className="flex-1">
+                             <span className="block text-[14px] font-bold text-slate-700">Save</span>
+                          </div>
+                       </button>
+                       <button onClick={() => { sharePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
+                          <Share2 className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
+                          <div className="flex-1">
+                             <span className="block text-[14px] font-bold text-slate-700">Share via</span>
+                          </div>
+                       </button>
+                       <button onClick={() => { hidePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
+                          <EyeOff className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
+                          <div className="flex-1">
+                             <span className="block text-[14px] font-bold text-slate-700">Not interested</span>
+                          </div>
+                       </button>
+                       <button onClick={() => { unfollowUser(post.authorId); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
+                          <XCircle className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
+                          <div className="flex-1">
+                             <span className="block text-[14px] font-bold text-slate-700">Unfollow {post.author.firstName} {post.author.lastName}</span>
+                          </div>
+                       </button>
+                       <button onClick={() => { reportPost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
+                          <Flag className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
+                          <div className="flex-1">
+                             <span className="block text-[14px] font-bold text-slate-700">Report post</span>
+                          </div>
+                       </button>
+                    </div>
+                 )}
+              </div>
            </div>
         </div>
       </div>

@@ -41,6 +41,10 @@ interface FeedContextType {
   reactToPost: (postId: string, type: string) => Promise<void>;
   commentOnPost: (postId: string, content: string) => Promise<void>;
   sharePost: (postId: string, content?: string) => Promise<void>;
+  savePost: (postId: string) => Promise<void>;
+  hidePost: (postId: string) => void;
+  unfollowUser: (authorId: string) => void;
+  reportPost: (postId: string) => void;
 }
 
 const FeedContext = createContext<FeedContextType | undefined>(undefined);
@@ -186,9 +190,27 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const savePost = async (postId: string) => {
+    // Optionally connect to backend API, mock success
+    console.log(`Saved post ${postId}`);
+  };
+
+  const hidePost = (postId: string) => {
+    setPosts(prev => prev.filter(p => p.id !== postId));
+  };
+
+  const unfollowUser = (authorId: string) => {
+    setPosts(prev => prev.filter(p => p.authorId !== authorId));
+  };
+
+  const reportPost = (postId: string) => {
+    setPosts(prev => prev.filter(p => p.id !== postId));
+    console.log(`Reported post ${postId}`);
+  };
+
   return (
     <FeedContext.Provider value={{ 
-      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost 
+      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost 
     }}>
       {children}
     </FeedContext.Provider>
