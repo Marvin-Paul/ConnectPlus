@@ -19,7 +19,6 @@ import {
   HelpCircle,
   LogOut,
   Sparkles,
-  ShieldCheck,
   PlusCircle,
   Target,
   BarChart3,
@@ -30,7 +29,6 @@ import {
   DollarSign,
   Mail,
   TrendingUp,
-  X,
   ChevronRight,
   ThumbsUp,
   MoreHorizontal
@@ -94,6 +92,7 @@ export function TopNav() {
 
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const selectedNotif = notifications.find(n => n.id === openNotifMenuId) || null;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -277,34 +276,6 @@ export function TopNav() {
                                    <MoreHorizontal className="h-5 w-5" />
                                 </button>
 
-                                {openNotifMenuId === notif.id && (
-                                   <div className="absolute top-full right-0 mt-2 w-[220px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 z-[60] animate-in zoom-in-95 duration-200">
-                                      <button 
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setNotifications(prev => prev.filter(n => n.id !== notif.id));
-                                          setOpenNotifMenuId(null);
-                                        }}
-                                        className="w-full px-5 py-3 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 text-left transition-colors"
-                                      >
-                                         <X className="w-4 h-4 text-slate-400" /> Remove Notification
-                                      </button>
-                                      <button 
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, unread: false } : n));
-                                          setOpenNotifMenuId(null);
-                                        }}
-                                        className="w-full px-5 py-3 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 text-left transition-colors"
-                                      >
-                                         <ShieldCheck className="w-4 h-4 text-slate-400" /> Mark as Read
-                                      </button>
-                                      <div className="mx-4 my-2 border-t border-slate-50" />
-                                      <button className="w-full px-5 py-3 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 text-left transition-colors">
-                                         <Settings className="w-4 h-4 text-slate-400" /> Notification Settings
-                                      </button>
-                                   </div>
-                                )}
                              </div>
                           </div>
                         ))}
@@ -572,6 +543,41 @@ export function TopNav() {
         </nav>
 
       </div>
+
+      {selectedNotif && (
+        <div className="fixed inset-0 z-[140]">
+          <button
+            type="button"
+            aria-label="Close notification options"
+            onClick={() => setOpenNotifMenuId(null)}
+            className="absolute inset-0 bg-black/20"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
+            <button
+              onClick={() => {
+                setNotifications(prev => prev.map(n => n.id === selectedNotif.id ? { ...n, unread: false } : n));
+                setOpenNotifMenuId(null);
+              }}
+              className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              Mark as read
+            </button>
+            <button
+              onClick={() => {
+                setNotifications(prev => prev.filter(n => n.id !== selectedNotif.id));
+                setOpenNotifMenuId(null);
+              }}
+              className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              Remove notification
+            </button>
+            <button onClick={() => setOpenNotifMenuId(null)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+              Notification settings
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

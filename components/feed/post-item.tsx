@@ -112,40 +112,6 @@ export function PostItem({ post }: PostItemProps) {
                     <Ellipsis className="w-5 h-5" />
                  </button>
    
-                 {showOptions && (
-                    <div className="absolute top-[calc(100%+8px)] right-0 w-[300px] bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 py-3 z-[100] animate-in zoom-in-95 duration-200">
-                       <button onClick={() => { savePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
-                          <Bookmark className={`w-5 h-5 ${post.isSaved ? 'text-primary fill-current' : 'text-slate-400'} group-hover/item:text-slate-700 transition-colors`} />
-                          <div className="flex-1">
-                             <span className={`block text-[14px] font-bold ${post.isSaved ? 'text-primary' : 'text-slate-700'}`}>{post.isSaved ? 'Saved' : 'Save'}</span>
-                          </div>
-                       </button>
-                       <button onClick={() => { sharePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
-                          <Share2 className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
-                          <div className="flex-1">
-                             <span className="block text-[14px] font-bold text-slate-700">Share via</span>
-                          </div>
-                       </button>
-                       <button onClick={() => { hidePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
-                          <EyeOff className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
-                          <div className="flex-1">
-                             <span className="block text-[14px] font-bold text-slate-700">Not interested</span>
-                          </div>
-                       </button>
-                       <button onClick={() => { unfollowUser(post.authorId); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
-                          <XCircle className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
-                          <div className="flex-1">
-                             <span className="block text-[14px] font-bold text-slate-700">Unfollow {post.author.firstName} {post.author.lastName}</span>
-                          </div>
-                       </button>
-                       <button onClick={() => { reportPost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
-                          <Flag className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
-                          <div className="flex-1">
-                             <span className="block text-[14px] font-bold text-slate-700">Report post</span>
-                          </div>
-                       </button>
-                    </div>
-                 )}
               </div>
            </div>
         </div>
@@ -275,6 +241,53 @@ export function PostItem({ post }: PostItemProps) {
             // but we could refresh local state here if needed.
           }} 
         />
+      )}
+
+      {showOptions && (
+        <div className="fixed inset-0 z-[120]">
+          <button
+            type="button"
+            aria-label="Close options"
+            onClick={() => setShowOptions(false)}
+            className="absolute inset-0 bg-black/20"
+          />
+          <div
+            ref={optionsRef}
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200"
+          >
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
+            <button onClick={() => { savePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors text-left group/item">
+              <Bookmark className={`w-5 h-5 ${post.isSaved ? 'text-primary fill-current' : 'text-slate-500'} group-hover/item:text-slate-700 transition-colors`} />
+              <div className="flex-1">
+                <span className={`block text-[18px] font-medium ${post.isSaved ? 'text-primary' : 'text-slate-700'}`}>{post.isSaved ? 'Saved' : 'Save'}</span>
+              </div>
+            </button>
+            <button onClick={() => { sharePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors text-left group/item">
+              <Share2 className="w-5 h-5 text-slate-500 group-hover/item:text-slate-700 transition-colors" />
+              <div className="flex-1">
+                <span className="block text-[18px] font-medium text-slate-700">Share via</span>
+              </div>
+            </button>
+            <button onClick={() => { hidePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors text-left group/item">
+              <EyeOff className="w-5 h-5 text-slate-500 group-hover/item:text-slate-700 transition-colors" />
+              <div className="flex-1">
+                <span className="block text-[18px] font-medium text-slate-700">Not interested</span>
+              </div>
+            </button>
+            <button onClick={() => { unfollowUser(post.authorId); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors text-left group/item">
+              <XCircle className="w-5 h-5 text-slate-500 group-hover/item:text-slate-700 transition-colors" />
+              <div className="flex-1">
+                <span className="block text-[18px] font-medium text-slate-700">Unfollow {post.author.firstName} {post.author.lastName}</span>
+              </div>
+            </button>
+            <button onClick={() => { reportPost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors text-left group/item">
+              <Flag className="w-5 h-5 text-slate-500 group-hover/item:text-slate-700 transition-colors" />
+              <div className="flex-1">
+                <span className="block text-[18px] font-medium text-slate-700">Report post</span>
+              </div>
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

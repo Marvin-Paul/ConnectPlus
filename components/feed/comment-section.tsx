@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Smile, Send, MoreHorizontal as Ellipsis, ThumbsUp, Heart, Star, Sparkles, MessageSquare, Award, Clock, ChevronDown, User, Reply, Search, X } from "lucide-react";
 import { useUser } from "../providers/user-provider";
 
@@ -219,15 +219,6 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
                               <Ellipsis className="w-4 h-4" />
                            </button>
 
-                           {activeMore === comment.id && (
-                             <div className="absolute bottom-full right-0 mb-2 w-40 bg-white rounded-xl shadow-2xl border border-slate-100 py-2 z-50 animate-in zoom-in-95 duration-200">
-                               <button onClick={() => setActiveMore(null)} className="w-full px-4 py-2 text-left text-[11px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-colors">Report</button>
-                               <button onClick={() => {
-                                 setComments(prev => prev.filter(c => c.id !== comment.id));
-                                 setActiveMore(null);
-                               }} className="w-full px-4 py-2 text-left text-[11px] font-black uppercase tracking-widest text-red-500 hover:bg-red-50 transition-colors">Delete</button>
-                             </div>
-                           )}
                         </div>
                      </div>
                   </div>
@@ -249,6 +240,32 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
       <button className="w-full py-8 mt-12 bg-white rounded-[2rem] border border-slate-100 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-primary hover:bg-slate-50 transition-all shadow-sm">
          Discover deeper conversations
       </button>
+
+      {activeMore && (
+        <div className="fixed inset-0 z-[140]">
+          <button
+            type="button"
+            aria-label="Close comment options"
+            onClick={() => setActiveMore(null)}
+            className="absolute inset-0 bg-black/20"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
+            <button onClick={() => setActiveMore(null)} className="w-full px-6 py-4 text-left text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+              Report
+            </button>
+            <button
+              onClick={() => {
+                setComments(prev => prev.filter(c => c.id !== activeMore));
+                setActiveMore(null);
+              }}
+              className="w-full px-6 py-4 text-left text-[18px] font-medium text-red-500 hover:bg-red-50 transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

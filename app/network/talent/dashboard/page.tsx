@@ -35,6 +35,8 @@ const ACTIVE_JOBS = [
 ];
 
 export default function RecruiterDashboard() {
+  const [activeJobMenuId, setActiveJobMenuId] = useState<string | null>(null);
+
   return (
     <div className="max-w-7xl mx-auto py-12 px-6">
       {/* Header */}
@@ -148,7 +150,10 @@ export default function RecruiterDashboard() {
                          <div className={`w-10 h-10 rounded-xl ${job.color} flex items-center justify-center text-white shadow-lg`}>
                             <Briefcase className="w-5 h-5" />
                          </div>
-                         <button className="p-2 rounded-full hover:bg-slate-50 text-slate-300">
+                        <button
+                          onClick={() => setActiveJobMenuId(job.id)}
+                          className="p-2 rounded-full hover:bg-slate-50 text-slate-300"
+                        >
                             <MoreHorizontal className="w-4 h-4" />
                          </button>
                       </div>
@@ -185,6 +190,29 @@ export default function RecruiterDashboard() {
            </div>
         </aside>
       </div>
+
+      {activeJobMenuId && (
+        <div className="fixed inset-0 z-[140]">
+          <button
+            type="button"
+            aria-label="Close job options"
+            onClick={() => setActiveJobMenuId(null)}
+            className="absolute inset-0 bg-black/20"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
+            <button onClick={() => setActiveJobMenuId(null)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+              View pipeline
+            </button>
+            <button onClick={() => setActiveJobMenuId(null)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+              Pause job
+            </button>
+            <button onClick={() => setActiveJobMenuId(null)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-red-500 hover:bg-red-50 transition-colors">
+              Close posting
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

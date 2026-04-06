@@ -15,6 +15,7 @@ export default function GroupsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newGroup, setNewGroup] = useState({ name: "", description: "" });
   const [activeTab, setActiveTab] = useState("all");
+  const [activeGroupMenuId, setActiveGroupMenuId] = useState<string | null>(null);
 
   const handleJoin = (id: string) => {
     setGroups(prev => prev.map(g => g.id === id ? { ...g, joined: !g.joined } : g));
@@ -141,7 +142,10 @@ export default function GroupsPage() {
                             >
                                {group.joined ? 'Dismiss' : 'Join Community'}
                             </button>
-                            <button className="p-2.5 rounded-full text-slate-400 hover:text-slate-600 ml-2 transition-colors">
+                            <button
+                              onClick={() => setActiveGroupMenuId(group.id)}
+                              className="p-2.5 rounded-full text-slate-400 hover:text-slate-600 ml-2 transition-colors"
+                            >
                                <MoreHorizontal className="w-5 h-5" />
                             </button>
                          </div>
@@ -205,6 +209,32 @@ export default function GroupsPage() {
                 Create Community
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeGroupMenuId && (
+        <div className="fixed inset-0 z-[140]">
+          <button
+            type="button"
+            aria-label="Close group options"
+            onClick={() => setActiveGroupMenuId(null)}
+            className="absolute inset-0 bg-black/20"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
+            <button
+              onClick={() => {
+                handleJoin(activeGroupMenuId);
+                setActiveGroupMenuId(null);
+              }}
+              className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              Join / Leave group
+            </button>
+            <button onClick={() => setActiveGroupMenuId(null)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+              Report group
+            </button>
           </div>
         </div>
       )}

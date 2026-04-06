@@ -12,6 +12,7 @@ const initialPages = [
 
 export default function PagesManagementPage() {
   const [pages, setPages] = useState(initialPages);
+  const [activePageMenuId, setActivePageMenuId] = useState<string | null>(null);
 
   const handleFollow = (id: string) => {
     setPages(prev => prev.map(p => p.id === id ? { ...p, joined: !p.joined } : p));
@@ -92,7 +93,10 @@ export default function PagesManagementPage() {
                             >
                                {brand.joined ? 'Following' : 'Follow Link'}
                             </button>
-                            <button className="p-3 rounded-full text-slate-400 hover:text-slate-600 border border-slate-100 transition-colors">
+                            <button
+                              onClick={() => setActivePageMenuId(brand.id)}
+                              className="p-3 rounded-full text-slate-400 hover:text-slate-600 border border-slate-100 transition-colors"
+                            >
                                <MoreHorizontal className="w-5 h-5 font-black" />
                             </button>
                          </div>
@@ -103,6 +107,38 @@ export default function PagesManagementPage() {
            </div>
         </div>
       </main>
+
+      {activePageMenuId && (
+        <div className="fixed inset-0 z-[140]">
+          <button
+            type="button"
+            aria-label="Close page options"
+            onClick={() => setActivePageMenuId(null)}
+            className="absolute inset-0 bg-black/20"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
+            <button
+              onClick={() => {
+                handleFollow(activePageMenuId);
+                setActivePageMenuId(null);
+              }}
+              className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              Follow / Unfollow
+            </button>
+            <button
+              onClick={() => {
+                setPages(prev => prev.filter(p => p.id !== activePageMenuId));
+                setActivePageMenuId(null);
+              }}
+              className="w-full text-left px-6 py-4 text-[18px] font-medium text-red-500 hover:bg-red-50 transition-colors"
+            >
+              Remove page
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

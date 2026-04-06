@@ -46,6 +46,7 @@ export function ChatWindow() {
   ]);
 
   const [inputText, setInputText] = useState("");
+  const [showHeaderOptions, setShowHeaderOptions] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -100,7 +101,10 @@ export function ChatWindow() {
             <button className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
                <Plus className="h-5 w-5 text-[#666666]" />
             </button>
-            <button className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
+            <button
+              onClick={() => setShowHeaderOptions(true)}
+              className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+            >
                <MoreHorizontal className="h-5 w-5 text-[#666666]" />
             </button>
          </div>
@@ -175,6 +179,29 @@ export function ChatWindow() {
             </div>
          </div>
       </div>
+
+      {showHeaderOptions && (
+        <div className="fixed inset-0 z-[140]">
+          <button
+            type="button"
+            aria-label="Close chat options"
+            onClick={() => setShowHeaderOptions(false)}
+            className="absolute inset-0 bg-black/20"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
+            <button onClick={() => setShowHeaderOptions(false)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+              Mute conversation
+            </button>
+            <button onClick={() => setShowHeaderOptions(false)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+              View profile
+            </button>
+            <button onClick={() => setShowHeaderOptions(false)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-red-500 hover:bg-red-50 transition-colors">
+              Delete chat
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
