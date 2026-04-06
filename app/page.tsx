@@ -209,7 +209,16 @@ const MIXED_EVENTS: any[] = [
 
 function FeedContent() {
   const { posts, loading, hasMore, fetchPosts } = useFeed();
+  const [sortOrder, setSortOrder] = useState<'recent' | 'top'>('recent');
   const observer = useRef<IntersectionObserver | null>(null);
+
+  const sortedPosts = [...posts].sort((a, b) => {
+    if (sortOrder === 'recent') {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    } else {
+      return (b._count.likes + b._count.comments + b._count.reposts) - (a._count.likes + a._count.comments + a._count.reposts);
+    }
+  });
 
   const lastPostRef = useCallback((node: HTMLDivElement) => {
     if (loading) return;
@@ -233,28 +242,45 @@ function FeedContent() {
         <main className="md:col-span-8 lg:col-span-6 space-y-4">
           <CreatePost />
 
-          <div className="flex items-center gap-2 py-2">
+          <div className="flex items-center gap-3 py-2">
             <div className="flex-1 h-px bg-slate-200" />
-            <p className="text-[12px] text-slate-400 font-bold uppercase tracking-widest">
-              Sort by: <span className="text-[#0A66C2] cursor-pointer" onClick={() => fetchPosts(1)}>Recent</span>
-            </p>
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-full">
+              <button
+                onClick={() => setSortOrder('top')}
+                className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest transition-all ${
+                  sortOrder === 'top'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                Top
+              </button>
+              <button
+                onClick={() => { setSortOrder('recent'); fetchPosts(1); }}
+                className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest transition-all ${
+                  sortOrder === 'recent'
+                    ? 'bg-white text-[#0A66C2] shadow-sm'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                Recent
+              </button>
+            </div>
+            <div className="flex-1 h-px bg-slate-200" />
           </div>
 
           <div className="space-y-4">
-            {posts.map((post, index) => {
+            {sortedPosts.map((post, index) => {
               const elements = [];
               
-              // Intersperse Article after 2nd post
               if (index === 1 && MIXED_ARTICLES[0]) {
                 elements.push(<ArticleCard key="mixed-art-1" item={MIXED_ARTICLES[0]} />);
               }
-              
-              // Intersperse Event after 4th post
               if (index === 3 && MIXED_EVENTS[0]) {
                 elements.push(<EventCard key="mixed-eve-1" item={MIXED_EVENTS[0]} />);
               }
 
-              if (posts.length === index + 1) {
+              if (sortedPosts.length === index + 1) {
                 elements.push(
                   <div key={post.id} ref={lastPostRef}>
                     <PostItem post={post} />
