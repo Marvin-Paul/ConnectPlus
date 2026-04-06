@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Smile, Send, MoreHorizontal, ThumbsUp, Heart, Star, Sparkles, MessageSquare, Award, Clock, ChevronDown, User, Reply, Search, X } from "lucide-react";
+import { Smile, Send, MoreHorizontal as Ellipsis, ThumbsUp, Heart, Star, Sparkles, MessageSquare, Award, Clock, ChevronDown, User, Reply, Search, X } from "lucide-react";
 import { useUser } from "../providers/user-provider";
 
 interface Comment {
@@ -29,6 +29,7 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [likedComments, setLikedComments] = useState<Set<string>>(new Set());
+  const [activeMore, setActiveMore] = useState<string | null>(null);
 
   const fetchComments = async () => {
     try {
@@ -210,9 +211,24 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
                            <span>Award</span>
                         </button>
                         <div className="flex-1" />
-                        <button className="p-1 rounded-full text-slate-200 hover:text-slate-400 transition-colors">
-                           <MoreHorizontal className="w-4 h-4" />
-                        </button>
+                        <div className="relative">
+                           <button 
+                             onClick={() => setActiveMore(prev => prev === comment.id ? null : comment.id)}
+                             className={`p-1 rounded-full transition-colors ${activeMore === comment.id ? 'text-slate-500 bg-slate-100' : 'text-slate-200 hover:text-slate-400'}`}
+                           >
+                              <Ellipsis className="w-4 h-4" />
+                           </button>
+
+                           {activeMore === comment.id && (
+                             <div className="absolute bottom-full right-0 mb-2 w-40 bg-white rounded-xl shadow-2xl border border-slate-100 py-2 z-50 animate-in zoom-in-95 duration-200">
+                               <button onClick={() => setActiveMore(null)} className="w-full px-4 py-2 text-left text-[11px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-colors">Report</button>
+                               <button onClick={() => {
+                                 setComments(prev => prev.filter(c => c.id !== comment.id));
+                                 setActiveMore(null);
+                               }} className="w-full px-4 py-2 text-left text-[11px] font-black uppercase tracking-widest text-red-500 hover:bg-red-50 transition-colors">Delete</button>
+                             </div>
+                           )}
+                        </div>
                      </div>
                   </div>
                </div>

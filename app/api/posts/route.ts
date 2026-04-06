@@ -4,15 +4,25 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId") || "demo-user"; // Fallback for demo
+    const userId = searchParams.get("userId") || "demo-user";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
+    const sort = searchParams.get("sort") || "recent";
     const skip = (page - 1) * limit;
+
+    let orderBy: any = { createdAt: "desc" };
+    if (sort === "top") {
+      orderBy = [
+        { reactions: { _count: "desc" } },
+        { comments: { _count: "desc" } },
+        { createdAt: "desc" }
+      ];
+    }
 
     const posts = await prisma.post.findMany({
       take: limit,
       skip: skip,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       include: {
         author: {
           select: {
@@ -38,7 +48,16 @@ export async function GET(request: Request) {
       },
     });
 
-    return NextResponse.json(posts);
+    const formattedPosts = (posts as any).map((post: any) => ({
+      ...post,
+      _count: {
+        likes: post._count?.reactions || 0,
+        comments: post._count?.comments || 0,
+        reposts: post._count?.reposts || 0
+      }
+    }));
+
+    return NextResponse.json(formattedPosts);
   } catch (error) {
     console.error("Error fetching posts:", error);
     return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });

@@ -30,6 +30,7 @@ export interface Post {
   author: PostAuthor;
   _count: PostStats;
   reactions: { type: string }[];
+  isSaved?: boolean;
 }
 
 interface FeedContextType {
@@ -41,10 +42,10 @@ interface FeedContextType {
   reactToPost: (postId: string, type: string) => Promise<void>;
   commentOnPost: (postId: string, content: string) => Promise<void>;
   sharePost: (postId: string, content?: string) => Promise<void>;
-  savePost: (postId: string) => Promise<void>;
-  hidePost: (postId: string) => void;
   unfollowUser: (authorId: string) => void;
   reportPost: (postId: string) => void;
+  sort: string;
+  setSort: (sort: string) => void;
 }
 
 const FeedContext = createContext<FeedContextType | undefined>(undefined);
@@ -55,31 +56,39 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [sort, setSort] = useState("recent");
 
-  const fetchPosts = useCallback(async (pageNum = 1) => {
+  const fetchPosts = useCallback(async (pageNum = 1, currentSort = sort) => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/posts?page=${pageNum}&limit=10&userId=${user?.id || 'demo-user'}`);
+      const res = await fetch(`/api/posts?page=${pageNum}&limit=10&userId=${user?.id || 'demo-user'}&sort=${currentSort}`);
       const data = await res.json();
       
       if (pageNum === 1) {
         setPosts(data);
+        setHasMore(data.length === 10);
       } else {
         setPosts(prev => [...prev, ...data]);
+        if (data.length < 10) setHasMore(false);
       }
       
-      if (data.length < 10) setHasMore(false);
       setPage(pageNum);
     } catch (error) {
       console.error("Error fetching feed:", error);
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, sort]);
 
   useEffect(() => {
-    fetchPosts(1);
-  }, [fetchPosts]);
+    fetchPosts(1, sort);
+  }, [fetchPosts, sort]);
+
+  const handleSetSort = (newSort: string) => {
+    setSort(newSort);
+    setPage(1);
+    setHasMore(true);
+  };
 
   const createPost = async (content: string, imageUrl?: string) => {
     if (!user) return;
@@ -106,16 +115,16 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     // Optimistic Update
     setPosts(prev => prev.map(post => {
       if (post.id === postId) {
-        const hasExisting = post.reactions.length > 0;
-        const sameType = hasExisting && post.reactions[0].type === type;
+        const isReversing = post.reactions?.[0]?.type === type;
+        const isSwitching = post.reactions.length > 0 && !isReversing;
         
         let newLikeCount = post._count.likes;
         let newReactions = post.reactions;
 
-        if (sameType) {
+        if (isReversing) {
           newLikeCount -= 1;
           newReactions = [];
-        } else if (hasExisting) {
+        } else if (isSwitching) {
           newReactions = [{ type }];
         } else {
           newLikeCount += 1;
@@ -138,7 +147,6 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ userId: user.id, type }),
       });
     } catch (error) {
-       // Rollback could be implemented here
        console.error("Error reacting:", error);
     }
   };
@@ -191,8 +199,10 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
   };
 
   const savePost = async (postId: string) => {
-    // Optionally connect to backend API, mock success
-    console.log(`Saved post ${postId}`);
+    setPosts(prev => prev.map(post => 
+      post.id === postId ? { ...post, isSaved: !post.isSaved } : post
+    ));
+    console.log(`Toggled save for post ${postId}`);
   };
 
   const hidePost = (postId: string) => {
@@ -210,7 +220,7 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <FeedContext.Provider value={{ 
-      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost 
+      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost, sort, setSort: handleSetSort
     }}>
       {children}
     </FeedContext.Provider>

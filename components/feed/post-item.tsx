@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ThumbsUp, MessageSquare, Repeat2, Send, Globe, Plus, Heart, MoreHorizontal, Smile, Award, Lightbulb, Search, X, Bookmark, Share2, EyeOff, XCircle, Flag } from "lucide-react";
+import { ThumbsUp, MessageSquare, Repeat2, Send, Globe, Plus, Heart, MoreHorizontal as Ellipsis, Smile, Award, Lightbulb, Search, X, Bookmark, Share2, EyeOff, XCircle, Flag } from "lucide-react";
 import { Post, useFeed } from "../providers/feed-provider";
 import { useUser } from "../providers/user-provider";
 import { CommentSection } from "./comment-section";
@@ -26,6 +26,7 @@ export function PostItem({ post }: PostItemProps) {
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [isSent, setIsSent] = useState(false);
   const optionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,6 +61,11 @@ export function PostItem({ post }: PostItemProps) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSend = () => {
+    setIsSent(true);
+    setTimeout(() => setIsSent(false), 2000);
   };
 
   const timeAgo = (dateStr: string) => {
@@ -103,15 +109,15 @@ export function PostItem({ post }: PostItemProps) {
                    onClick={() => setShowOptions(!showOptions)}
                    className={`p-3 rounded-full transition-all ${showOptions ? 'bg-slate-100 text-slate-700' : 'hover:bg-slate-50 text-slate-300 hover:text-slate-500'}`}
                  >
-                    <MoreHorizontal className="w-5 h-5" />
+                    <Ellipsis className="w-5 h-5" />
                  </button>
    
                  {showOptions && (
                     <div className="absolute top-[calc(100%+8px)] right-0 w-[300px] bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 py-3 z-[100] animate-in zoom-in-95 duration-200">
                        <button onClick={() => { savePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
-                          <Bookmark className="w-5 h-5 text-slate-400 group-hover/item:text-slate-700 transition-colors" />
+                          <Bookmark className={`w-5 h-5 ${post.isSaved ? 'text-primary fill-current' : 'text-slate-400'} group-hover/item:text-slate-700 transition-colors`} />
                           <div className="flex-1">
-                             <span className="block text-[14px] font-bold text-slate-700">Save</span>
+                             <span className={`block text-[14px] font-bold ${post.isSaved ? 'text-primary' : 'text-slate-700'}`}>{post.isSaved ? 'Saved' : 'Save'}</span>
                           </div>
                        </button>
                        <button onClick={() => { sharePost(post.id); setShowOptions(false); }} className="w-full flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors text-left group/item">
@@ -249,10 +255,15 @@ export function PostItem({ post }: PostItemProps) {
             <span className="hidden md:block text-[11px] font-black text-slate-400 group-hover/btn:text-slate-800 uppercase tracking-widest">Share</span>
          </button>
 
-         <button className="flex-1 flex items-center justify-center gap-2 md:gap-3 py-3 md:py-4 px-1 md:px-2 rounded-xl md:rounded-2xl hover:bg-slate-50 transition-all group/btn active:scale-95">
-            <Send className="h-5 w-5 md:h-6 md:w-6 text-slate-400 group-hover/btn:text-orange-500 group-hover/btn:scale-110 transition-all" />
-            <span className="hidden md:block text-[11px] font-black text-slate-400 group-hover/btn:text-slate-800 uppercase tracking-widest">Send</span>
-         </button>
+         <button 
+            onClick={handleSend}
+            className="flex-1 flex items-center justify-center gap-2 md:gap-3 py-3 md:py-4 px-1 md:px-2 rounded-xl md:rounded-2xl hover:bg-slate-50 transition-all group/btn active:scale-95"
+          >
+            <Send className={`h-5 w-5 md:h-6 md:w-6 transition-all ${isSent ? 'text-green-500 scale-125' : 'text-slate-400 group-hover:btn:text-orange-500 group-hover:btn:scale-110'}`} />
+            <span className={`hidden md:block text-[11px] font-black uppercase tracking-widest ${isSent ? 'text-slate-800' : 'text-slate-400 group-hover:btn:text-slate-800'}`}>
+              {isSent ? 'Sent!' : 'Send'}
+            </span>
+          </button>
       </div>
 
       {/* Comment Section */}
