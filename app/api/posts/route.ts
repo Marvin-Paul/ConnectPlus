@@ -59,8 +59,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { content, imageUrl, authorId, type = "POST", title, tags } = body;
 
-    if (!content || !authorId) {
-      return NextResponse.json({ error: "Content and authorId are required" }, { status: 400 });
+    if ((!content && !imageUrl) || !authorId) {
+      return NextResponse.json({ error: "Content (or an image) and authorId are required" }, { status: 400 });
     }
 
     // Verify the author exists — try by ID first, then fall back to username lookup
@@ -138,11 +138,4 @@ export async function POST(request: Request) {
     console.error("Error creating post:", error);
     return NextResponse.json({ error: error.message || "Failed to create post", details: error.toString() }, { status: 500 });
   }
-}
-model Post {
-  id  string @id @default(cuid())
-  content string 
-  isEvent boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
