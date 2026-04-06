@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "../providers/user-provider";
 import { 
   Home, 
@@ -36,23 +36,51 @@ import {
   MoreHorizontal
 } from "lucide-react";
 
-const navLinks = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/network", label: "My Network", icon: Users },
-  { href: "/jobs", label: "Jobs", icon: Briefcase },
-  { href: "/messaging", label: "Messaging", icon: MessageSquare, badge: 1 },
-  { href: "/notifications", label: "Notifications", icon: Bell, badge: 17 },
-];
+// navLinks moved inside component to be fully dynamic based on mock state
 
 export function TopNav() {
   const { user, loading } = useUser();
-  const [isMeOpen, setIsMeOpen] = useState(false);
-  const [isBusinessOpen, setIsBusinessOpen] = useState(false);
-  const [isPremiumOpen, setIsPremiumOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [isMessagingOpen, setIsMessagingOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [openNotifMenuId, setOpenNotifMenuId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const pathname = usePathname();
+
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "David Walusimbi and 14 others reacted to your update.", time: "2H", icon: ThumbsUp, color: "text-blue-500", bg: "bg-blue-50", unread: true },
+    { id: 2, text: "Lead Backend Engineer role at SafeBoda matches your profile.", time: "5H", icon: Briefcase, color: "text-orange-500", bg: "bg-orange-50", unread: true },
+    { id: 3, text: "Sarah Namayanja mentioned you in a comment.", time: "6H", icon: MessageSquare, color: "text-pink-500", bg: "bg-pink-50", unread: true },
+    { id: 4, text: "12 people viewed your profile today. unlock Premium.", time: "10H", icon: Star, color: "text-yellow-500", bg: "bg-yellow-50", unread: true }
+  ]);
+  const [messages, setMessages] = useState([
+    { id: 1, name: "Dr. Catherine Namubiru", text: "Let's chat about potential MTN collaborations.", time: "3:42 PM", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", unread: true },
+    { id: 2, name: "Recruiter @ Chipper Cash", text: "Is your InMail working? We have an opening.", time: "1:20 PM", avatar: "CC", unread: false },
+    { id: 3, name: "Isaac Kato", text: "Documentation sent. Check your email.", time: "Yesterday", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", unread: false }
+  ]);
+
+  const navLinks = [
+    { href: "/", label: "Home", icon: Home },
+    { href: "/network", label: "My Network", icon: Users },
+    { href: "/jobs", label: "Jobs", icon: Briefcase },
+    { 
+      href: "/messaging", 
+      label: "Messaging", 
+      icon: MessageSquare, 
+      badge: messages.filter(m => m.unread).length > 0 ? messages.filter(m => m.unread).length : undefined 
+    },
+    { 
+      href: "/notifications", 
+      label: "Notifications", 
+      icon: Bell, 
+      badge: notifications.filter(n => n.unread).length > 0 ? notifications.filter(n => n.unread).length : undefined 
+    },
+  ];
+
+  const isActivePath = (href: string) => {
+    if (href === '/') return pathname === '/';
+    return pathname.startsWith(href);
+  };
+
 
   const userName = user ? `${user.firstName} ${user.lastName}` : "Marvin Muwereza";
   const userHeadline = user?.headline || "Senior Full-Stack Engineer | AI Expert";
@@ -69,11 +97,14 @@ export function TopNav() {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (meRef.current && !meRef.current.contains(event.target as Node)) setIsMeOpen(false);
-      if (bizRef.current && !bizRef.current.contains(event.target as Node)) setIsBusinessOpen(false);
-      if (premRef.current && !premRef.current.contains(event.target as Node)) setIsPremiumOpen(false);
-      if (notifRef.current && !notifRef.current.contains(event.target as Node)) setIsNotificationsOpen(false);
-      if (msgRef.current && !msgRef.current.contains(event.target as Node)) setIsMessagingOpen(false);
+      if (meRef.current && !meRef.current.contains(event.target as Node) && 
+          bizRef.current && !bizRef.current.contains(event.target as Node) &&
+          premRef.current && !premRef.current.contains(event.target as Node) &&
+          notifRef.current && !notifRef.current.contains(event.target as Node) &&
+          msgRef.current && !msgRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+        setOpenNotifMenuId(null);
+      }
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) setShowSearchSuggestions(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -192,11 +223,11 @@ export function TopNav() {
               return (
                 <div key={link.label} className="relative h-full" ref={notifRef}>
                   <button
-                    onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                    className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[80px] h-full transition hover:text-primary relative group ${isNotificationsOpen ? 'text-primary' : 'text-slate-500'}`}
+                    onClick={() => setActiveDropdown(activeDropdown === 'notifications' ? null : 'notifications')}
+                    className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[80px] h-full transition hover:text-primary relative group ${activeDropdown === 'notifications' || isActivePath(link.href) ? 'text-primary' : 'text-slate-500'}`}
                   >
                     <div className="relative">
-                      <link.icon className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
+                      <link.icon className={`h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform ${isActivePath(link.href) ? 'fill-primary/10' : ''}`} />
                       {link.badge && (
                         <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] font-black px-1 rounded-full min-w-[16px] h-[16px] grid place-items-center border-2 border-white shadow-sm">
                           {link.badge > 9 ? '9+' : link.badge}
@@ -204,22 +235,26 @@ export function TopNav() {
                       )}
                     </div>
                     <span className="text-[11px] mt-0.5 font-bold uppercase tracking-widest hidden lg:block opacity-70 group-hover:opacity-100 transition-opacity scale-90">{link.label}</span>
-                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${isNotificationsOpen ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${activeDropdown === 'notifications' || isActivePath(link.href) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
                   </button>
 
-                  {isNotificationsOpen && (
+                  {activeDropdown === 'notifications' && (
                     <div className="absolute top-[52px] right-[-140px] w-[400px] bg-white rounded-b-3xl shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
                       <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-white">
                         <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Recent Notifications</h4>
-                        <button className="text-[11px] font-black text-primary uppercase tracking-widest hover:underline">Mark all read</button>
+                        {notifications.filter(n => n.unread).length > 0 && (
+                          <button 
+                            onClick={() => setNotifications(prev => prev.map(n => ({...n, unread: false})))}
+                            className="text-[11px] font-black text-primary uppercase tracking-widest hover:underline"
+                          >
+                            Mark all read
+                          </button>
+                        )}
                       </div>
                       <div className="max-h-[500px] overflow-y-auto">
-                        {[
-                          { id: 1, text: "David Walusimbi and 14 others reacted to your update.", time: "2H", icon: ThumbsUp, color: "text-blue-500", bg: "bg-blue-50", unread: true },
-                          { id: 2, text: "Lead Backend Engineer role at SafeBoda matches your profile.", time: "5H", icon: Briefcase, color: "text-orange-500", bg: "bg-orange-50", unread: true },
-                          { id: 3, text: "Sarah Namayanja mentioned you in a comment.", time: "6H", icon: MessageSquare, color: "text-pink-500", bg: "bg-pink-50", unread: true },
-                          { id: 4, text: "12 people viewed your profile today. unlock Premium.", time: "10H", icon: Star, color: "text-yellow-500", bg: "bg-yellow-50", unread: true }
-                        ].map((notif) => (
+                        {notifications.length === 0 ? (
+                          <div className="p-8 text-center text-slate-500 text-xs font-medium">No new notifications.</div>
+                        ) : notifications.map((notif) => (
                           <div key={notif.id} className="p-6 flex items-start gap-4 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-50 last:border-0 group">
                             <div className={`w-14 h-14 rounded-full ${notif.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
                               <notif.icon className={`h-7 w-7 ${notif.color}`} />
@@ -228,20 +263,55 @@ export function TopNav() {
                               <p className="text-[15px] font-black text-slate-800 leading-[1.3] mb-1">{notif.text}</p>
                               <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest mt-1 block italic">{notif.time}</span>
                             </div>
-                            <div className="flex items-center gap-4 shrink-0">
-                               {notif.unread && (
-                                 <div className="w-2.5 h-2.5 bg-blue-600 rounded-full" />
-                               )}
-                               <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center hover:bg-slate-100 transition-colors">
-                                  <MoreHorizontal className="h-5 w-5 text-slate-400" />
-                               </button>
-                            </div>
+                            <div className="flex items-center gap-4 shrink-0 relative">
+                                {notif.unread && (
+                                  <div className="w-2.5 h-2.5 bg-blue-600 rounded-full" />
+                                )}
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenNotifMenuId(openNotifMenuId === notif.id ? null : notif.id);
+                                  }}
+                                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${openNotifMenuId === notif.id ? 'bg-slate-200 text-slate-900' : 'bg-slate-50 hover:bg-slate-100 text-slate-400'}`}
+                                >
+                                   <MoreHorizontal className="h-5 w-5" />
+                                </button>
+
+                                {openNotifMenuId === notif.id && (
+                                   <div className="absolute top-full right-0 mt-2 w-[220px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-slate-100 py-2 z-[60] animate-in zoom-in-95 duration-200">
+                                      <button 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setNotifications(prev => prev.filter(n => n.id !== notif.id));
+                                          setOpenNotifMenuId(null);
+                                        }}
+                                        className="w-full px-5 py-3 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 text-left transition-colors"
+                                      >
+                                         <X className="w-4 h-4 text-slate-400" /> Remove Notification
+                                      </button>
+                                      <button 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, unread: false } : n));
+                                          setOpenNotifMenuId(null);
+                                        }}
+                                        className="w-full px-5 py-3 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 text-left transition-colors"
+                                      >
+                                         <ShieldCheck className="w-4 h-4 text-slate-400" /> Mark as Read
+                                      </button>
+                                      <div className="mx-4 my-2 border-t border-slate-50" />
+                                      <button className="w-full px-5 py-3 flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 text-left transition-colors">
+                                         <Settings className="w-4 h-4 text-slate-400" /> Notification Settings
+                                      </button>
+                                   </div>
+                                )}
+                             </div>
                           </div>
                         ))}
                       </div>
-                      <Link 
+                        <Link 
                         href="/notifications" 
-                        onClick={() => setIsNotificationsOpen(false)}
+                        onClick={() => setActiveDropdown(null)}
                         className="w-full py-5 bg-slate-50/50 border-t border-slate-100 text-center block text-[12px] font-black uppercase tracking-widest text-slate-500 hover:text-primary hover:bg-slate-100 transition-all active:bg-slate-200"
                       >
                         See all notifications
@@ -256,11 +326,11 @@ export function TopNav() {
               return (
                 <div key={link.label} className="relative h-full" ref={msgRef}>
                   <button
-                    onClick={() => setIsMessagingOpen(!isMessagingOpen)}
-                    className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[80px] h-full transition hover:text-primary relative group ${isMessagingOpen ? 'text-primary' : 'text-slate-500'}`}
+                    onClick={() => setActiveDropdown(activeDropdown === 'messaging' ? null : 'messaging')}
+                    className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[80px] h-full transition hover:text-primary relative group ${activeDropdown === 'messaging' || isActivePath(link.href) ? 'text-primary' : 'text-slate-500'}`}
                   >
                     <div className="relative">
-                      <link.icon className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
+                      <link.icon className={`h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform ${isActivePath(link.href) ? 'fill-primary/10' : ''}`} />
                       {link.badge && (
                         <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] font-black px-1 rounded-full min-w-[16px] h-[16px] grid place-items-center border-2 border-white shadow-sm">
                           {link.badge}
@@ -268,21 +338,19 @@ export function TopNav() {
                       )}
                     </div>
                     <span className="text-[11px] mt-0.5 font-bold uppercase tracking-widest hidden lg:block opacity-70 group-hover:opacity-100 transition-opacity scale-90">{link.label}</span>
-                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${isMessagingOpen ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${activeDropdown === 'messaging' || isActivePath(link.href) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
                   </button>
 
-                  {isMessagingOpen && (
+                  {activeDropdown === 'messaging' && (
                     <div className="absolute top-[52px] right-[-100px] w-[360px] bg-white rounded-b-3xl shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
                       <div className="p-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
                         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Direct Messages</h4>
-                        <Link href="/messaging" onClick={() => setIsMessagingOpen(false)} className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">New Message</Link>
+                        <Link href="/messaging" onClick={() => setActiveDropdown(null)} className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">New Message</Link>
                       </div>
                       <div className="max-h-[400px] overflow-y-auto">
-                        {[
-                          { id: 1, name: "Dr. Catherine Namubiru", text: "Let's chat about potential MTN collaborations.", time: "3:42 PM", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", unread: true },
-                          { id: 2, name: "Recruiter @ Chipper Cash", text: "Is your InMail working? We have an opening.", time: "1:20 PM", avatar: "CC", unread: false },
-                          { id: 3, name: "Isaac Kato", text: "Documentation sent. Check your email.", time: "Yesterday", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", unread: false }
-                        ].map((chat) => (
+                        {messages.length === 0 ? (
+                           <div className="p-8 text-center text-slate-500 text-xs font-medium">No direct messages.</div>
+                        ) : messages.map((chat) => (
                           <div key={chat.id} className="p-4 flex gap-3 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-50 last:border-0">
                             <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0 font-black text-slate-400 text-xs overflow-hidden">
                               {chat.avatar.startsWith('http') ? <img src={chat.avatar} className="w-full h-full object-cover" alt="" /> : chat.avatar}
@@ -297,7 +365,7 @@ export function TopNav() {
                       </div>
                       <Link 
                         href="/messaging" 
-                        onClick={() => setIsMessagingOpen(false)}
+                        onClick={() => setActiveDropdown(null)}
                         className="w-full py-3.5 bg-slate-50 border-t border-slate-100 text-center block text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary hover:bg-slate-100 transition-all"
                       >
                         See all in Messaging
@@ -312,10 +380,10 @@ export function TopNav() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="flex flex-col items-center justify-center min-w-[50px] md:min-w-[80px] h-full text-slate-500 transition hover:text-primary relative group"
+                className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[80px] h-full transition hover:text-primary relative group ${isActivePath(link.href) ? 'text-primary' : 'text-slate-500'}`}
               >
                 <div className="relative">
-                  <link.icon className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
+                  <link.icon className={`h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform ${isActivePath(link.href) ? 'fill-primary/10' : ''}`} />
                   {link.badge && (
                     <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] font-black px-1 rounded-full min-w-[16px] h-[16px] grid place-items-center border-2 border-white shadow-sm">
                       {link.badge > 9 ? '9+' : link.badge}
@@ -323,7 +391,7 @@ export function TopNav() {
                   )}
                 </div>
                 <span className="text-[11px] mt-0.5 font-bold uppercase tracking-widest hidden lg:block opacity-70 group-hover:opacity-100 transition-opacity scale-90">{link.label}</span>
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-center" />
+                <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${isActivePath(link.href) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
               </Link>
             );
           })}
@@ -331,20 +399,20 @@ export function TopNav() {
           {/* Profile Dropdown */}
           <div className="relative h-full" ref={meRef}>
             <button 
-              onClick={() => setIsMeOpen(!isMeOpen)}
-              className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[64px] h-full text-slate-500 hover:text-primary md:border-r border-slate-100 md:mr-2 md:pr-2 group transition-all ${isMeOpen ? 'text-primary' : ''}`}
+              onClick={() => setActiveDropdown(activeDropdown === 'me' ? null : 'me')}
+              className={`flex flex-col items-center justify-center min-w-[50px] md:min-w-[64px] h-full text-slate-500 hover:text-primary md:border-r border-slate-100 md:mr-2 md:pr-2 group transition-all ${activeDropdown === 'me' ? 'text-primary' : ''}`}
             >
-              <div className={`w-7 h-7 rounded-full overflow-hidden mb-0.5 border-2 transition-all ${isMeOpen ? 'border-primary' : 'border-slate-100 group-hover:border-primary'}`}>
+              <div className={`w-7 h-7 rounded-full overflow-hidden mb-0.5 border-2 transition-all ${activeDropdown === 'me' ? 'border-primary' : 'border-slate-100 group-hover:border-primary'}`}>
                 <img src={userAvatar} alt="Me" className="w-full h-full object-cover" />
               </div>
               <div className="flex items-center gap-0.5">
                 <span className="text-[11px] font-bold uppercase tracking-widest hidden lg:block opacity-70 scale-90">Me</span>
-                <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${isMeOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${activeDropdown === 'me' ? 'rotate-180' : ''}`} />
               </div>
-              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${isMeOpen ? 'scale-x-100' : 'scale-x-0'}`} />
+              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${activeDropdown === 'me' ? 'scale-x-100' : 'scale-x-0'}`} />
             </button>
 
-            {isMeOpen && (
+            {activeDropdown === 'me' && (
               <div className="absolute top-[52px] right-0 w-[280px] bg-white rounded-b-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
                  <div className="p-5 flex items-start gap-3">
                     <img src={userAvatar} className="w-12 h-12 rounded-full object-cover shadow-md" alt="" />
@@ -354,15 +422,15 @@ export function TopNav() {
                     </div>
                  </div>
                  <div className="px-4 pb-4">
-                    <Link href="/profile/demo-user" onClick={() => setIsMeOpen(false)} className="w-full flex items-center justify-center py-1.5 rounded-full border border-[#1B5E20] text-[#1B5E20] font-black text-[11px] uppercase tracking-widest hover:bg-green-50 transition-colors">
+                    <Link href="/profile/demo-user" onClick={() => setActiveDropdown(null)} className="w-full flex items-center justify-center py-1.5 rounded-full border border-[#1B5E20] text-[#1B5E20] font-black text-[11px] uppercase tracking-widest hover:bg-green-50 transition-colors">
                        View Profile
                     </Link>
                  </div>
                  <div className="py-2 border-t border-slate-100">
-                    <Link href="/settings" onClick={() => setIsMeOpen(false)} className="px-5 py-2.5 flex items-center gap-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                    <Link href="/settings" onClick={() => setActiveDropdown(null)} className="px-5 py-2.5 flex items-center gap-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                        <Settings className="w-4 h-4 text-slate-400" /> Settings & Privacy
                     </Link>
-                    <Link href="/help" onClick={() => setIsMeOpen(false)} className="px-5 py-2.5 flex items-center gap-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                    <Link href="/help" onClick={() => setActiveDropdown(null)} className="px-5 py-2.5 flex items-center gap-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                        <HelpCircle className="w-4 h-4 text-slate-400" /> Help Center
                     </Link>
                  </div>
@@ -383,27 +451,27 @@ export function TopNav() {
           {/* Business Dropdown */}
           <div className="relative h-full" ref={bizRef}>
             <button 
-              onClick={() => setIsBusinessOpen(!isBusinessOpen)}
-              className={`hidden md:flex flex-col items-center justify-center min-w-[80px] h-full text-slate-500 hover:text-primary group relative transition-all ${isBusinessOpen ? 'text-primary' : ''}`}
+              onClick={() => setActiveDropdown(activeDropdown === 'business' ? null : 'business')}
+              className={`hidden md:flex flex-col items-center justify-center min-w-[80px] h-full text-slate-500 hover:text-primary group relative transition-all ${activeDropdown === 'business' ? 'text-primary' : ''}`}
             >
               <Grid3X3 className="h-6 w-6 stroke-[1.5px] group-hover:scale-110 transition-transform" />
               <div className="flex items-center gap-0.5">
                 <span className="text-[11px] font-bold uppercase tracking-widest hidden lg:block opacity-70 scale-90">Business</span>
-                <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${isBusinessOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${activeDropdown === 'business' ? 'rotate-180' : ''}`} />
               </div>
-              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${isBusinessOpen ? 'scale-x-100' : 'scale-x-0'}`} />
+              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-transform origin-center ${activeDropdown === 'business' ? 'scale-x-100' : 'scale-x-0'}`} />
             </button>
 
-            {isBusinessOpen && (
+            {activeDropdown === 'business' && (
               <div className="absolute top-[52px] right-0 w-[340px] bg-white rounded-b-[2.5rem] shadow-[0_30px_90px_rgba(0,0,0,0.2)] border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300">
                  <div className="p-8 border-b border-slate-50 bg-slate-50/30">
                     <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-[#1B5E20] mb-6">Employer Solutions</h4>
                     <div className="grid grid-cols-2 gap-4">
-                       <Link href="/jobs/post" onClick={() => setIsBusinessOpen(false)} className="p-4 rounded-2xl bg-white border border-slate-100 group/item hover:border-[#1B5E20] transition-all flex flex-col items-center text-center shadow-sm">
+                       <Link href="/jobs/post" onClick={() => setActiveDropdown(null)} className="p-4 rounded-2xl bg-white border border-slate-100 group/item hover:border-[#1B5E20] transition-all flex flex-col items-center text-center shadow-sm">
                           <PlusCircle className="w-6 h-6 text-[#1B5E20] mb-2 group-hover/item:scale-110 transition-transform" />
                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">Post a Job</span>
                        </Link>
-                       <Link href="/network/talent" onClick={() => setIsBusinessOpen(false)} className="p-4 rounded-2xl bg-white border border-slate-100 group/item hover:border-[#1B5E20] transition-all flex flex-col items-center text-center shadow-sm">
+                       <Link href="/network/talent" onClick={() => setActiveDropdown(null)} className="p-4 rounded-2xl bg-white border border-slate-100 group/item hover:border-[#1B5E20] transition-all flex flex-col items-center text-center shadow-sm">
                           <Target className="w-6 h-6 text-blue-500 mb-2 group-hover/item:scale-110 transition-transform" />
                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">Talent Solutions</span>
                        </Link>
@@ -417,7 +485,7 @@ export function TopNav() {
                       { href: "/learning", icon: BookOpen, label: "Learning Academy", desc: "Expert training modules", color: "text-green-500" },
                       { href: "/jobs/post", icon: Zap, label: "Post a Job (Lite)", desc: "Quick hire for small business", color: "text-yellow-500" }
                     ].map((item, idx) => (
-                      <Link key={idx} href={item.href} onClick={() => setIsBusinessOpen(false)} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 group/row transition-all">
+                      <Link key={idx} href={item.href} onClick={() => setActiveDropdown(null)} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 group/row transition-all">
                          <div className={`p-2 rounded-xl bg-slate-100 ${item.color} group-hover/row:scale-110 transition-transform`}>
                             <item.icon className="w-4 h-4" />
                          </div>
@@ -432,32 +500,32 @@ export function TopNav() {
                  
                  <div className="p-6 bg-[#1B5E20] text-center">
                      <p className="text-[10px] font-black uppercase tracking-widest text-green-200 mb-1">Scale your vision</p>
-                     <Link href="/business-suite" onClick={() => setIsBusinessOpen(false)} className="text-sm font-black text-white hover:underline flex items-center justify-center gap-2 mx-auto">
+                     <Link href="/business-suite" onClick={() => setActiveDropdown(null)} className="text-sm font-black text-white hover:underline flex items-center justify-center gap-2 mx-auto">
                         Explore Business Suite <PlusCircle className="w-4 h-4" />
                      </Link>
-                  </div>
-              </div>
+                   </div>
+               </div>
             )}
           </div>
           
           {/* Unleash Premium Button */}
           <div className="hidden md:relative h-full" ref={premRef}>
             <button 
-              onClick={() => setIsPremiumOpen(!isPremiumOpen)}
-              className={`flex flex-col items-center justify-center min-w-[100px] h-full text-accent font-black uppercase tracking-[0.1em] hover:text-accent/80 leading-[1.1] text-center transition-all group ${isPremiumOpen ? 'bg-accent/10' : ''}`}
+              onClick={() => setActiveDropdown(activeDropdown === 'premium' ? null : 'premium')}
+              className={`flex flex-col items-center justify-center min-w-[100px] h-full text-accent font-black uppercase tracking-[0.1em] hover:text-accent/80 leading-[1.1] text-center transition-all group ${activeDropdown === 'premium' ? 'bg-accent/10' : ''}`}
             >
               <div className="relative">
-                 <Sparkles className={`w-6 h-6 mb-0.5 transition-all duration-500 ${isPremiumOpen ? 'rotate-180 scale-125' : 'group-hover:scale-110'}`} />
+                 <Sparkles className={`w-6 h-6 mb-0.5 transition-all duration-500 ${activeDropdown === 'premium' ? 'rotate-180 scale-125' : 'group-hover:scale-110'}`} />
                  <span className="absolute -top-1 -right-1 flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
                  </span>
               </div>
               <span className="text-[10px] scale-90">Unleash <br /> Premium</span>
-              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#A57C00] transition-transform origin-center ${isPremiumOpen ? 'scale-x-100' : 'scale-x-0'}`} />
+              <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#A57C00] transition-transform origin-center ${activeDropdown === 'premium' ? 'scale-x-100' : 'scale-x-0'}`} />
             </button>
 
-            {isPremiumOpen && (
+            {activeDropdown === 'premium' && (
               <div className="absolute top-[52px] right-0 w-[380px] bg-slate-900 rounded-b-[3rem] shadow-[0_40px_100px_rgba(0,0,0,0.4)] overflow-hidden animate-in slide-in-from-top-4 duration-500 border border-slate-800">
                  {/* Header */}
                  <div className="p-10 bg-gradient-to-br from-[#1B5E20] to-slate-900 border-b border-white/5">
@@ -478,7 +546,7 @@ export function TopNav() {
                          { href: "/premium/analytics", icon: BarChart3, label: "Applicant Insights", desc: "Competitive intelligence & rankings", color: "text-orange-400" },
                          { href: "/learning", icon: BookOpen, label: "Elite Learning", desc: "Full certification library access", color: "text-indigo-400" }
                        ].map((feat, idx) => (
-                         <Link key={idx} href={feat.href} onClick={() => setIsPremiumOpen(false)} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 group/feat transition-all cursor-pointer">
+                         <Link key={idx} href={feat.href} onClick={() => setActiveDropdown(null)} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 group/feat transition-all cursor-pointer">
                             <div className={`p-2.5 rounded-xl bg-white/5 ${feat.color} group-hover/feat:scale-110 transition-transform`}>
                                <feat.icon className="w-4.5 h-4.5" />
                             </div>
@@ -492,7 +560,7 @@ export function TopNav() {
                     </div>
 
                     <div className="pt-6 border-t border-white/5 flex flex-col gap-4">
-                       <Link href="/premium/analytics" onClick={() => setIsPremiumOpen(false)} className="w-full py-4 rounded-full bg-yellow-400 text-slate-900 font-black text-center text-xs uppercase tracking-[0.2em] hover:bg-yellow-500 transition-all shadow-xl shadow-yellow-900/20 active:scale-95">
+                       <Link href="/premium/analytics" onClick={() => setActiveDropdown(null)} className="w-full py-4 rounded-full bg-yellow-400 text-slate-900 font-black text-center text-xs uppercase tracking-[0.2em] hover:bg-yellow-500 transition-all shadow-xl shadow-yellow-900/20 active:scale-95">
                           Start 1 Month Zero Cost
                        </Link>
                        <p className="text-[8px] text-white/30 text-center uppercase tracking-widest font-black">Cancel anytime. Experience professional link infinity.</p>
