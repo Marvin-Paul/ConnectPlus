@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     const { content, imageUrl, authorId, type = "POST", title, tags } = body;
 
     if ((!content && !imageUrl) || !authorId) {
-      return NextResponse.json({ error: "Content (or an image) and authorId are required" }, { status: 400 });
+      return NextResponse.json({ error: `Validation Failed - Content: ${!!content}, ImageUrl: ${!!imageUrl}, AuthorId: ${authorId}` }, { status: 400 });
     }
 
     // Verify the author exists — try by ID first, then fall back to username lookup
