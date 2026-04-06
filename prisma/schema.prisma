@@ -53,11 +53,14 @@ enum JobApplicationStatus {
 
 model User {
   id            String          @id @default(cuid())
+  name          String?         // Full Name
   email         String          @unique
-  username      String          @unique
+  username      String?         @unique
+  phone         String?         @unique // Phone Number
   passwordHash  String
-  firstName     String
-  lastName      String
+  verificationToken String?     // For email verification
+  firstName     String?
+  lastName      String?
   headline      String?
   bio           String?
   location      String?
