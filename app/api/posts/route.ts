@@ -139,3 +139,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message || "Failed to create post", details: error.toString() }, { status: 500 });
   }
 }
+model Post {
+  id  string @id @default(cuid())
+  content string 
+  isEvent boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
