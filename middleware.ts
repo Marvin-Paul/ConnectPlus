@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Paths that don't require authentication
-  const isPublicPath = pathname === "/login" || pathname === "/signup" || pathname.startsWith("/api/");
+  const isPublicPath = pathname === "/" || pathname === "/login" || pathname === "/signup" || pathname.startsWith("/api/");
   
   // Static assets and internal next.js files
   if (
