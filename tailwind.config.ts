@@ -8,26 +8,33 @@ const config: Config = {
     "./lib/**/*.{ts,tsx}",
   ],
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
       colors: {
-        background: "#F3F6F8",
+        // Core Design Specification Colors
+        background: "#F3F6F8", // Professional Gray Background
+        foreground: "#1F2937", // Text Primary
         surface: "#FFFFFF",
+        
         primary: {
-          DEFAULT: "#0A66C2",
+          DEFAULT: "#0A66C2", // LinkedIn Blue
           hover: "#004182",
         },
-        text: {
-          primary: "#1F2937",
-          secondary: "#6B7280",
+        secondary: {
+          DEFAULT: "#6B7280", // Text Secondary
+          foreground: "#FFFFFF",
         },
-        border: "#E5E7EB",
+        border: "#E5E7EB", // Border Light Gray
+        input: "#E5E7EB",
+        ring: "#0A66C2",
+        
+        muted: {
+          DEFAULT: "#F3F6F8",
+          foreground: "#6B7280",
+        },
+        accent: {
+          DEFAULT: "#F3F6F8",
+          foreground: "#1F2937",
+        },
       },
       borderRadius: {
         lg: "16px",
