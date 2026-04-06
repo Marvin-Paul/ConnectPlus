@@ -15,7 +15,7 @@ import { EventCard } from "@/components/feed/event-card";
 
 const MIXED_ARTICLES: any[] = [
   {
-    id: "art1", type: "article", timestamp: Date.now() - 3600000 * 2,
+    id: "art1", type: "article", timestamp: 1735689600000, // Jan 1, 2025
     author: { name: "Dr. Catherine Namubiru", headline: "CIO at MTN Uganda", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", isFollowed: false },
     title: "AI Resilience in African Markets",
     coverImage: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800&h=450",
@@ -26,7 +26,7 @@ const MIXED_ARTICLES: any[] = [
 
 const MIXED_EVENTS: any[] = [
   {
-    id: "eve1", type: "event", timestamp: Date.now() - 3600000 * 4,
+    id: "eve1", type: "event", timestamp: 1735603200000, // Dec 31, 2024
     organizer: "Link Uganda", organizerLogo: "https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
     title: "Link Summit 2026: The Digital Pivot",
     image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800&h=450",
