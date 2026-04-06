@@ -110,7 +110,8 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     });
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data?.error || "Failed to create post");
+      console.error("[FeedProvider] POST /api/posts failed:", data);
+      throw new Error(data?.details || data?.error || JSON.stringify(data) || "Failed to create post");
     }
     // Normalize the response as a safety net
     const newPost: Post = {

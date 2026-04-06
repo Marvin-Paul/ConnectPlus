@@ -64,32 +64,49 @@ export async function POST(request: Request) {
     }
 
     // Verify the author exists — try by ID first, then fall back to username lookup
+    // Safely resolve an author ID that exists in the database
     let resolvedAuthorId = authorId;
-    const userById = await prisma.user.findUnique({ where: { id: authorId } });
-    if (!userById) {
-      // Fallback: try treating authorId as a username
-      const userByUsername = await prisma.user.findUnique({ where: { username: authorId } });
-      if (!userByUsername) {
-        // Last resort: find the first available user (demo/seed scenarios)
-        const fallbackUser = await prisma.user.findFirst();
-        if (!fallbackUser) {
-          return NextResponse.json({ error: "No valid user found to create post" }, { status: 400 });
-        }
-        resolvedAuthorId = fallbackUser.id;
-      } else {
-        resolvedAuthorId = userByUsername.id;
+    let foundUser = null;
+    
+    try {
+      // First try as an ID
+      foundUser = await prisma.user.findUnique({ where: { id: authorId } });
+      
+      // If not found, it might be a username (from our demo fallback)
+      if (!foundUser) {
+        foundUser = await prisma.user.findUnique({ where: { username: authorId } });
       }
+      
+      // Last resort: pick ANY user in the DB so the post doesn't fail
+      if (!foundUser) {
+        foundUser = await prisma.user.findFirst();
+      }
+      
+      if (!foundUser) {
+        return NextResponse.json({ error: "Database has no users. Please run the seed command first." }, { status: 400 });
+      }
+      
+      resolvedAuthorId = foundUser.id;
+    } catch (dbErr: any) {
+      console.error("Database user lookup error:", dbErr);
+      return NextResponse.json({ error: "Failed to look up user. Database connection error." }, { status: 500 });
     }
 
+    // Build the post creation payload safely
+    const postData: any = {
+      content,
+      authorId: resolvedAuthorId,
+      type: type || "POST",
+    };
+    
+    if (imageUrl) postData.imageUrl = imageUrl;
+    if (title) postData.title = title;
+    postData.tags = (tags && Array.isArray(tags)) ? tags : []; // Guarantee array
+
+    console.log("[API] Attempting to create post with data:", postData);
+
     const post = await prisma.post.create({
-      data: {
-        content,
-        imageUrl,
-        authorId: resolvedAuthorId,
-        type,
-        title,
-        tags: tags || [],
-      },
+      data: postData,
       include: {
         author: {
           select: {
@@ -117,8 +134,8 @@ export async function POST(request: Request) {
     };
 
     return NextResponse.json(formattedPost);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating post:", error);
-    return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to create post", details: error.toString() }, { status: 500 });
   }
 }
