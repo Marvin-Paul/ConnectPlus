@@ -56,35 +56,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // 2. Fallback to existing demo profile logic if /api/me fails or is not authenticated
-      let res = await fetch(`/api/profile/marvin-muwereza`);
-      if (!res.ok) {
-        res = await fetch(`/api/profile/demo-user`);
-      }
-      
-      if (!isMounted.current) return;
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.id) {
-          setUser({
-            ...data,
-            id: data.id,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            username: data.username,
-            headline: data.headline || "",
-            location: data.location || "",
-            avatarUrl: data.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
-            bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
-            isPremium: !!data.isPremium,
-            verified: !!data.verified
-          });
-        }
-      } else {
-        // Ultimate fallback (demo/logged-out state)
-        setUser(null);
-      }
+      // If not authenticated, set user to null
+      setUser(null);
     } catch (err) {
       console.error("Failed to fetch user context:", err);
       setUser(null);

@@ -103,14 +103,17 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const displayUser = {
     ...mock,
     ...user, // DB data overrides mock data if it exists
+    username: user?.username || username,
+    firstName: user?.firstName || user?.name?.split(' ')[0] || mock.firstName,
+    lastName: user?.lastName || user?.name?.split(' ').slice(1).join(' ') || mock.lastName,
     experiences: user?.experiences?.length ? user.experiences : mock.experiences,
     skills: user?.skills?.length ? user.skills : mock.skills,
     // Add other merges as needed...
-  }
+  } as any
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 space-y-4">
-      <ProfileHeader user={displayUser} />
+      <ProfileHeader user={displayUser as any} />
       <DashboardSection />
       
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">

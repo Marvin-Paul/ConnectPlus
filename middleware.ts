@@ -7,6 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-development-on
 // Use jose in middleware instead of jsonwebtoken as it's edge-compatible
 const getSecretKey = () => new TextEncoder().encode(JWT_SECRET);
 
+// Reverted to middleware for standard Next.js 14/15 compatibility
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("auth-token")?.value;
   const { pathname } = request.nextUrl;
