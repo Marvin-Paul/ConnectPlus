@@ -82,7 +82,6 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       setPage(pageNum);
     } catch (error) {
       console.error("Error fetching feed:", error);
-      setHasMore(false); // Stop loading if fetch fails
     } finally {
       setLoading(false);
     }
@@ -260,7 +259,6 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     </FeedContext.Provider>
   );
 }
-
 
 export const useFeed = () => {
   const context = useContext(FeedContext);

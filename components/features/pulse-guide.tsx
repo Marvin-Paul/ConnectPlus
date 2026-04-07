@@ -140,7 +140,7 @@ export function PulseGuide() {
     );
   }
 
-  const currentStep = GUIDE_STEPS[currentStepIndex];
+  const currentStep = currentStepIndex >= 0 ? GUIDE_STEPS[currentStepIndex] : null;
 
   return (
     <div className="fixed inset-0 z-[400] pointer-events-none overflow-hidden">

@@ -92,7 +92,53 @@ async function main() {
     ]
   })
 
-  // 5. Create Sample Elite Jobs
+  // 5. Generate Elite Post Feed (Social Heartbeat)
+  const posts = await prisma.post.createMany({
+    data: [
+      {
+        authorId: admin.id,
+        content: `Connect+ is more than a platform; it's a regional ecosystem for digital trust. 74% of West African tech hiring is now moving to verified-identity workflows. #ConnectedAfrica #TrustEngine`,
+        imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200',
+        type: 'POST',
+        tags: ['ConnectedAfrica', 'TrustEngine']
+      },
+      {
+        authorId: catherine.id,
+        content: `Just concluded the Q1 Infrastructure Sync at MTN. The shift toward decentralized edge computing is the next frontier for our regional connectivity. #MTN #TelecomFuture`,
+        type: 'POST',
+        tags: ['MTN', 'TelecomFuture']
+      },
+      {
+        authorId: admin.id,
+        content: `If you're not optimizing for AI-driven resource allocation in 2026, you're building for the past. Let's discuss why context-aware systems are winning.`,
+        imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1200',
+        type: 'POST',
+        tags: ['AI', 'Innovation']
+      }
+    ]
+  })
+
+  // 6. Add Interactions to Posts
+  const firstPost = await prisma.post.findFirst({ where: { authorId: admin.id } })
+  if (firstPost) {
+    await prisma.reaction.create({
+      data: {
+        userId: catherine.id,
+        postId: firstPost.id,
+        type: 'LIKE'
+      }
+    })
+    
+    await prisma.comment.create({
+      data: {
+        postId: firstPost.id,
+        authorId: catherine.id,
+        content: "Visionary approach, Marvin. We're seeing similar trends in our internal network audits."
+      }
+    })
+  }
+
+  // 7. Create Sample Elite Jobs
   await prisma.job.create({
     data: {
       postedById: catherine.id,

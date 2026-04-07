@@ -11,8 +11,8 @@ export function SplashScreen() {
       setIsAnimatingOut(true);
       setTimeout(() => {
         setIsVisible(false);
-      }, 800); // Wait for the fade out animation to finish
-    }, 2500); // Show splash screen for 2.5 seconds
+      }, 700); // Wait for the fade out animation to finish
+    }, 800); // Show splash screen for 0.8 seconds
 
     return () => clearTimeout(timer);
   }, []);
