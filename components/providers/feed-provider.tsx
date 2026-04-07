@@ -89,6 +89,34 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetchPosts(1, sort);
+
+    // Supabase Realtime Subscription for Live Feed
+    const initRealtime = async () => {
+       const { supabase } = await import("@/lib/supabase");
+       const channel = supabase.channel('realtime_feed')
+         .on(
+           'postgres_changes', 
+           { event: 'INSERT', schema: 'public', table: 'Post' }, 
+           async (payload) => {
+             console.log('Realtime post received:', payload.new);
+             // Fetch full post with author details for UI
+             const res = await fetch(`/api/posts/${payload.new.id}`);
+             if (res.ok) {
+               const fullPost = await res.json();
+               setPosts(prev => [fullPost, ...prev]);
+             }
+           }
+         )
+         .subscribe();
+
+       return channel;
+    };
+
+    const channelPromise = initRealtime();
+
+    return () => {
+      channelPromise.then(channel => channel.unsubscribe());
+    };
   }, [fetchPosts, sort]);
 
   const handleSetSort = (newSort: string) => {

@@ -72,11 +72,6 @@ export async function POST(req: Request) {
            passwordHash: 'AUTH_MANAGED_BY_SUPABASE', // Hashed password is in auth schema
            verified: false,
            username: email.split("@")[0].toLowerCase() + "_" + Math.floor(Math.random() * 1000),
-         },
-         select: {
-           id: true,
-           name: true,
-           email: true,
          }
        });
     }

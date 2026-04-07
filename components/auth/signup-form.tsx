@@ -220,6 +220,13 @@ export default function SignupForm() {
       <div className="grid grid-cols-2 gap-4">
         <button
           type="button"
+          onClick={async () => {
+             const { supabase } = await import("@/lib/supabase");
+             await supabase.auth.signInWithOAuth({
+               provider: 'google',
+               options: { redirectTo: `${window.location.origin}/api/auth/callback` }
+             });
+          }}
           className="flex h-12 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white text-[14px] font-bold text-[#1F2937] hover:bg-[#F9FAFB] transition-all active:scale-95 gap-2.5 shadow-sm"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
