@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
-import { hashPassword, generateToken, setAuthCookie } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
+import { generateToken, setAuthCookie } from "@/lib/auth";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Full name is required"),
@@ -31,58 +31,65 @@ export async function POST(req: Request) {
 
     const { name, email, phone, password } = validatedData.data;
 
-    // 2. Prevent duplicate accounts (same email or phone number)
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email },
-          { phone },
-        ],
+    // 2. Register user with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          phone: phone,
+        },
       },
     });
 
-    if (existingUser) {
-      const field = existingUser.email === email ? "email" : "phone number";
+    if (authError) {
+      console.error("Supabase Auth sign-up error:", authError);
       return NextResponse.json(
-        { message: `User with this ${field} already exists` },
-        { status: 409 }
+        { message: authError.message },
+        { status: 400 }
       );
     }
 
-    // 3. Hash password
-    const passwordHash = await hashPassword(password);
+    if (!authData.user) {
+      return NextResponse.json(
+        { message: "Registration failed – user not created" },
+        { status: 500 }
+      );
+    }
 
-    // 4. Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString("hex");
+    // 3. Create entry in Prisma 'User' table linked by auth ID
+    // Check if user already exists in Prisma (might happen if auth succeeded once but DB failed)
+    let user = await prisma.user.findUnique({ where: { id: authData.user.id } });
 
-    // 5. Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        phone,
-        passwordHash,
-        verificationToken,
-        verified: false,
-        username: email.split("@")[0] + "_" + Math.floor(Math.random() * 1000),
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      }
-    });
+    if (!user) {
+       user = await prisma.user.create({
+         data: {
+           id: authData.user.id, // Use Supabase internal ID as our primary key
+           name,
+           email,
+           phone,
+           passwordHash: 'AUTH_MANAGED_BY_SUPABASE', // Hashed password is in auth schema
+           verified: false,
+           username: email.split("@")[0].toLowerCase() + "_" + Math.floor(Math.random() * 1000),
+         },
+         select: {
+           id: true,
+           name: true,
+           email: true,
+         }
+       });
+    }
 
-    // Note: In a real production app, you would send the email here.
-    // sendVerificationEmail(user.email, verificationToken);
-
-    // 6. Generate JWT and set cookie
+    // 4. Generate local JWT and set cookie if verification isn't required to login
+    // Note: If email confirmation is enabled in Supabase, the user might not be 'active' yet.
+    // In many dev environments, confirmation is disabled by default.
     const token = generateToken({ userId: user.id, email: user.email });
     await setAuthCookie(token);
 
     return NextResponse.json(
       { 
-        message: "Registration successful. Please check your email for verification.", 
+        message: "Registration successful. Welcome to Connect+!", 
         user: { id: user.id, name: user.name, email: user.email } 
       },
       { status: 201 }

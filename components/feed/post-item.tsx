@@ -71,10 +71,10 @@ export function PostItem({ post }: PostItemProps) {
       <div className="p-4 md:p-5 flex items-start gap-4">
         <div className="w-12 h-12 rounded-[12px] overflow-hidden border border-[#E5E7EB] shadow-sm transform transition-hover hover:scale-105 shrink-0">
            {post.author.avatarUrl ? (
-              <img src={post.author.avatarUrl} alt={post.author.firstName} className="w-full h-full object-cover" />
+              <img src={post.author.avatarUrl} alt={post.author.firstName || "User"} className="w-full h-full object-cover" />
            ) : (
               <div className="w-full h-full bg-[#0A66C2]/10 flex items-center justify-center font-bold text-[#0A66C2] uppercase">
-                {post.author.firstName[0]}
+                {post.author.firstName?.[0] ?? post.author.username?.[0] ?? "U"}
               </div>
            )}
         </div>
@@ -82,9 +82,9 @@ export function PostItem({ post }: PostItemProps) {
            <div className="flex justify-between items-start">
               <div className="flex flex-col">
                  <h3 className="text-[15px] font-bold text-[#1F2937] hover:text-[#0A66C2] hover:underline transition-all cursor-pointer leading-tight">
-                   {post.author.firstName} {post.author.lastName}
+                   {post.author.firstName || post.author.username} {post.author.lastName || ""}
                  </h3>
-                 <p className="text-[12px] font-medium text-[#6B7280] line-clamp-1 mt-0.5 leading-tight">{post.author.headline}</p>
+                 <p className="text-[12px] font-medium text-[#6B7280] line-clamp-1 mt-0.5 leading-tight">{post.author.headline || "Connect+ Member"}</p>
                  <div className="flex items-center gap-1.5 text-[12px] font-bold text-[#9CA3AF] mt-1">
                     <span>{timeAgo(post.createdAt)}</span>
                     <span className="w-0.5 h-0.5 bg-[#D1D5DB] rounded-full" />
