@@ -150,9 +150,5 @@ function FeedContent() {
 }
 
 export default function FeedPage() {
-  return (
-    <FeedProvider>
-      <FeedContent />
-    </FeedProvider>
-  );
+  return <FeedContent />;
 }

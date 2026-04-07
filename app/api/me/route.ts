@@ -10,8 +10,12 @@ export async function GET() {
     }
 
     return NextResponse.json(user, { status: 200 });
-  } catch (error) {
-    console.error("Auth user fetch error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  } catch (error: any) {
+    console.error("[API] GET /api/me error details:", {
+      message: error.message,
+      stack: error.stack,
+      code: error.code
+    });
+    return NextResponse.json({ message: "Internal server error", details: error.message }, { status: 500 });
   }
 }
