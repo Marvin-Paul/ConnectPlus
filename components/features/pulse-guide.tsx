@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
-import { useUser } from "../providers/user-provider";
 import { Sparkles, X, ChevronRight, ChevronLeft, Zap, Rocket } from "lucide-react";
 
 interface GuideStep {
@@ -46,16 +45,16 @@ export function PulseGuide() {
 
   // Layout refinement: Hide on Auth pages
   const isAuthPage = pathname === "/login" || pathname === "/signup" || pathname?.startsWith("/onboarding");
-  if (isAuthPage) return null;
 
   useEffect(() => {
+    if (isAuthPage) return;
     const timer = setTimeout(() => {
       if (!localStorage.getItem('pulse_guide_seen')) {
         setShowNotification(true);
       }
     }, 3000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isAuthPage]);
 
   const updateTargetRect = useCallback(() => {
     if (currentStepIndex >= 0) {
@@ -69,6 +68,7 @@ export function PulseGuide() {
   }, [currentStepIndex]);
 
   useEffect(() => {
+    if (isAuthPage) return;
     if (isActive) {
       updateTargetRect();
       window.addEventListener('resize', updateTargetRect);
@@ -78,7 +78,7 @@ export function PulseGuide() {
       window.removeEventListener('resize', updateTargetRect);
       window.removeEventListener('scroll', updateTargetRect, true);
     };
-  }, [isActive, updateTargetRect]);
+  }, [isAuthPage, isActive, updateTargetRect]);
 
   const startGuide = () => {
     setIsActive(true);
@@ -106,6 +106,8 @@ export function PulseGuide() {
     setIsActive(false);
     setCurrentStepIndex(-1);
   };
+
+  if (isAuthPage) return null;
 
   if (!isActive && !showNotification) {
      return (
