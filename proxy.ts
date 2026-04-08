@@ -3,12 +3,12 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-development-only";
-
-// Use jose in middleware instead of jsonwebtoken as it's edge-compatible
 const getSecretKey = () => new TextEncoder().encode(JWT_SECRET);
 
-// Reverted to middleware for standard Next.js 14/15 compatibility
-export async function middleware(request: NextRequest) {
+/**
+ * Proxy function (previously middleware) handling authentication and routing boundaries.
+ */
+export async function proxy(request: NextRequest) {
   const token = request.cookies.get("auth-token")?.value;
   const { pathname } = request.nextUrl;
 
@@ -30,7 +30,6 @@ export async function middleware(request: NextRequest) {
       await jwtVerify(token, getSecretKey());
       return NextResponse.redirect(new URL("/", request.url));
     } catch (e) {
-      // Invalid token, allow access to public path
       const response = NextResponse.next();
       response.cookies.delete("auth-token");
       return response;
@@ -47,7 +46,6 @@ export async function middleware(request: NextRequest) {
       await jwtVerify(token, getSecretKey());
       return NextResponse.next();
     } catch (e) {
-      // Invalid token
       const response = NextResponse.redirect(new URL("/login", request.url));
       response.cookies.delete("auth-token");
       return response;
@@ -57,15 +55,11 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
+// Export as default as well to ensure Next.js can resolve it correctly
+export default proxy;
+
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };
