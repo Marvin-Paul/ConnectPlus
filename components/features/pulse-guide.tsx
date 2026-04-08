@@ -158,7 +158,7 @@ export function PulseGuide() {
           }
        `}</style>
 
-       {isActive && targetRect && (
+       {isActive && targetRect && currentStep && (
          <div 
            className="absolute inset-0 bg-[#1F2937]/40 backdrop-blur-[2px] pointer-events-auto transition-all duration-700 animate-fade-in pulse-spotlight"
            style={{
@@ -172,7 +172,7 @@ export function PulseGuide() {
          </div>
        )}
 
-       {isActive && targetRect && (
+       {isActive && targetRect && currentStep && (
           <div 
             className="absolute z-[500] pointer-events-auto transition-all duration-500 animate-fade-in pulse-tooltip max-w-[min(400px,calc(100vw-2rem))]"
             style={{

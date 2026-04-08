@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "prisma generate && next build",
+    "build": "node ./node_modules/prisma/build/index.js generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
-    "prisma:generate": "prisma generate",
+    "postinstall": "node ./node_modules/prisma/build/index.js generate",
+    "prisma:generate": "node ./node_modules/prisma/build/index.js generate",
     "prisma:migrate": "prisma migrate dev",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down"
@@ -39,6 +39,7 @@
     "tailwind-merge": "latest"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.12.1",
     "@types/node": "latest",
     "@types/pg": "^8.20.0",
     "@types/react": "latest",
