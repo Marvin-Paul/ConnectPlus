@@ -45,8 +45,23 @@ export async function POST(req: Request) {
 
     if (authError) {
       console.error("Supabase Auth sign-up error:", authError);
+      const status =
+        typeof (authError as any)?.status === "number" ? (authError as any).status : undefined;
+      const code = typeof (authError as any)?.code === "string" ? (authError as any).code : undefined;
+
+      if (status === 429 || code === "over_email_send_rate_limit") {
+        return NextResponse.json(
+          {
+            message:
+              "Sign-up email rate limit exceeded. Wait a bit, use a different email address, or disable email confirmations in Supabase while developing.",
+            code: code ?? "over_email_send_rate_limit",
+          },
+          { status: 429 }
+        );
+      }
+
       return NextResponse.json(
-        { message: authError.message },
+        { message: authError.message, code },
         { status: 400 }
       );
     }
