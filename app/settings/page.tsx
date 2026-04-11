@@ -93,7 +93,7 @@ export default function SettingsPage() {
                       { label: "Profile Information", desc: "Name, Headline, and Location settings" },
                       { label: "Display Mode", desc: "Choose between Light, Dark, or System Sync" },
                       { label: "Language", desc: "Set your preferred platform language" },
-                      { label: "Autoplay Videos", desc: "Choose if media should play automatically in your feed" }
+                      { label: "GitLab Connection", desc: "Manage your linked professional GitLab repositories" }
                     ].map(item => (
                       <div key={item.label} className="p-8 bg-white rounded-[2.5rem] border border-slate-100 hover:shadow-2xl transition-all duration-500 group cursor-pointer flex items-center justify-between">
                          <div className="space-y-1">

@@ -177,10 +177,19 @@ export default function LoginForm() {
         </button>
         <button
           type="button"
-          className="flex h-12 items-center justify-center rounded-xl bg-[#000000] text-white text-[14px] font-bold hover:bg-[#1F2937] transition-all active:scale-95 gap-2.5 shadow-sm"
+          onClick={async () => {
+             const { supabase } = await import("@/lib/supabase");
+             await supabase.auth.signInWithOAuth({
+               provider: 'gitlab',
+               options: { redirectTo: `${window.location.origin}/api/auth/callback` }
+             });
+          }}
+          className="flex h-12 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white text-[14px] font-bold text-[#1F2937] hover:bg-[#F9FAFB] transition-all active:scale-95 gap-2.5 shadow-sm"
         >
-          <Apple className="w-5 h-5 fill-white" />
-          Apple
+          <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#FC6D26" d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 01-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 015.12 2a.43.43 0 01.39.28l2 6.05h8.92l2-6.05A.43.43 0 0118.88 2a.42.42 0 01.41.13l2.44 7.51 1.22 3.78a.84.84 0 01-.3.97z" />
+          </svg>
+          GitLab
         </button>
       </div>
 

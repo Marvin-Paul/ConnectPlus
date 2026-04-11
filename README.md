@@ -47,4 +47,13 @@ connect+/
   postcss.config.js
   tailwind.config.ts
   tsconfig.json
-```
+## GitLab Integration
+
+This application is connected to GitLab for:
+- **SSO**: Log in with your GitLab professional account.
+- **CI/CD**: Automated pipelines are configured in `.gitlab-ci.yml`.
+- **Profile Sync**: Link your GitLab username in Settings to showcase your projects.
+
+To enable GitLab OAuth:
+1. Create a GitLab Application in your profile settings.
+2. Add `GITLAB_CLIENT_ID` and `GITLAB_CLIENT_SECRET` to your Supabase Auth configuration.

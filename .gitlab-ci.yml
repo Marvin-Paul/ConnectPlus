@@ -1,0 +1,38 @@
+image: node:20
+
+stages:
+  - build
+  - test
+
+cache:
+  paths:
+    - .next/cache/
+    - node_modules/
+
+install_dependencies:
+  stage: build
+  script:
+    - npm install
+  artifacts:
+    paths:
+      - node_modules/
+
+build_app:
+  stage: build
+  script:
+    - npx prisma generate
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+  only:
+    - main
+    - Connect+
+
+lint_app:
+  stage: test
+  script:
+    - npm run lint
+  only:
+    - main
+    - Connect+

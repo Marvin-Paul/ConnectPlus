@@ -1,13 +1,10 @@
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native"]
-  previewFeatures = ["driverAdapters"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 enum ConnectionStatus {
@@ -73,7 +70,7 @@ model User {
   isHiring      Boolean         @default(false)
   isPremium     Boolean         @default(false)
   verified      Boolean         @default(false)
-  roleCategory  String?         // e.g. "Engineer", "Leadership", "Design"
+  gitlabUsername String?         @unique
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
