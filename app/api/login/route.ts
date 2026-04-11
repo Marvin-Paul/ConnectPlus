@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
 import { generateToken, setAuthCookie } from "@/lib/auth";
 
+export const runtime = "nodejs";
+
 const loginSchema = z.object({
   identifier: z.string().min(1, "Email or phone is required"),
   password: z.string().min(1, "Password is required"),
