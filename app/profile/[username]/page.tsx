@@ -10,6 +10,7 @@ import { EducationSection } from "@/components/profile/education-section"
 import { SkillsSection } from "@/components/profile/skills-section"
 import { SocialProofSection } from "@/components/profile/social-proof-section"
 import { AccomplishmentsSection } from "@/components/profile/accomplishments-section"
+import { Sparkles } from "lucide-react"
 
 interface ProfilePageProps {
   params: Promise<{ username: string }>
@@ -112,59 +113,59 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   } as any
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4 space-y-4">
-      <ProfileHeader user={displayUser as any} />
-      <DashboardSection />
-      
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        {/* Left Column (Main Feed) */}
-        <div className="md:col-span-8 space-y-6">
-          <AboutSection username={displayUser.username} about={displayUser.bio} />
-          <FeaturedSection username={displayUser.username} items={displayUser.featuredItems as any} />
-          <ExperienceSection username={displayUser.username} experiences={displayUser.experiences as any} />
-          <EducationSection username={displayUser.username} educations={displayUser.educations as any} />
-          <SkillsSection username={displayUser.username} skills={displayUser.skills as any} />
-          <SocialProofSection username={displayUser.username} recommendations={displayUser.recommendationsReceived as any} />
-          <AccomplishmentsSection 
-            username={displayUser.username}
-            certifications={displayUser.certifications as any}
-            projects={displayUser.projects as any}
-            volunteering={displayUser.volunteering as any}
-            honors={displayUser.honors as any}
-          />
-        </div>
+    <div className="min-h-screen bg-background pb-20">
+      <div className="max-w-[1152px] mx-auto pt-8 px-4 flex flex-col gap-6 animate-pro-fade">
+        <ProfileHeader user={displayUser as any} />
+        <DashboardSection />
+        
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* Main Feed */}
+          <div className="md:col-span-8 space-y-6">
+            <AboutSection username={displayUser.username} about={displayUser.bio} />
+            <FeaturedSection username={displayUser.username} items={displayUser.featuredItems as any} />
+            <ExperienceSection username={displayUser.username} experiences={displayUser.experiences as any} />
+            <EducationSection username={displayUser.username} educations={displayUser.educations as any} />
+            <SkillsSection username={displayUser.username} skills={displayUser.skills as any} />
+            <SocialProofSection username={displayUser.username} recommendations={displayUser.recommendationsReceived as any} />
+          </div>
 
-        {/* Right Column (Sidebar) */}
-        <div className="md:col-span-4 space-y-6">
-           <div className="bg-card border rounded-lg p-6 flex flex-col items-center text-center space-y-4 shadow-sm hover:shadow-md transition-shadow">
-             <h3 className="font-bold flex items-center gap-2">
-                <span className="text-primary">✨</span> Ad: Remote Work Guru
-             </h3>
-             <p className="text-sm text-muted-foreground font-medium">Looking for a Senior Developer to lead your remote team? Visit our jobs section.</p>
-             <Link href="/jobs" className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-full font-bold text-sm transition-colors text-center">
-                Explore Jobs
-             </Link>
-           </div>
-
-           <div className="bg-card border rounded-lg p-6 space-y-4 shadow-sm">
-             <h3 className="font-bold text-md text-foreground">People also viewed</h3>
-             <div className="space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex gap-3 group cursor-pointer items-start">
-                    <div className="w-10 h-10 rounded-full bg-muted shrink-0 bg-gradient-to-br from-primary/10 to-primary/30 flex items-center justify-center font-bold text-primary">J</div>
-                    <div>
-                      <h4 className="text-sm font-bold group-hover:text-primary transition-colors">Jane Doe</h4>
-                      <p className="text-xs text-muted-foreground line-clamp-1 italic">Product Designer @ Creative Studio</p>
-                      <button className="mt-1.5 text-xs font-bold text-muted-foreground border rounded-full px-3 py-1 hover:bg-muted/50 transition-colors flex items-center gap-1">
-                        Connect
-                      </button>
-                    </div>
-                  </div>
-                ))}
+          {/* Sidebar */}
+          <div className="md:col-span-4 space-y-6">
+             <div className="bg-white border rounded-xl p-8 flex flex-col items-center text-center space-y-6 shadow-soft transition-all hover:shadow-dropdown">
+               <div className="w-14 h-14 bg-primary/5 rounded-full flex items-center justify-center border border-primary/10">
+                  <Sparkles className="w-6 h-6 text-primary" />
+               </div>
+                <div className="space-y-2">
+                  <h3 className="font-bold text-slate-900 uppercase tracking-widest text-[11px]">Connect+ Premium</h3>
+                  <p className="text-[13px] text-slate-500 font-medium leading-relaxed">Increase your profile visibility to industry leaders with our Premium features.</p>
+                </div>
+                <Link href="/premium" className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-lg font-bold text-[11px] uppercase tracking-widest transition-all shadow-sm">
+                   Upgrade to Premium
+                </Link>
              </div>
-           </div>
+
+             <div className="bg-white border rounded-xl p-6 space-y-6 shadow-soft">
+               <h3 className="font-extrabold text-[12px] text-foreground uppercase tracking-widest px-2">People also viewed</h3>
+               <div className="space-y-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex gap-4 group cursor-pointer items-start px-2">
+                      <div className="w-12 h-12 rounded-full bg-muted shrink-0 border border-border overflow-hidden">
+                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=user${i+10}`} className="w-full h-full object-cover" alt="" />
+                      </div>
+                       <div className="min-w-0">
+                        <h4 className="text-[14px] font-bold text-slate-900 group-hover:text-[#1B5E20] transition-colors truncate">Professional {i}</h4>
+                        <p className="text-[12px] text-slate-500 font-medium line-clamp-1">Senior System Architect</p>
+                        <button className="mt-2 text-[11px] font-bold text-slate-500 border border-slate-200 rounded-lg px-4 py-1.5 hover:bg-slate-50 transition-all uppercase tracking-widest">
+                          Connect
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+               </div>
+             </div>
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

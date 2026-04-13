@@ -10,36 +10,41 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Core Design Specification Colors
-        background: "#F3F6F8", // Professional Gray Background
-        foreground: "#1F2937", // Text Primary
-        surface: "#FFFFFF",
+        // Core Design Specification Colors mapped to CSS variables for Inclusiveness
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        card: "hsl(var(--card))",
+        "card-foreground": "hsl(var(--card-foreground))",
         
         primary: {
-          DEFAULT: "#0A66C2", // LinkedIn Blue
-          hover: "#004182",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#6B7280", // Text Secondary
-          foreground: "#FFFFFF",
-        },
-        border: "#E5E7EB", // Border Light Gray
-        input: "#E5E7EB",
-        ring: "#0A66C2",
-        
-        muted: {
-          DEFAULT: "#F3F6F8",
-          foreground: "#6B7280",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         accent: {
-          DEFAULT: "#F3F6F8",
-          foreground: "#1F2937",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
       },
       borderRadius: {
-        lg: "16px",
-        md: "12px",
-        sm: "8px",
+        xl: "20px",
+        lg: "12px",
+        md: "8px",
+        sm: "4px",
       },
       fontFamily: {
         sans: ["Inter", "Roboto", "sans-serif"],

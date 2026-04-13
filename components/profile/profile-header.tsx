@@ -68,11 +68,23 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
       const ext = file.name.split(".").pop()
       const fileName = `avatars/${user.username}_${Date.now()}.${ext}`
       const { data, error } = await supabase.storage.from("avatars").upload(fileName, file, { upsert: true })
-      if (error) throw error
+      
+      if (error) {
+        // Fallback for missing bucket in development
+        if (error.message?.toLowerCase().includes("bucket not found") || error.message?.includes("404")) {
+          console.warn("Supabase bucket 'avatars' not found. Falling back to local preview.");
+          const localUrl = URL.createObjectURL(file);
+          setAvatarUrl(localUrl);
+          return;
+        }
+        throw error
+      }
+      
       const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(data.path)
       setAvatarUrl(urlData.publicUrl)
-    } catch (err) {
-      console.error(err)
+    } catch (err: any) {
+      console.error("Avatar Upload Error:", err);
+      // Optional: Add a toast or UI error message here
     } finally {
       setAvatarUploading(false)
     }
@@ -91,14 +103,15 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
               <div className="w-full h-full bg-slate-900 border-b border-slate-800" />
             )}
             
-            <div className="absolute top-6 right-6 flex items-center gap-3">
-               <button 
-                  onClick={() => setIsEditModalOpen(true)}
-                  className="p-3 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all active:scale-95"
-               >
-                  <PenLine className="h-5 w-5" />
-               </button>
-            </div>
+             <div className="absolute top-6 right-6 flex items-center gap-3">
+                <button 
+                   onClick={() => setIsEditModalOpen(true)}
+                   aria-label="Edit introduction"
+                   className="p-3 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all active:scale-95"
+                >
+                   <PenLine className="h-5 w-5" />
+                </button>
+             </div>
           </div>
 
           <div className="relative pt-24 pb-16 px-12">
@@ -106,7 +119,14 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
             {/* AVATAR OVERLAY */}
             <div className="absolute -top-16 left-8">
               <div className="relative group/avatar">
-                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                <input 
+                  ref={fileInputRef} 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleAvatarChange} 
+                  aria-label="Upload avatar portrait"
+                />
                 <button
                   onClick={handleAvatarClick}
                   disabled={avatarUploading}
@@ -142,7 +162,10 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                     <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
                       {user.firstName} {user.lastName}
                     </h1>
-                    <button className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors">
+                    <button 
+                      aria-label="Listen to name pronunciation"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors"
+                    >
                       <Volume2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -219,7 +242,10 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                       Direct Node
                     </Link>
 
-                    <button className="h-14 w-14 flex items-center justify-center rounded-full border border-slate-100 text-slate-300 hover:text-accent transition-all bg-white shadow-sm">
+                    <button 
+                      aria-label="Save profile to favorites"
+                      className="h-14 w-14 flex items-center justify-center rounded-full border border-slate-100 text-slate-300 hover:text-accent transition-all bg-white shadow-sm"
+                    >
                        <Star className="w-5 h-5" />
                     </button>
                   </>

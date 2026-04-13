@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Smile, Send, MoreHorizontal as Ellipsis, ThumbsUp, Heart, Star, Sparkles, MessageSquare, Award, Clock, ChevronDown, User, Reply, Search, X } from "lucide-react";
+import { Smile, Send, MoreHorizontal as Ellipsis, ThumbsUp, Heart, Star, Sparkles, MessageSquare, Award, Clock, ChevronDown, User, Reply, Search, X, Flag, Trash2 } from "lucide-react";
 import { useUser } from "../providers/user-provider";
 
 interface Comment {
@@ -10,8 +10,10 @@ interface Comment {
   createdAt: string;
   likes_count?: number;
   author: {
+    id: string;
     firstName: string;
     lastName: string;
+    username: string;
     avatarUrl: string | null;
     headline: string | null;
   };
@@ -48,6 +50,55 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
 
   useEffect(() => {
     fetchComments();
+
+    // Realtime subscription for new comments
+    let channel: any = null;
+    const initRealtime = async () => {
+      try {
+        const { supabase } = await import("@/lib/supabase");
+        if (!supabase) return;
+
+        // Clean up any existing channel with same name to prevent "after subscribe" error
+        const existing = supabase.getChannels().find(c => c.topic === `realtime:comments_${postId}`);
+        if (existing) {
+          await supabase.removeChannel(existing);
+        }
+
+        channel = supabase.channel(`comments_${postId}`)
+          .on(
+            'postgres_changes' as any,
+            { event: 'INSERT', schema: 'public', table: 'Comment', filter: `postId=eq.${postId}` },
+            async (payload: any) => {
+               try {
+                  const res = await fetch(`/api/comment/${payload.new.id}`);
+                  if (res.ok) {
+                     const fullComment = await res.json();
+                     setComments(prev => {
+                        if (prev.find(c => c.id === fullComment.id)) return prev;
+                        return [fullComment, ...prev];
+                     });
+                  }
+               } catch (e) {
+                  console.error("Error fetching realtime comment:", e);
+               }
+            }
+          );
+        
+        channel.subscribe();
+      } catch (err) {
+        console.error("Realtime comments error:", err);
+      }
+    };
+
+    initRealtime();
+
+    return () => {
+      if (channel) {
+        import("@/lib/supabase").then(({ supabase }) => {
+          supabase.removeChannel(channel);
+        });
+      }
+    };
   }, [postId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,10 +107,13 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
 
     setIsSubmitting(true);
     try {
+      // Use the authenticated user ID, or fallback to 'demo-user' to match the backend's development pattern
+      const senderId = user?.id || "demo-user";
+      
       const res = await fetch(`/api/posts/${postId}/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.id, content: newComment }),
+        body: JSON.stringify({ userId: senderId, content: newComment }),
       });
       if (res.ok) {
         const comment = await res.json();
@@ -98,128 +152,179 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
     return `${Math.floor(hours / 24)}d`;
   };
 
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const EMOJIS = ["💡", "🚀", "📈", "🤝", "🎯", "✨", "🔥", "💎", "✅", "🙌"];
+
+  const addEmoji = (emoji: string) => {
+    setNewComment(prev => prev + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      handleSubmit(e as any);
+    }
+  };
+
   return (
-    <div className="px-4 md:px-10 pb-12 pt-8 animate-in fade-in slide-in-from-top-6 duration-700 bg-slate-50/20 backdrop-blur-3xl border-t border-slate-100/50">
+    <div className="bg-[#F8FAFC]/50 px-4 md:px-8 py-8 space-y-8 animate-pro-fade">
       
-      {/* Premium Input Hub */}
-      <div className="relative mb-12 group/input">
-         <div className="absolute inset-x-0 -top-12 flex justify-between items-center px-4">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Share your professional perspective</h4>
-            <div className="flex items-center gap-2">
-               <Smile className="w-4 h-4 text-slate-300 hover:text-primary transition-colors cursor-pointer" />
-               <Sparkles className="w-4 h-4 text-slate-300 hover:text-accent transition-colors cursor-pointer" />
-            </div>
+      {/* Editorial Comment Hub */}
+      <div className="flex gap-4 group/input">
+         <div className="w-10 h-10 rounded-lg overflow-hidden border border-border bg-white shadow-sm shrink-0">
+            {user?.avatarUrl ? (
+               <img src={user.avatarUrl} className="w-full h-full object-cover" alt="My Profile" />
+            ) : (
+               <div className="w-full h-full bg-primary/10 flex items-center justify-center font-bold text-primary uppercase text-[14px]">
+                  {user?.firstName?.[0] || 'U'}
+               </div>
+            )}
          </div>
          
-         <form onSubmit={handleSubmit} className="flex gap-4 items-center bg-white p-2 rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.05)] border border-slate-100 hover:shadow-xl transition-all duration-500 hover:border-primary/20">
-            <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
-               {user?.avatarUrl ? <img src={user.avatarUrl} className="w-full h-full object-cover" /> : <User className="w-5 h-5 text-slate-300" />}
-            </div>
-            <div className="flex-1">
-               <input 
+         <form onSubmit={handleSubmit} className="flex-1 relative">
+            <div className="relative overflow-hidden rounded-xl border border-border bg-white focus-within:border-primary/50 transition-all shadow-sm">
+               {showEmojiPicker && (
+                  <div className="absolute bottom-14 left-2 p-2 bg-white rounded-xl shadow-premium border border-border flex gap-2 animate-in slide-in-from-bottom-2 z-50">
+                     {EMOJIS.map(e => (
+                        <button 
+                           key={e} 
+                           type="button" 
+                           onClick={() => addEmoji(e)}
+                           className="text-lg hover:scale-125 transition-transform p-1"
+                        >
+                           {e}
+                        </button>
+                     ))}
+                     <button 
+                        type="button" 
+                        onClick={() => setShowEmojiPicker(false)} 
+                        aria-label="Close emoji picker"
+                        className="p-1 text-secondary/40 hover:text-foreground"
+                     >
+                        <X className="w-4 h-4" />
+                     </button>
+                  </div>
+               )}
+               <textarea 
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Drop a professional insight..."
-                  className="w-full bg-transparent border-none focus:ring-0 text-[14px] font-medium text-slate-800 placeholder:text-slate-400 pl-2"
+                  onKeyDown={handleKeyDown}
+                  placeholder="Share a professional perspective..."
+                  rows={2}
+                  className="w-full p-3.5 pb-12 bg-transparent border-none focus:ring-0 text-[14px] font-medium text-foreground placeholder:text-secondary/60 resize-none leading-relaxed"
+                  aria-label="Write a professional comment"
                />
+               <div className="absolute bottom-2 inset-x-2 flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                     <button 
+                        type="button" 
+                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        aria-label="Add emoji" 
+                        className={`p-2 rounded-lg transition-colors ${showEmojiPicker ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-secondary/60 hover:text-primary'}`}
+                     >
+                        <Smile className="w-5 h-5" />
+                     </button>
+                     <button type="button" aria-label="Use AI Assistant" className="p-2 rounded-lg hover:bg-muted text-secondary/60 hover:text-accent transition-colors">
+                        <Sparkles className="w-5 h-5" />
+                     </button>
+                  </div>
+                  <button 
+                     type="submit"
+                     disabled={!newComment.trim() || isSubmitting}
+                     className={`px-6 py-1.5 rounded-full font-bold text-[13px] transition-all shadow-premium active:scale-95 bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+                  >
+                     {isSubmitting && <Clock className="w-3.5 h-3.5 animate-spin" />}
+                     {isSubmitting ? "Posting..." : "Post insight"}
+                  </button>
+               </div>
             </div>
-            <button 
-               disabled={!newComment.trim() || isSubmitting}
-               className="bg-primary text-white p-3 rounded-full shadow-lg shadow-primary/25 hover:bg-slate-900 transition-all active:scale-90 disabled:opacity-30 flex items-center justify-center group/send"
-            >
-               {isSubmitting ? (
-                  <Clock className="w-5 h-5 animate-spin" />
-               ) : (
-                  <Send className="w-5 h-5 group-hover/send:translate-x-1 group-hover/send:-translate-y-1 transition-transform" />
-               )}
-            </button>
          </form>
       </div>
 
-      {/* Conversations Stream */}
-      <div className="space-y-10">
-         <div className="flex items-center gap-3">
-            <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent to-slate-100" />
-            <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] italic">
-               {loading ? "Discovering Insights..." : `${comments.length} Elite Contributions`}
-            </span>
-            <div className="h-[2px] flex-1 bg-gradient-to-l from-transparent to-slate-100" />
+      {/* Stream Options */}
+      <div className="flex items-center justify-between px-1">
+         <div className="flex items-center gap-2 text-[12px] font-bold text-secondary">
+            <span className="text-foreground">Most relevant</span>
+            <ChevronDown className="w-3 h-3" />
          </div>
+      </div>
 
+      {/* Conversations Feed */}
+      <div className="space-y-6">
          {loading ? (
-            <div className="space-y-8">
-               {[1, 2, 3].map(i => (
-                  <div key={i} className="flex gap-4 animate-pulse px-4">
-                     <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full" />
-                     <div className="flex-1 space-y-3">
-                        <div className="h-4 bg-slate-50 w-32 rounded-full" />
-                        <div className="h-4 bg-slate-50 w-full rounded-full opacity-60" />
-                        <div className="h-4 bg-slate-50 w-2/3 rounded-full opacity-30" />
+            <div className="space-y-6">
+               {[1, 2].map(i => (
+                  <div key={i} className="flex gap-4 animate-pulse">
+                     <div className="w-10 h-10 bg-muted rounded-lg shrink-0" />
+                     <div className="flex-1 space-y-2.5">
+                        <div className="h-4 bg-muted w-32 rounded-full" />
+                        <div className="h-12 bg-muted w-full rounded-xl" />
                      </div>
                   </div>
                ))}
             </div>
          ) : (
             comments.map(comment => (
-               <div key={comment.id} className="relative flex gap-5 group/comment">
-                  {/* Continuity Line */}
-                  <div className="absolute left-6 top-14 bottom-[-40px] w-[2px] bg-gradient-to-b from-slate-100 to-transparent opacity-50 group-last/comment:hidden" />
-                  
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm overflow-hidden shrink-0 group-hover/comment:scale-110 transition-transform duration-500 z-10">
+               <div key={comment.id} className="group/comment flex gap-4 pr-1">
+                  <div className="w-10 h-10 rounded-lg overflow-hidden border border-border shrink-0 z-10 bg-white">
                      {comment.author.avatarUrl ? (
-                        <img src={comment.author.avatarUrl} className="w-full h-full object-cover" />
+                        <img src={comment.author.avatarUrl} className="w-full h-full object-cover" alt="" />
                      ) : (
-                        <div className="w-full h-full flex items-center justify-center font-black text-slate-200 bg-slate-50">{comment.author.firstName[0]}</div>
+                        <div className="w-full h-full flex items-center justify-center font-bold text-primary/40 text-[12px] uppercase">
+                           {(comment.author.firstName?.[0] || comment.author.username?.[0] || "U")}
+                        </div>
                      )}
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                     <div className="relative bg-white/60 backdrop-blur-xl border border-slate-100 rounded-[2rem] rounded-tl-none p-6 shadow-sm group-hover/comment:shadow-xl transition-all duration-500 group-hover/comment:border-primary/10">
-                        <div className="flex justify-between items-start mb-3">
-                           <div>
-                              <p className="text-[13px] font-black text-slate-900 tracking-tight leading-none mb-1">{comment.author.firstName} {comment.author.lastName}</p>
-                              <p className="text-[10px] font-bold text-slate-400 italic line-clamp-1">{comment.author.headline || "Industry Expert"}</p>
+                  <div className="flex-1 space-y-1.5 min-w-0">
+                     <div className="bg-white rounded-2xl rounded-tl-none p-4 ring-1 ring-border shadow-sm group-hover/comment:ring-primary/20 transition-all">
+                        <div className="flex justify-between items-start gap-4">
+                           <div className="min-w-0">
+                              <h5 className="text-[13px] font-bold text-foreground hover:text-primary transition-colors cursor-pointer truncate">
+                                 {comment.author.firstName || comment.author.username} {comment.author.lastName || ""}
+                              </h5>
+                              <p className="text-[11px] font-semibold text-secondary line-clamp-1 leading-tight">
+                                 {comment.author.headline || "Connect Plus Member"}
+                              </p>
                            </div>
-                           <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{timeAgo(comment.createdAt)}</span>
+                           <div className="flex items-center gap-2 shrink-0 ml-4">
+                              <span className="text-[10px] font-bold text-secondary/50 uppercase tracking-widest">{timeAgo(comment.createdAt)}</span>
+                              <button 
+                                 aria-label="Comment options"
+                                 onClick={() => setActiveMore(activeMore === comment.id ? null : comment.id)}
+                                 className="p-1 rounded-lg hover:bg-muted text-secondary/40 hover:text-foreground transition-colors"
+                              >
+                                 <Ellipsis className="w-4 h-4" />
+                              </button>
+                           </div>
                         </div>
-                        <p className="text-[14px] text-slate-600 leading-relaxed font-medium italic">
-                           "{comment.content}"
+                        <p className="text-[14px] leading-relaxed text-foreground/80 font-medium">
+                           {comment.content}
                         </p>
                         
-                        {/* Interactive Reaction Plate */}
-                        <div className="absolute -bottom-4 right-6 flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full border border-slate-100 shadow-xl opacity-0 group-hover/comment:opacity-100 transition-all translate-y-2 group-hover/comment:translate-y-0 duration-500">
-                           <button onClick={() => handleLikeComment(comment.id)} className="hover:scale-125 transition-transform text-red-500"><Heart className="w-3.5 h-3.5 fill-current" /></button>
-                           <button className="hover:scale-125 transition-transform text-primary"><Award className="w-3.5 h-3.5" /></button>
-                           <button className="hover:scale-125 transition-transform text-blue-500"><MessageSquare className="w-3.5 h-3.5" /></button>
-                        </div>
+                        {/* Reaction count bubble */}
+                        {(comment.likes_count || 0) > 0 && (
+                           <div className="absolute -bottom-2 -left-2 px-2 py-0.5 bg-white border border-border rounded-full shadow-lg flex items-center gap-1 scale-90">
+                              <div className="flex -space-x-1">
+                                 <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center border border-white">
+                                    <ThumbsUp className="w-2.5 h-2.5 text-white fill-white" />
+                                 </div>
+                              </div>
+                              <span className="text-[11px] font-bold text-secondary">{comment.likes_count}</span>
+                           </div>
+                        )}
                      </div>
 
-                     <div className="flex gap-8 px-6 mt-3">
+                     <div className="flex items-center gap-4 px-2 text-[12px] font-black uppercase tracking-widest text-secondary/60">
                         <button 
                            onClick={() => handleLikeComment(comment.id)}
-                           className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${likedComments.has(comment.id) ? 'text-primary' : 'text-slate-400 hover:text-primary'}`}
+                           className={`flex items-center gap-1.5 transition-colors ${likedComments.has(comment.id) ? 'text-primary' : 'hover:text-primary'}`}
                         >
-                           <ThumbsUp className={`w-3.5 h-3.5 ${likedComments.has(comment.id) ? 'fill-current' : ''}`} />
-                           <span>{(comment.likes_count || 0) > 0 ? comment.likes_count : 'Endorse'}</span>
+                           Like
                         </button>
-                        <button className="flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-primary transition-colors uppercase tracking-[0.2em]">
-                           <Reply className="w-3.5 h-3.5" />
-                           <span>Answer</span>
-                        </button>
-                        <button className="flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-primary transition-colors uppercase tracking-[0.2em]">
-                           <Award className="w-3.5 h-3.5" />
-                           <span>Award</span>
-                        </button>
-                        <div className="flex-1" />
-                        <div className="relative">
-                           <button 
-                             onClick={() => setActiveMore(prev => prev === comment.id ? null : comment.id)}
-                             className={`p-1 rounded-full transition-colors ${activeMore === comment.id ? 'text-slate-500 bg-slate-100' : 'text-slate-200 hover:text-slate-400'}`}
-                           >
-                              <Ellipsis className="w-4 h-4" />
-                           </button>
-
-                        </div>
+                        <span className="w-1 h-1 bg-border rounded-full" />
+                        <button className="hover:text-primary transition-colors">Reply</button>
                      </div>
                   </div>
                </div>
@@ -227,43 +332,52 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
          )}
 
          {!loading && comments.length === 0 && (
-            <div className="text-center py-20 bg-white/50 rounded-[3rem] border-2 border-dashed border-slate-100 animate-in fade-in zoom-in-95 duration-1000">
-               <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
-                  <MessageSquare className="w-8 h-8 text-slate-200" />
+            <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-border animate-pro-fade">
+               <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MessageSquare className="w-6 h-6 text-secondary/30" />
                </div>
-               <h5 className="text-[14px] font-black text-slate-800 uppercase tracking-widest leading-none mb-2">No conversations yet</h5>
-               <p className="text-[11px] text-slate-400 font-bold italic">Initiate the dialog with your professional perspective.</p>
+               <h6 className="text-[14px] font-bold text-foreground">No contributions yet</h6>
+               <p className="text-[12px] text-secondary mt-1">Be the first to share an editorial insight.</p>
             </div>
          )}
       </div>
 
-      <button className="w-full py-8 mt-12 bg-white rounded-[2rem] border border-slate-100 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-primary hover:bg-slate-50 transition-all shadow-sm">
-         Discover deeper conversations
-      </button>
-
+      {/* Floating Context Menu (for Delete/Report) */}
       {activeMore && (
-        <div className="fixed inset-0 z-[140]">
-          <button
-            type="button"
-            aria-label="Close comment options"
-            onClick={() => setActiveMore(null)}
-            className="absolute inset-0 bg-black/20"
-          />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
-            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
-            <button onClick={() => setActiveMore(null)} className="w-full px-6 py-4 text-left text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-              Report
-            </button>
-            <button
-              onClick={() => {
-                setComments(prev => prev.filter(c => c.id !== activeMore));
-                setActiveMore(null);
-              }}
-              className="w-full px-6 py-4 text-left text-[18px] font-medium text-red-500 hover:bg-red-50 transition-colors"
-            >
-              Delete
-            </button>
-          </div>
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/5 backdrop-blur-[2px]">
+           <div 
+             className="w-full max-w-xs bg-white rounded-2xl shadow-premium border border-border overflow-hidden animate-in zoom-in-95 duration-200"
+             onClick={(e) => e.stopPropagation()}
+           >
+              <div className="p-2">
+                 <button 
+                  onClick={() => setActiveMore(null)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted text-[14px] font-bold text-foreground transition-all"
+                 >
+                    <Flag className="w-4 h-4 text-secondary" /> Report perspective
+                 </button>
+                 {user?.id === comments.find(c => c.id === activeMore)?.author.id && (
+                    <button 
+                     onClick={() => {
+                        setComments(prev => prev.filter(c => c.id !== activeMore));
+                        setActiveMore(null);
+                     }}
+                     className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-[14px] font-bold text-red-600 transition-all mt-1"
+                    >
+                       <Trash2 className="w-4 h-4" /> Delete contribution
+                    </button>
+                 )}
+              </div>
+              <div className="border-t border-border p-2">
+                 <button 
+                  onClick={() => setActiveMore(null)}
+                  className="w-full py-2.5 text-[13px] font-bold text-secondary hover:text-foreground transition-all"
+                 >
+                    Cancel
+                 </button>
+              </div>
+           </div>
+           <div className="absolute inset-0 -z-10" onClick={() => setActiveMore(null)} />
         </div>
       )}
     </div>

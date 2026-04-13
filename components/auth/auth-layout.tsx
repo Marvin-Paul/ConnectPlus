@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import { Sparkles, Globe, ShieldCheck, Zap } from "lucide-react";
+import { Sparkles, Globe, ShieldCheck, Zap, Grid3X3 } from "lucide-react";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -8,88 +8,83 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#F3F6F8] selection:bg-[#0A66C2]/10 selection:text-[#0A66C2]">
-      {/* Visual Side: High-Fidelity Professional Branding */}
-      <div className="hidden lg:flex flex-col justify-between p-16 bg-[#0A66C2] relative overflow-hidden group">
-        {/* Dynamic Professional Gradients & Orbs */}
-        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-white/5 rounded-full blur-[120px] transition-transform duration-[20s] animate-pulse" />
-        <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-[#004182]/40 rounded-full blur-[100px] animate-pulse" />
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background selection:bg-primary/10 selection:text-primary">
+      {/* Visual Side */}
+      <div className="hidden lg:flex flex-col justify-between p-16 bg-primary relative overflow-hidden group">
+        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-white/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-black/20 rounded-full blur-[100px]" />
         
-        <div className="relative z-10 flex items-center gap-4">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 bg-white text-[#0A66C2] rounded-2xl flex items-center justify-center font-black text-2xl shadow-xl transform group-hover:rotate-6 transition-transform duration-500">
-              C+
+        <div className="relative z-10 flex items-center gap-6">
+          <Link href="/" className="inline-flex items-center gap-4 group/logo">
+            <div className="h-[44px] w-[44px] flex items-center justify-center rounded-xl bg-white/10 backdrop-blur-md text-white shadow-premium border border-white/20">
+               <span className="font-black text-2xl tracking-tighter">C+</span>
             </div>
-            <span className="text-2xl font-bold tracking-tighter text-white">Connect<span className="opacity-80">Plus</span></span>
+            <div className="flex flex-col">
+              <span className="text-2xl font-black tracking-tight text-white leading-none">Connect Plus</span>
+              <span className="text-[10px] font-bold text-accent uppercase tracking-[0.3em] mt-1">Professional</span>
+            </div>
           </Link>
-          <div className="h-6 w-[1px] bg-white/20 mx-2" />
-          <span className="text-[11px] font-bold text-white/50 tracking-[0.2em] uppercase mt-1">Professional Core</span>
         </div>
 
         <div className="relative z-10 max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/90 text-xs font-bold tracking-wide mb-8 backdrop-blur-md border border-white/10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-white/90 text-[11px] font-extrabold tracking-widest uppercase mb-10 backdrop-blur-md border border-white/10">
              <Sparkles className="w-3.5 h-3.5 text-accent" />
-             NEW: Elite Networking Mode Active
+             Future of Networking
           </div>
-          <h2 className="text-6xl font-black text-white leading-[1.05] tracking-tight mb-8">
+          <h2 className="text-6xl font-black text-white leading-[1.05] tracking-tighter mb-8">
             Scale your <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40">professional</span> <br />
-            identity.
+            legacy.
           </h2>
-          <p className="text-white/70 text-lg leading-relaxed font-medium mb-12">
-            The next generation of professional discovery. Connect with industry leaders, elite engineers, and global visionaries.
+          <p className="text-white/60 text-lg leading-relaxed font-semibold mb-12">
+            The elite destination for builders, visionaries, and industry leaders across the African continent and beyond.
           </p>
           
           <div className="grid grid-cols-2 gap-8">
-             <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10">
-                   <Globe className="w-5 h-5 text-white" />
+             <div className="flex gap-4 group/feat">
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10 transition-colors group-hover/feat:bg-white/20">
+                   <Globe className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                   <h4 className="text-white font-bold text-sm">Global Reach</h4>
-                   <p className="text-white/40 text-[12px] mt-0.5">150+ Countries synced</p>
+                   <h4 className="text-white font-bold text-sm">Global Core</h4>
+                   <p className="text-white/40 text-[11px] font-bold mt-1 uppercase tracking-wider">Synced Network</p>
                 </div>
              </div>
-             <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10">
-                   <ShieldCheck className="w-5 h-5 text-white" />
+             <div className="flex gap-4 group/feat">
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10 transition-colors group-hover/feat:bg-white/20">
+                   <ShieldCheck className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                   <h4 className="text-white font-bold text-sm">Elite Security</h4>
-                   <p className="text-white/40 text-[12px] mt-0.5">Pro-Grade Verification</p>
+                   <h4 className="text-white font-bold text-sm">Elite Trust</h4>
+                   <p className="text-white/40 text-[11px] font-bold mt-1 uppercase tracking-wider">Verified Identity</p>
                 </div>
              </div>
           </div>
         </div>
 
-        <div className="relative z-10 flex items-center justify-between">
-           <div className="flex items-center gap-3">
-              <div className="flex -space-x-2">
-                 {[1, 2, 3].map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0A66C2] bg-white/10 overflow-hidden ring-2 ring-white/10">
+        <div className="relative z-10 flex items-center justify-between border-t border-white/10 pt-8 mt-12">
+           <div className="flex items-center gap-4">
+              <div className="flex -space-x-3">
+                 {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-primary bg-muted overflow-hidden ring-2 ring-white/10">
                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=user${i}`} alt="" className="w-full h-full object-cover" />
                     </div>
                  ))}
               </div>
-              <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">Join 85k+ Experts</span>
-           </div>
-           <div className="text-white/20 text-[10px] font-bold uppercase tracking-widest">
-             &copy; 2026 Connect+ Ecosystem
+              <span className="text-[12px] font-extrabold text-white/50 uppercase tracking-widest">Join 85,000+ Profiles</span>
            </div>
         </div>
       </div>
 
-      {/* Logic Side: Premium Authentication Form Container */}
-      <div className="flex items-center justify-center p-8 sm:p-12 md:p-24 relative">
-        <div className="absolute inset-0 bg-[#F3F6F8] pointer-events-none" />
-        
-        {/* Subtle geometric accents for mobile */}
-        <div className="absolute top-20 right-10 w-64 h-64 bg-[#0A66C2]/5 rounded-full blur-[80px] lg:hidden" />
-        
-        <div className="w-full max-w-[420px] bg-white p-10 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] border border-white relative z-10 overflow-hidden transform hover:translate-y-[-2px] transition-transform duration-500">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#0A66C2]/5 to-transparent rounded-bl-[100px]" />
+      {/* Logic Side */}
+      <div className="flex items-center justify-center p-6 sm:p-12 relative overflow-hidden">
+        <div className="w-full max-w-[440px] bg-white p-10 rounded-3xl shadow-premium border border-border relative z-10 animate-pro-fade">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/[0.02] rounded-bl-[120px] pointer-events-none" />
           {children}
         </div>
+        
+        {/* Background Accents */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/[0.01] rounded-full blur-[120px] -z-0" />
       </div>
     </div>
   );

@@ -6,10 +6,12 @@ import { useState } from "react";
 import { Home, Users, PlusSquare, Bell, Briefcase } from "lucide-react";
 import { PostModal } from "../feed/post-modal";
 import { useUser } from "../providers/user-provider";
+import { useNotifications } from "../providers/notification-provider";
 
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { user } = useUser();
+  const { unreadCount } = useNotifications();
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   
   // Hide on Auth/Onboarding pages
@@ -20,7 +22,7 @@ export function MobileBottomNav() {
     { href: "/", label: "Home", icon: Home },
     { href: "/network", label: "My Network", icon: Users },
     { label: "Post", icon: PlusSquare, onClick: () => setIsPostModalOpen(true) },
-    { href: "/notifications", label: "Notifications", icon: Bell, badge: 17 },
+    { href: "/notifications", label: "Notifications", icon: Bell, badge: unreadCount },
     { href: "/jobs", label: "Jobs", icon: Briefcase },
   ];
 
@@ -41,8 +43,8 @@ export function MobileBottomNav() {
               <item.icon 
                 className={`h-[24px] w-[24px] transition-all duration-200 ${isActive ? 'text-[#0A66C2] scale-110 stroke-[2.2px]' : 'text-[#6B7280] stroke-[1.8px] hover:text-[#1F2937]'}`} 
               />
-              {item.badge && (
-                <span className="absolute -top-1.5 -right-2.5 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full min-w-[16px] h-[16px] flex items-center justify-center border-2 border-white shadow-sm">
+              {item.badge !== undefined && item.badge > 0 && (
+                <span className="absolute top-0 right-0 -translate-y-1/3 translate-x-1/3 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full min-w-[16px] h-[16px] flex items-center justify-center border-2 border-white shadow-sm z-10">
                   {Math.min(item.badge, 99)}
                 </span>
               )}

@@ -4,28 +4,36 @@
 
 @layer base {
   :root {
-    /* Premium Professional Design System - Spec-Compatible HSL */
-    --background: 204 25% 97%; /* #F3F6F8 */
-    --foreground: 215 28% 17%; /* #1F2937 */
+    /* Connect+ Inclusive Design System - WCAG 2.1 Compliant */
+    /* Favouring high contrast and eye-condition inclusiveness */
+    
+    --background: 210 33% 99%; /* Off-white with slight cool tint to reduce glare */
+    --foreground: 222 47% 11%; /* High contrast slate for maximum readability */
     
     --card: 0 0% 100%;
-    --card-foreground: 215 28% 17%;
+    --card-foreground: 222 47% 11%;
     
-    --primary: 210 90% 40.4%; /* LinkedIn Blue #0A66C2 */
+    /* Primary Blue optimized for high contrast ratio against background */
+    --primary: 221 83% 36%; 
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 220 9% 46.3%; /* Text Secondary #6B7280 */
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary text using darker slate for improved low-vision readability */
+    --secondary: 215 25% 35%; 
+    --secondary-foreground: 210 40% 98%;
     
-    --muted: 214 15% 91%; /* Borders/Muted #E5E7EB */
-    --muted-foreground: 220 9% 46%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 20% 40%;
     
-    --accent: 210 90% 95%;
-    --accent-foreground: 210 90% 20%;
+    /* Accent color: Rich deep bronze, more distinct for color-blind users than yellow/gold */
+    --accent: 28 50% 35%; 
+    --accent-foreground: 0 0% 100%;
     
-    --border: 214 15% 91%;
-    --input: 214 15% 91%;
-    --ring: 210 90% 40.4%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 36%;
+    
+    --destructive: 0 84% 40%; /* Accessible high-contrast red */
+    --destructive-foreground: 210 40% 98%;
     
     --radius: 12px;
   }
@@ -37,14 +45,16 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    line-height: 1.5;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.011em; /* Subtle professional tight look for Inter */
   }
 
-  h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
-  h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; }
-  h3 { font-size: 20px; font-weight: 600; }
+  h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: hsl(var(--foreground)); }
+  h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.025em; color: hsl(var(--foreground)); }
+  h3 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  h4 { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
 }
 
 @layer components {

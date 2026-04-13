@@ -20,7 +20,7 @@ async function main() {
       avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256',
       isPremium: true,
       verified: true,
-      roleCategory: 'Engineering'
+      isHiring: true
     }
   })
 
@@ -37,8 +37,7 @@ async function main() {
       headline: 'CIO at MTN Uganda | Professional Tech Evangelist',
       location: 'Kampala, Uganda',
       avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=256&h=256',
-      isPremium: true,
-      roleCategory: 'Leadership'
+      isPremium: true
     }
   })
 
