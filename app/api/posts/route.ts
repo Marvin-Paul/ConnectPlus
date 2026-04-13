@@ -20,46 +20,65 @@ export async function GET(request: Request) {
       ];
     }
 
-    const posts = await prisma.post.findMany({
-      take: limit,
-      skip: skip,
-      orderBy,
-      include: {
-        author: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            username: true,
-            avatarUrl: true,
-            headline: true,
+    try {
+      const posts = await prisma.post.findMany({
+        take: limit,
+        skip: skip,
+        orderBy,
+        include: {
+          author: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              username: true,
+              avatarUrl: true,
+              headline: true,
+            },
           },
+          _count: true,
         },
-        _count: true,
-      },
-    });
+      });
 
-    const formattedPosts = (posts as any).map((post: any) => ({
-      ...post,
-      reactions: [],
-      _count: {
-        likes: post._count?.reactions ?? post._count?.likes ?? 0,
-        comments: post._count?.comments || 0,
-        reposts: post._count?.reposts || 0
-      }
-    }));
+      const formattedPosts = (posts as any).map((post: any) => ({
+        ...post,
+        reactions: [],
+        _count: {
+          likes: post._count?.reactions ?? post._count?.likes ?? 0,
+          comments: post._count?.comments || 0,
+          reposts: post._count?.reposts || 0
+        }
+      }));
 
-    return NextResponse.json(formattedPosts);
+      return NextResponse.json(formattedPosts);
+    } catch (dbError) {
+      console.error("Database error fetching posts:", dbError);
+      throw dbError;
+    }
   } catch (error) {
-    console.error("Error fetching posts:", error);
-    return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
+    console.error("DEBUG: GET /api/posts error:", error);
+    return NextResponse.json({ 
+      error: "Failed to fetch posts",
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { content, imageUrl, authorId, type = "POST", title, tags } = body;
+    const { 
+      content, 
+      imageUrl, 
+      authorId, 
+      type = "POST", 
+      title, 
+      tags,
+      isEvent,
+      eventDate,
+      eventLocation,
+      attendeeCount
+    } = body;
 
     if ((!content && !imageUrl) || !authorId) {
       return NextResponse.json({ error: `Validation Failed - Content: ${!!content}, ImageUrl: ${!!imageUrl}, AuthorId: ${authorId}` }, { status: 400 });
@@ -99,9 +118,18 @@ export async function POST(request: Request) {
       content,
       authorId: resolvedAuthorId,
       type: type || "POST",
+      isEvent: !!isEvent,
+      eventDate: eventDate ? new Date(eventDate) : null,
+      eventLocation: eventLocation || null,
+      attendeeCount: attendeeCount ? parseInt(attendeeCount) : 0,
     };
     
-    if (imageUrl) postData.imageUrl = imageUrl;
+    if (imageUrl) {
+      // Safety check: ensure we don't save local blob URLs to the database
+      postData.imageUrl = imageUrl.startsWith('blob:') 
+        ? "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80" 
+        : imageUrl;
+    }
     if (title) postData.title = title;
     postData.tags = (tags && Array.isArray(tags)) ? tags : []; // Guarantee array
 

@@ -46,6 +46,7 @@ interface FeedContextType {
   hidePost: (postId: string) => void;
   unfollowUser: (authorId: string) => void;
   reportPost: (postId: string) => void;
+  incrementCommentCount: (postId: string) => void;
   sort: string;
   setSort: (sort: string) => void;
 }
@@ -91,31 +92,55 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     fetchPosts(1, sort);
 
     // Supabase Realtime Subscription for Live Feed
+    let channel: any = null;
+    
     const initRealtime = async () => {
-       const { supabase } = await import("@/lib/supabase");
-       const channel = supabase.channel('realtime_feed')
-         .on(
-           'postgres_changes', 
-           { event: 'INSERT', schema: 'public', table: 'Post' }, 
-           async (payload) => {
-             console.log('Realtime post received:', payload.new);
-             // Fetch full post with author details for UI
-             const res = await fetch(`/api/posts/${payload.new.id}`);
-             if (res.ok) {
-               const fullPost = await res.json();
-               setPosts(prev => [fullPost, ...prev]);
-             }
-           }
-         )
-         .subscribe();
+      try {
+        const { supabase } = await import("@/lib/supabase");
+        if (!supabase) return;
 
-       return channel;
+        // Ensure we are truly clean before starting
+        const existingChannels = supabase.getChannels();
+        for (const existing of existingChannels) {
+           if (existing.topic === 'realtime:realtime_feed') {
+              await supabase.removeChannel(existing);
+           }
+        }
+        
+        // Use a unique channel name every time to avoid state conflicts in Dev mode
+        const channelId = `feed_${Date.now()}`;
+        channel = supabase.channel(channelId)
+          .on(
+            'postgres_changes' as any, 
+            { event: 'INSERT', schema: 'public', table: 'Post' }, 
+            async (payload: any) => {
+              console.log('Realtime post received:', payload.new);
+              const res = await fetch(`/api/posts/${payload.new.id}`);
+              if (res.ok) {
+                const fullPost = await res.json();
+                setPosts(prev => [fullPost, ...prev]);
+              }
+            }
+          );
+          
+        channel.subscribe((status: string) => {
+          if (status === 'SUBSCRIBED') {
+            console.log(`Realtime channel ${channelId} active`);
+          }
+        });
+      } catch (err) {
+        console.error("Failed to initialize realtime feed:", err);
+      }
     };
 
-    const channelPromise = initRealtime();
+    initRealtime();
 
     return () => {
-      channelPromise.then(channel => channel.unsubscribe());
+      if (channel) {
+        import("@/lib/supabase").then(({ supabase }) => {
+          supabase.removeChannel(channel).catch(console.error);
+        });
+      }
     };
   }, [fetchPosts, sort]);
 
@@ -125,7 +150,14 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     setHasMore(true);
   };
 
-  const createPost = async (content: string, imageUrl?: string) => {
+  const createPost = async (content: string, imageUrl?: string, options?: { 
+    type?: string; 
+    title?: string; 
+    tags?: string[];
+    isEvent?: boolean;
+    eventDate?: string;
+    eventLocation?: string;
+  }) => {
     if (!user) throw new Error("User not authenticated");
     const res = await fetch("/api/posts", {
       method: "POST",
@@ -134,6 +166,7 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
         content,
         imageUrl,
         authorId: user.id,
+        ...options
       }),
     });
     const data = await res.json();
@@ -202,10 +235,11 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     }));
 
     try {
+      const effectId = user?.id || "demo-user";
       await fetch(`/api/posts/${postId}/react`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.id, type }),
+        body: JSON.stringify({ userId: effectId, type }),
       });
     } catch (error) {
        console.error("Error reacting:", error);
@@ -239,10 +273,11 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
   const sharePost = async (postId: string, content?: string) => {
     if (!user) return;
     try {
+      const effectId = user?.id || "demo-user";
       await fetch(`/api/posts/${postId}/share`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.id, content }),
+        body: JSON.stringify({ userId: effectId, content }),
       });
       
       setPosts(prev => prev.map(post => {
@@ -279,9 +314,21 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     console.log(`Reported post ${postId}`);
   };
 
+  const incrementCommentCount = (postId: string) => {
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          _count: { ...post._count, comments: post._count.comments + 1 }
+        };
+      }
+      return post;
+    }));
+  };
+
   return (
     <FeedContext.Provider value={{ 
-      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost, sort, setSort: handleSetSort
+      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost, incrementCommentCount, sort, setSort: handleSetSort
     }}>
       {children}
     </FeedContext.Provider>

@@ -36,19 +36,25 @@ export async function GET(request: Request) {
          where: { id: authUser.id }
        });
 
-       if (!user) {
+        if (!user) {
+          const fullName = authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || "User";
+          const [firstName, ...lastNameParts] = fullName.split(' ');
+          const lastName = lastNameParts.join(' ');
+
           user = await prisma.user.create({
             data: {
               id: authUser.id,
               email: authUser.email!,
-              name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || "User",
+              name: fullName,
+              firstName: firstName || fullName,
+              lastName: lastName || "",
               phone: authUser.phone || authUser.user_metadata?.phone || "",
               passwordHash: 'AUTH_MANAGED_BY_SUPABASE',
               username: authUser.email?.split("@")[0].toLowerCase() + "_" + Math.floor(Math.random() * 1000),
               verified: true
             }
           });
-       }
+        }
 
        // Set local auth cookie
        const token = generateToken({ userId: user.id, email: user.email });

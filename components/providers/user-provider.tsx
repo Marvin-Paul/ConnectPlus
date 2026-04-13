@@ -14,6 +14,12 @@ interface UserProfile {
   bannerUrl: string;
   isPremium: boolean;
   verified: boolean;
+  totalConnections?: number;
+  _count?: {
+    posts: number;
+    followers: number;
+    following: number;
+  };
 }
 
 interface UserContextType {
@@ -49,7 +55,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             avatarUrl: data.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${data.name || data.email}`,
             bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
             isPremium: !!data.isPremium,
-            verified: !!data.verified
+            verified: !!data.verified,
+            totalConnections: data.totalConnections || 0,
+            _count: data._count
           });
           setLoading(false);
           return;

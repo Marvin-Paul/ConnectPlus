@@ -5,6 +5,7 @@ import { MobileBottomNav } from "../components/layout/mobile-bottom-nav";
 import { QueryProvider } from "../components/providers/query-provider";
 import { UserProvider } from "../components/providers/user-provider";
 import { FeedProvider } from "../components/providers/feed-provider";
+import { NotificationProvider } from "../components/providers/notification-provider";
 import { PulseGuide } from "../components/features/pulse-guide";
 import { Inter } from "next/font/google"; 
 import { SplashScreen } from "../components/ui/splash-screen";
@@ -20,7 +21,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Connect+ | Professional Networking for Africa",
+  title: "Connect Plus | Professional Networking for Africa",
   description: "The premier professional identity, networking, and opportunity platform for the modern African workforce. Build your digital trust.",
 };
 
@@ -32,12 +33,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <QueryProvider>
           <UserProvider>
             <FeedProvider>
-              <TopNav />
-              <main className="md:pt-[56px] min-h-screen">
-                 {children}
-              </main>
-              <MobileBottomNav />
-              <PulseGuide />
+              <NotificationProvider>
+                <TopNav />
+                <main className="md:pt-[56px] min-h-screen">
+                   {children}
+                </main>
+                <MobileBottomNav />
+                <PulseGuide />
+              </NotificationProvider>
             </FeedProvider>
           </UserProvider>
         </QueryProvider>

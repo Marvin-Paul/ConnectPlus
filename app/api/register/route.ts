@@ -80,17 +80,22 @@ export async function POST(req: Request) {
     let user = await prisma.user.findUnique({ where: { id: authData.user.id } });
 
     if (!user) {
-       user = await prisma.user.create({
-         data: {
-           id: authData.user.id, // Use Supabase internal ID as our primary key
-           name,
-           email,
-           phone,
-           passwordHash: 'AUTH_MANAGED_BY_SUPABASE', // Hashed password is in auth schema
-           verified: false,
-           username: email.split("@")[0].toLowerCase() + "_" + Math.floor(Math.random() * 1000),
-         }
-       });
+      const [firstName, ...lastNameParts] = name.split(' ');
+      const lastName = lastNameParts.join(' ');
+
+      user = await prisma.user.create({
+        data: {
+          id: authData.user.id,
+          name,
+          firstName: firstName || name,
+          lastName: lastName || "",
+          email,
+          phone,
+          passwordHash: 'AUTH_MANAGED_BY_SUPABASE',
+          verified: false,
+          username: email.split("@")[0].toLowerCase() + "_" + Math.floor(Math.random() * 1000),
+        }
+      });
     }
 
     // 4. Generate local JWT and set cookie if verification isn't required to login

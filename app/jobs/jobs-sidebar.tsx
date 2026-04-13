@@ -67,7 +67,7 @@ export function JobsSidebar() {
              className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/20 active:scale-95"
            >
              <Zap className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
-             Post explicit job
+             Post a position
            </Link>
         </div>
       </div>
@@ -76,7 +76,7 @@ export function JobsSidebar() {
       <div className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-2xl shadow-slate-200/40 p-10 space-y-10">
          <div className="flex items-center gap-3">
             <Filter className="w-5 h-5 text-[#1B5E20]" />
-            <h2 className="text-[14px] font-black text-slate-800 uppercase tracking-[0.3em] italic">Precision Filters</h2>
+            <h2 className="text-[14px] font-black text-slate-800 uppercase tracking-[0.3em]">Precision Filters</h2>
          </div>
 
          <div className="space-y-6">
@@ -100,7 +100,7 @@ export function JobsSidebar() {
          </div>
 
          <div className="pt-8 border-t border-slate-50">
-            <button className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 hover:text-[#1B5E20] transition-colors italic">
+            <button className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 hover:text-[#1B5E20] transition-colors">
                Clear all parameters
             </button>
          </div>

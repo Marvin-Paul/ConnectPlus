@@ -61,7 +61,7 @@ function FeedContent() {
   }, [loading, hasMore, posts.length, fetchPosts]);
 
   return (
-    <div className="min-h-screen bg-[#F3F6F8] pb-24">
+    <div className="min-h-screen bg-background pb-24">
       <div className="max-w-[1152px] mx-auto py-8 px-4 grid grid-cols-1 md:grid-cols-12 gap-8 relative">
         
         <aside className="hidden md:block md:col-span-4 lg:col-span-3 h-fit">
