@@ -1,5 +1,12 @@
+require('dotenv').config()
 const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const { PrismaPg } = require('@prisma/adapter-pg')
+const { Pool } = require('pg')
+
+const connectionString = process.env.DATABASE_URL
+const pool = new Pool({ connectionString })
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log('--- DEPLOYING ELITE SEED DATA ---')
@@ -20,7 +27,8 @@ async function main() {
       avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256',
       isPremium: true,
       verified: true,
-      isHiring: true
+      isHiring: true,
+      role: 'ADMIN'
     }
   })
 

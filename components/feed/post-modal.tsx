@@ -127,12 +127,15 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            </div>
            
            <div className="flex items-center gap-2">
+              <div className={`text-[12px] font-bold ${content.length > 5000 ? 'text-red-500' : 'text-[#6B7280]/60'}`}>
+                 {content.length}/5000
+              </div>
               <button className="h-9 px-3 rounded-full hover:bg-[#F3F6F8] text-[#6B7280] flex items-center justify-center transition-colors" title="Schedule post">
                  <Calendar className="w-6 h-6" />
               </button>
               <button 
                 onClick={handlePost}
-                disabled={(!content.trim() && !image) || isPosting || uploading}
+                disabled={(!content.trim() && !image) || isPosting || uploading || content.length > 5000}
                 className="h-9 px-6 rounded-full font-bold text-[14px] transition-all shadow-premium bg-primary text-white hover:bg-primary/90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                  {isPosting ? "Posting..." : "Post"}

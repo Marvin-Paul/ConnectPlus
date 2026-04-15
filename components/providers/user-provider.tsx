@@ -14,6 +14,7 @@ interface UserProfile {
   bannerUrl: string;
   isPremium: boolean;
   verified: boolean;
+  role: "USER" | "ADMIN";
   totalConnections?: number;
   _count?: {
     posts: number;
@@ -56,6 +57,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
             isPremium: !!data.isPremium,
             verified: !!data.verified,
+            role: data.role || "USER",
             totalConnections: data.totalConnections || 0,
             _count: data._count
           });

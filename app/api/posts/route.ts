@@ -80,8 +80,12 @@ export async function POST(request: Request) {
       attendeeCount
     } = body;
 
-    if ((!content && !imageUrl) || !authorId) {
-      return NextResponse.json({ error: `Validation Failed - Content: ${!!content}, ImageUrl: ${!!imageUrl}, AuthorId: ${authorId}` }, { status: 400 });
+    if ((!content?.trim() && !imageUrl) || !authorId) {
+      return NextResponse.json({ error: "Post must have either content or an image" }, { status: 400 });
+    }
+
+    if (content && content.length > 5000) {
+      return NextResponse.json({ error: "Post content is too long (max 5000 characters)" }, { status: 400 });
     }
 
     // Verify the author exists — try by ID first, then fall back to username lookup

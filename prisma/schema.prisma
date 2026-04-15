@@ -15,6 +15,11 @@ enum ConnectionStatus {
   BLOCKED
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 enum ReactionType {
   LIKE
   LOVE
@@ -71,6 +76,7 @@ model User {
   isHiring      Boolean         @default(false)
   isPremium     Boolean         @default(false)
   verified      Boolean         @default(false)
+  role          Role            @default(USER)
   gitlabUsername String?         @unique
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt

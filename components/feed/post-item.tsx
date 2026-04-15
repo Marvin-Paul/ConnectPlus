@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ThumbsUp, MessageSquare, Repeat2, Send, Globe, Heart, MoreHorizontal as Ellipsis, Award, Lightbulb, Search, Bookmark, Share2, EyeOff, XCircle, Flag } from "lucide-react";
+import { ThumbsUp, MessageSquare, Repeat2, Send, Globe, Heart, MoreHorizontal as Ellipsis, Award, Lightbulb, Search, Bookmark, Share2, EyeOff, XCircle, Flag, Trash2, UserMinus } from "lucide-react";
 import { Post, useFeed } from "../providers/feed-provider";
 import { useUser } from "../providers/user-provider";
 import { CommentSection } from "./comment-section";
@@ -19,7 +19,7 @@ const REACTION_TYPES = [
 ];
 
 export function PostItem({ post }: PostItemProps) {
-  const { reactToPost, sharePost, savePost, hidePost, unfollowUser, reportPost, incrementCommentCount } = useFeed();
+  const { reactToPost, sharePost, savePost, hidePost, unfollowUser, reportPost, incrementCommentCount, deletePost } = useFeed();
   const { user } = useUser();
   const [showReactions, setShowReactions] = useState(false);
   const [showComments, setShowComments] = useState(false);
@@ -96,13 +96,78 @@ export function PostItem({ post }: PostItemProps) {
                  </div>
               </div>
                <div className="relative" ref={optionsRef}>
-                  <button 
+                   <button 
                     onClick={() => setShowOptions(!showOptions)}
                     aria-label="Post options"
                     className={`p-2 rounded-lg transition-all ${showOptions ? 'bg-muted text-foreground' : 'hover:bg-muted text-secondary/60 hover:text-foreground'}`}
                   >
                     <Ellipsis className="w-5 h-5" />
                  </button>
+
+                 {showOptions && (
+                    <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-xl shadow-premium border border-border py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+                      {(user?.id === post.authorId || user?.role === "ADMIN") ? (
+                        <>
+                          <button 
+                            onClick={() => {
+                              if (confirm("Are you sure you want to delete this post?")) {
+                                deletePost(post.id);
+                              }
+                              setShowOptions(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-red-600 hover:bg-red-50 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            <span>Delete post</span>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button 
+                            onClick={() => {
+                              savePost(post.id);
+                              setShowOptions(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-foreground hover:bg-muted transition-colors"
+                          >
+                            <Bookmark className={`w-4 h-4 ${post.isSaved ? 'fill-primary text-primary' : ''}`} />
+                            <span>{post.isSaved ? 'Unsave' : 'Save post'}</span>
+                          </button>
+                          <button 
+                            onClick={() => {
+                              unfollowUser(post.authorId);
+                              setShowOptions(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-foreground hover:bg-muted transition-colors"
+                          >
+                            <UserMinus className="w-4 h-4" />
+                            <span>Unfollow {post.author.firstName}</span>
+                          </button>
+                          <div className="h-px bg-border my-1" />
+                          <button 
+                            onClick={() => {
+                              hidePost(post.id);
+                              setShowOptions(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-foreground hover:bg-muted transition-colors"
+                          >
+                            <EyeOff className="w-4 h-4" />
+                            <span>Hide this post</span>
+                          </button>
+                          <button 
+                            onClick={() => {
+                              reportPost(post.id);
+                              setShowOptions(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-foreground hover:bg-muted transition-colors"
+                          >
+                            <Flag className="w-4 h-4" />
+                            <span>Report post</span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                 )}
               </div>
            </div>
         </div>

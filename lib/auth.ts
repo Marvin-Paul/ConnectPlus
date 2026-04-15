@@ -57,6 +57,7 @@ export const getAuthUser = async () => {
         location: true,
         isPremium: true,
         verified: true,
+        role: true,
         _count: {
           select: {
             sentConnections: { where: { status: 'ACCEPTED' } },
@@ -66,12 +67,13 @@ export const getAuthUser = async () => {
             posts: true,
           }
         }
-      }
+      } as any
     });
     
     // Normalize user object to include totalConnections
     if (user) {
-      (user as any).totalConnections = (user._count.sentConnections || 0) + (user._count.receivedConnections || 0);
+      const u = user as any;
+      u.totalConnections = (u._count?.sentConnections?.length || 0) + (u._count?.receivedConnections?.length || 0);
     }
     
     return user;

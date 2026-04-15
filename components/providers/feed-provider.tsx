@@ -49,6 +49,7 @@ interface FeedContextType {
   incrementCommentCount: (postId: string) => void;
   sort: string;
   setSort: (sort: string) => void;
+  deletePost: (postId: string) => Promise<void>;
 }
 
 const FeedContext = createContext<FeedContextType | undefined>(undefined);
@@ -314,6 +315,25 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     console.log(`Reported post ${postId}`);
   };
 
+  const deletePost = async (postId: string) => {
+    if (!user) return;
+    try {
+      const res = await fetch(`/api/posts/${postId}?userId=${user.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setPosts(prev => prev.filter(p => p.id !== postId));
+      } else {
+        const data = await res.json();
+        console.error("Failed to delete post:", data.error);
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      throw error;
+    }
+  };
+
   const incrementCommentCount = (postId: string) => {
     setPosts(prev => prev.map(post => {
       if (post.id === postId) {
@@ -328,7 +348,7 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <FeedContext.Provider value={{ 
-      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost, incrementCommentCount, sort, setSort: handleSetSort
+      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost, incrementCommentCount, deletePost, sort, setSort: handleSetSort
     }}>
       {children}
     </FeedContext.Provider>
