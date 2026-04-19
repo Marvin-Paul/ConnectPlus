@@ -51,102 +51,95 @@ export function InvitationsCard() {
   }
 
   return (
-    <div className="bg-white rounded-[3.5rem] border border-slate-100 overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.05)] animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex items-center justify-between p-10 border-b border-slate-50 bg-white/50 backdrop-blur-xl">
-        <div className="flex items-center gap-4">
-           <div className="w-12 h-12 rounded-2xl bg-[#1B5E20]/5 flex items-center justify-center border border-[#1B5E20]/10">
-              <UserPlus className="w-6 h-6 text-[#1B5E20]" />
-           </div>
-           <div>
-              <h2 className="text-[14px] font-black text-slate-800 uppercase tracking-[0.3em] italic">Pending Engagements</h2>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-60">Review your incoming local elite circle</p>
-           </div>
+    <div className="bg-white rounded-xl border border-border overflow-hidden shadow-sm">
+      <div className="flex items-center justify-between p-5 border-b border-border bg-slate-50/50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-border shadow-sm">
+            <UserPlus className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-[14px] font-bold text-foreground">Invitations</h2>
+            <p className="text-[12px] text-secondary font-medium">Review your connection requests</p>
+          </div>
         </div>
-        <button className="text-[11px] font-black text-[#1B5E20] hover:underline uppercase tracking-[0.2em] transition-all bg-[#1B5E20]/5 px-6 py-2 rounded-full">
-          Manage Circle
-        </button>
+        <Link href="/network/invitations" className="text-[13px] font-bold text-primary hover:underline">
+          Manage
+        </Link>
       </div>
       
-      <div className="divide-y divide-slate-50">
+      <div className="divide-y divide-border">
         {invitations.map((inv) => {
           const isAccepted = acceptedIds.includes(inv.id);
           
           return (
-            <div key={inv.id} className={`p-10 transition-all duration-700 ease-in-out relative group/inv ${isAccepted ? 'bg-green-50/30' : 'hover:bg-slate-50/50'}`}>
-              <div className="flex flex-col md:flex-row gap-8">
-                <Link href={`/profile/${inv.id}`} className="shrink-0 relative group">
-                  <div className={`w-24 h-24 rounded-[2.5rem] overflow-hidden border-2 transition-all duration-500 shadow-xl group-hover:scale-105 group-hover:-rotate-3 ${isAccepted ? 'border-green-500' : 'border-white'}`}>
+            <div key={inv.id} className={`p-5 transition-colors ${isAccepted ? 'bg-green-50/20' : 'hover:bg-slate-50'}`}>
+              <div className="flex gap-4">
+                <Link href={`/profile/${inv.id}`} className="shrink-0">
+                  <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${isAccepted ? 'border-green-500' : 'border-white shadow-sm'}`}>
                     <img src={inv.avatar} alt={inv.name} className="w-full h-full object-cover" />
                   </div>
-                  {isAccepted && (
-                    <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2 border-4 border-white shadow-2xl animate-in zoom-in duration-500">
-                       <UserCheck className="h-5 w-5 text-white" />
-                    </div>
-                  )}
                 </Link>
                 
-                <div className="flex-1 min-w-0 pt-2">
-                  <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-4">
-                         <Link href={`/profile/${inv.id}`} className={`text-2xl font-black leading-tight tracking-tighter italic transition-colors ${isAccepted ? 'text-green-700' : 'text-slate-800 hover:text-[#1B5E20] hover:underline'}`}>
-                           {inv.name}
-                         </Link>
-                         <div className="flex items-center gap-2">
-                            {inv.role === "Leadership" && <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-widest border border-blue-100">Executive</span>}
-                            {inv.role === "Engineer" && <span className="text-[9px] font-black text-orange-600 bg-orange-50 px-2 py-0.5 rounded uppercase tracking-widest border border-orange-100">Engineering</span>}
-                         </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Link href={`/profile/${inv.id}`} className="text-[15px] font-bold text-foreground hover:text-primary hover:underline leading-tight">
+                          {inv.name}
+                        </Link>
+                        {inv.role === "Leadership" && <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">Executive</span>}
                       </div>
-                      <p className="text-[13px] font-bold text-slate-500 leading-relaxed italic opacity-80 max-w-xl">
+                      <p className="text-[13px] text-secondary font-medium mt-0.5 line-clamp-1">
                         {inv.headline}
                       </p>
                       
-                      <div className="flex items-center gap-4 pt-2">
-                        <div className="flex -space-x-3">
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <div className="flex -space-x-1.5">
                            {[1,2,3].map(i => (
-                             <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-200 shadow-md flex items-center justify-center text-[10px] font-black group-hover/inv:translate-x-1 transition-transform" />
+                             <div key={i} className="w-5 h-5 rounded-full border border-white bg-slate-200" />
                            ))}
                         </div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic opacity-60">
-                          {inv.mutualConnections} mutual linkings · verified
+                        <span className="text-[11px] text-secondary font-medium">
+                          {inv.mutualConnections} mutual connections
                         </span>
                       </div>
                     </div>
 
                     {!isAccepted ? (
-                      <div className="flex items-center gap-4 shrink-0 mt-4 xl:mt-0">
+                      <div className="flex items-center gap-2 mt-3 sm:mt-0 shrink-0">
                         <button 
                           onClick={() => handleDismiss(inv.id)}
-                          className="w-14 h-14 flex items-center justify-center rounded-full border border-slate-100 hover:bg-red-50 hover:border-red-100 hover:text-red-500 transition-all group/btn shadow-sm active:scale-95"
-                          title="Ignore"
+                          className="min-h-[34px] py-1.5 px-4 rounded-full text-slate-500 font-bold text-[13px] hover:bg-slate-100 transition-all flex items-center justify-center whitespace-nowrap shrink-0"
                         >
-                          <X className="h-6 w-6 text-slate-300 group-hover/btn:scale-110 group-hover/btn:rotate-90 transition-all duration-500" />
+                          Ignore
                         </button>
                         <button 
                           onClick={() => handleAccept(inv.id)}
-                          className="flex items-center justify-center px-10 h-14 rounded-full bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/20 active:scale-95"
+                          className="min-h-[34px] py-1.5 px-6 rounded-full border-2 border-[#1B5E20] text-[#1B5E20] font-bold text-[13px] hover:bg-[#1B5E20]/5 transition-all flex items-center justify-center whitespace-nowrap shadow-sm shrink-0"
                         >
-                          Accept Link
+                          Accept
                         </button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-4 shrink-0 mt-4 xl:mt-0">
-                        <button className="flex items-center justify-center px-10 h-14 rounded-full bg-green-600 text-white font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-green-100 italic pointer-events-none opacity-90 animate-in slide-in-from-right duration-500">
-                          Engaged
-                        </button>
-                        <button className="w-14 h-14 flex items-center justify-center rounded-full border border-green-100 bg-green-50 text-green-600 hover:bg-green-100 transition-all active:scale-95">
-                           <MessageSquare className="w-5 h-5" />
+                      <div className="flex items-center gap-2 mt-3 sm:mt-0 shrink-0">
+                        <div className="min-h-[34px] py-1.5 px-4 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[12px] border border-emerald-100 flex items-center gap-1.5 shrink-0">
+                          <Check className="w-3.5 h-3.5" />
+                          Accepted
+                        </div>
+                        <button 
+                          aria-label="Send message"
+                          className="h-9 w-9 flex items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-all shrink-0 shadow-sm"
+                        >
+                           <MessageSquare className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     )}
                   </div>
 
                   {inv.message && !isAccepted && (
-                    <div className="mt-8 p-8 rounded-[2.5rem] border border-slate-100 bg-slate-50 relative animate-in slide-in-from-top-2 duration-500 group/msg overflow-hidden">
-                      <div className="absolute top-0 left-0 w-1 h-full bg-[#1B5E20]/20 group-hover/msg:bg-[#1B5E20] transition-colors" />
-                      <div className="flex items-start gap-4">
-                         <Sparkles className="w-4 h-4 text-yellow-500 mt-1 shrink-0" />
-                         <p className="text-[14px] text-slate-700 italic leading-relaxed font-bold tracking-tight">
+                    <div className="mt-3 p-3 rounded-lg border border-border bg-slate-50 relative group/msg">
+                      <div className="flex items-start gap-2">
+                         <p className="text-[13px] text-foreground font-medium italic">
                            &ldquo;{inv.message}&rdquo;
                          </p>
                       </div>
@@ -159,8 +152,8 @@ export function InvitationsCard() {
         })}
       </div>
       
-      <button className="w-full py-8 text-[12px] font-black text-slate-400 hover:text-[#1B5E20] hover:bg-slate-50 transition-all border-t border-slate-50 uppercase tracking-[0.4em] bg-white group/footer">
-        Discover more elite talent <ChevronRight className="w-4 h-4 inline ml-2 group-hover/footer:translate-x-1 transition-transform" />
+      <button className="w-full py-3 text-[13px] font-bold text-secondary hover:text-primary hover:bg-slate-50 transition-all border-t border-border flex items-center justify-center gap-1">
+        Show more <ChevronRight className="w-4 h-4" />
       </button>
     </div>
   );

@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+/**
+ * GET /api/posts/[id]/comment
+ * Retrieves all comments for a specific post.
+ */
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  let postId: string | undefined;
   try {
     const { id } = await context.params;
+    postId = id;
+
     const comments = await prisma.comment.findMany({
       where: { postId: id },
       orderBy: { createdAt: "desc" },
@@ -25,18 +32,25 @@ export async function GET(
     });
 
     return NextResponse.json(comments);
-  } catch (error) {
-    console.error("Error fetching comments:", error);
-    return NextResponse.json({ error: "Failed to fetch comments" }, { status: 500 });
+  } catch (error: any) {
+    console.error(`[API] Error fetching comments for post ${postId || 'unknown'}:`, error);
+    return NextResponse.json({ error: "Failed to fetch comments", details: error.message }, { status: 500 });
   }
 }
 
+/**
+ * POST /api/posts/[id]/comment
+ * Adds a new comment or reply to a post.
+ */
 export async function POST(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  let postId: string | undefined;
   try {
     const { id } = await context.params;
+    postId = id;
+
     const body = await request.json();
     const { userId, content, parentCommentId } = body;
 
@@ -44,11 +58,14 @@ export async function POST(
       return NextResponse.json({ error: "userId and content are required" }, { status: 400 });
     }
 
-    const postId = id;
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
 
     const comment = await prisma.comment.create({
       data: {
-        postId,
+        postId: postId!,
         authorId: userId,
         content,
         parentCommentId,
@@ -66,23 +83,22 @@ export async function POST(
       },
     });
 
-    // Create notification if NOT own post
-    const post = await prisma.post.findUnique({ where: { id: postId } });
-    if (post && post.authorId !== userId) {
-      await prisma.notification.create({
+    // Notify post author (asynchronous)
+    if (post.authorId !== userId) {
+      prisma.notification.create({
         data: {
           userId: post.authorId,
           type: "COMMENT",
-          content: `someone commented on your post`,
-          sourceId: postId,
+          content: `commented on your post`,
+          sourceId: postId!,
           sourceType: "POST",
         },
-      });
+      }).catch(err => console.error("[Notification Error]:", err));
     }
 
     return NextResponse.json(comment);
-  } catch (error) {
-    console.error("Error creating comment:", error);
-    return NextResponse.json({ error: "Failed to create comment" }, { status: 500 });
+  } catch (error: any) {
+    console.error(`[API] Error creating comment for post ${postId || 'unknown'}:`, error);
+    return NextResponse.json({ error: "Failed to create comment", details: error.message }, { status: 500 });
   }
 }

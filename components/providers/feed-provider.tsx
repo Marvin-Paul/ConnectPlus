@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useUser } from "./user-provider";
 
 export interface PostAuthor {
@@ -10,6 +10,7 @@ export interface PostAuthor {
   username: string;
   avatarUrl: string | null;
   headline: string | null;
+  connectionDegree?: string; // e.g. "1st", "2nd"
 }
 
 export interface PostStats {
@@ -23,7 +24,9 @@ export interface Post {
   authorId: string;
   content: string;
   imageUrl: string | null;
+  mediaUrls: string[];
   type: string;
+  visibility: string;
   title: string | null;
   tags: string[];
   createdAt: string;
@@ -38,7 +41,16 @@ interface FeedContextType {
   loading: boolean;
   hasMore: boolean;
   fetchPosts: (page?: number) => Promise<void>;
-  createPost: (content: string, imageUrl?: string) => Promise<void>;
+  createPost: (content: string, imageUrl?: string, options?: { 
+    type?: string; 
+    title?: string; 
+    tags?: string[];
+    isEvent?: boolean;
+    eventDate?: string;
+    eventLocation?: string;
+    mediaUrls?: string[];
+    visibility?: string;
+  }) => Promise<void>;
   reactToPost: (postId: string, type: string) => Promise<void>;
   commentOnPost: (postId: string, content: string) => Promise<void>;
   sharePost: (postId: string, content?: string) => Promise<void>;
@@ -46,10 +58,10 @@ interface FeedContextType {
   hidePost: (postId: string) => void;
   unfollowUser: (authorId: string) => void;
   reportPost: (postId: string) => void;
+  deletePost: (postId: string) => Promise<void>;
   incrementCommentCount: (postId: string) => void;
   sort: string;
   setSort: (sort: string) => void;
-  deletePost: (postId: string) => Promise<void>;
 }
 
 const FeedContext = createContext<FeedContextType | undefined>(undefined);
@@ -67,11 +79,23 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       const res = await fetch(`/api/posts?page=${pageNum}&limit=10&userId=${user?.id || 'demo-user'}&sort=${currentSort}`);
       const data = await res.json();
-      const nextPosts = Array.isArray(data) ? data : [];
 
-      if (!res.ok && !Array.isArray(data)) {
-        console.error("Unexpected /api/posts response:", data);
+      if (!res.ok) {
+        console.error("Feed API Error:", {
+          status: res.status,
+          payload: data
+        });
+        setLoading(false);
+        return;
       }
+
+      if (!Array.isArray(data)) {
+        console.error("Critical: Feed API returned non-array payload:", data);
+        setLoading(false);
+        return;
+      }
+      
+      const nextPosts = data;
       
       if (pageNum === 1) {
         setPosts(nextPosts);
@@ -83,67 +107,83 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       
       setPage(pageNum);
     } catch (error) {
-      console.error("Error fetching feed:", error);
+      console.error("Fatal exception in FeedProvider.fetchPosts:", error);
     } finally {
       setLoading(false);
     }
   }, [user, sort]);
 
+  const realtimeRef = useRef<any>(null);
+  const isInitializingRealtime = useRef(false);
+
   useEffect(() => {
     fetchPosts(1, sort);
+  }, [fetchPosts, sort]);
 
-    // Supabase Realtime Subscription for Live Feed
-    let channel: any = null;
+  useEffect(() => {
+    if (isInitializingRealtime.current) return;
     
     const initRealtime = async () => {
       try {
+        isInitializingRealtime.current = true;
         const { supabase } = await import("@/lib/supabase");
         if (!supabase) return;
 
-        // Ensure we are truly clean before starting
-        const existingChannels = supabase.getChannels();
-        for (const existing of existingChannels) {
-           if (existing.topic === 'realtime:realtime_feed') {
-              await supabase.removeChannel(existing);
-           }
+        // Force cleanup of any lingering channels from previous renders
+        const channels = supabase.getChannels();
+        for (const c of channels) {
+          if (c.topic.includes('feed_')) {
+            await supabase.removeChannel(c);
+          }
         }
         
-        // Use a unique channel name every time to avoid state conflicts in Dev mode
-        const channelId = `feed_${Date.now()}`;
-        channel = supabase.channel(channelId)
-          .on(
-            'postgres_changes' as any, 
-            { event: 'INSERT', schema: 'public', table: 'Post' }, 
-            async (payload: any) => {
-              console.log('Realtime post received:', payload.new);
+        const channelId = `feed_${Math.random().toString(36).substring(7)}`;
+        const channel = supabase.channel(channelId);
+        
+        channel.on(
+          'postgres_changes' as any, 
+          { event: 'INSERT', schema: 'public', table: 'Post' }, 
+          async (payload: any) => {
+            try {
               const res = await fetch(`/api/posts/${payload.new.id}`);
               if (res.ok) {
                 const fullPost = await res.json();
-                setPosts(prev => [fullPost, ...prev]);
+                setPosts(prev => {
+                  if (prev.some(p => p.id === fullPost.id)) return prev;
+                  return [fullPost, ...prev];
+                });
               }
+            } catch (err) {
+              console.error("[Realtime] Handler error:", err);
             }
-          );
+          }
+        );
           
         channel.subscribe((status: string) => {
           if (status === 'SUBSCRIBED') {
-            console.log(`Realtime channel ${channelId} active`);
+            realtimeRef.current = channel;
+            console.log(`[Realtime] Active: ${channelId}`);
           }
         });
       } catch (err) {
-        console.error("Failed to initialize realtime feed:", err);
+        console.error("[Realtime] Init error:", err);
+      } finally {
+        isInitializingRealtime.current = false;
       }
     };
 
     initRealtime();
 
     return () => {
-      if (channel) {
+      if (realtimeRef.current) {
+        const channelToClose = realtimeRef.current;
+        realtimeRef.current = null;
         import("@/lib/supabase").then(({ supabase }) => {
-          supabase.removeChannel(channel).catch(console.error);
+          supabase.removeChannel(channelToClose).catch(() => {});
         });
       }
     };
-  }, [fetchPosts, sort]);
+  }, []); // Only run once on mount for stability
 
   const handleSetSort = (newSort: string) => {
     setSort(newSort);
@@ -158,6 +198,8 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     isEvent?: boolean;
     eventDate?: string;
     eventLocation?: string;
+    mediaUrls?: string[];
+    visibility?: string;
   }) => {
     if (!user) throw new Error("User not authenticated");
     const res = await fetch("/api/posts", {
@@ -181,7 +223,9 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       authorId: data.authorId,
       content: data.content,
       imageUrl: data.imageUrl || null,
+      mediaUrls: data.mediaUrls || (data.imageUrl ? [data.imageUrl] : []),
       type: data.type || "POST",
+      visibility: data.visibility || "ANYONE",
       title: data.title || null,
       tags: data.tags || [],
       createdAt: data.createdAt,
@@ -317,19 +361,23 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
 
   const deletePost = async (postId: string) => {
     if (!user) return;
+    
+    // Optimistic Update
+    const originalPosts = [...posts];
+    setPosts(prev => prev.filter(p => p.id !== postId));
+
     try {
       const res = await fetch(`/api/posts/${postId}?userId=${user.id}`, {
         method: "DELETE",
       });
-      if (res.ok) {
-        setPosts(prev => prev.filter(p => p.id !== postId));
-      } else {
+      
+      if (!res.ok) {
         const data = await res.json();
-        console.error("Failed to delete post:", data.error);
-        throw new Error(data.error);
+        throw new Error(data.error || "Failed to delete post");
       }
     } catch (error) {
       console.error("Error deleting post:", error);
+      setPosts(originalPosts); // Rollback
       throw error;
     }
   };
@@ -348,7 +396,7 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <FeedContext.Provider value={{ 
-      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost, incrementCommentCount, deletePost, sort, setSort: handleSetSort
+      posts, loading, hasMore, fetchPosts, createPost, reactToPost, commentOnPost, sharePost, savePost, hidePost, unfollowUser, reportPost, deletePost, incrementCommentCount, sort, setSort: handleSetSort
     }}>
       {children}
     </FeedContext.Provider>

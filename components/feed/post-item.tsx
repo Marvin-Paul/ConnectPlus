@@ -1,7 +1,30 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ThumbsUp, MessageSquare, Repeat2, Send, Globe, Heart, MoreHorizontal as Ellipsis, Award, Lightbulb, Search, Bookmark, Share2, EyeOff, XCircle, Flag, Trash2, UserMinus } from "lucide-react";
+import { 
+  ThumbsUp, 
+  MessageSquare, 
+  Repeat2, 
+  Send, 
+  Globe, 
+  Heart, 
+  MoreHorizontal as Ellipsis, 
+  Award, 
+  Lightbulb, 
+  Search, 
+  Bookmark, 
+  Share2, 
+  EyeOff, 
+  XCircle, 
+  Flag, 
+  Trash2, 
+  UserMinus, 
+  ChevronLeft, 
+  ChevronRight, 
+  UserPlus, 
+  Link2, 
+  Users 
+} from "lucide-react";
 import { Post, useFeed } from "../providers/feed-provider";
 import { useUser } from "../providers/user-provider";
 import { CommentSection } from "./comment-section";
@@ -19,12 +42,14 @@ const REACTION_TYPES = [
 ];
 
 export function PostItem({ post }: PostItemProps) {
-  const { reactToPost, sharePost, savePost, hidePost, unfollowUser, reportPost, incrementCommentCount, deletePost } = useFeed();
-  const { user } = useUser();
+  const { reactToPost, sharePost, savePost, hidePost, unfollowUser, reportPost, deletePost, incrementCommentCount } = useFeed();
+  const { user: currentUser } = useUser();
   const [showReactions, setShowReactions] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [isSent, setIsSent] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const optionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,7 +75,6 @@ export function PostItem({ post }: PostItemProps) {
   };
 
   const handleSend = () => {
-    // Simulate real sharing by copying the link to clipboard
     const postUrl = `${window.location.origin}/post/${post.id}`;
     navigator.clipboard.writeText(postUrl).then(() => {
       setIsSent(true);
@@ -68,205 +92,272 @@ export function PostItem({ post }: PostItemProps) {
     return `${Math.floor(hours / 24)}d`;
   };
 
+  const media = (post.mediaUrls && post.mediaUrls.length > 0) ? post.mediaUrls : (post.imageUrl ? [post.imageUrl] : []);
+  const hasMultipleMedia = media.length > 1;
+
+  const nextMedia = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentMediaIndex((prev) => (prev + 1) % media.length);
+  };
+
+  const prevMedia = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentMediaIndex((prev) => (prev - 1 + media.length) % media.length);
+  };
+
+  const isAuthor = currentUser?.id === post.authorId;
+  const isAdmin = currentUser?.role === "ADMIN";
+  const contentThreshold = 200;
+  const shouldTruncate = post.content.length > contentThreshold && !isExpanded;
+  const displayContent = shouldTruncate ? post.content.slice(0, contentThreshold) + "..." : post.content;
+
   return (
     <div className="bg-white rounded-xl border border-border shadow-soft overflow-hidden transition-all duration-300 hover:shadow-premium animate-pro-fade group/card">
       
       {/* Header */}
-      <div className="p-4 flex items-start gap-4">
-        <div className="w-12 h-12 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center shadow-sm shrink-0">
+      <div className="p-4 flex items-start gap-3">
+        <div className="w-12 h-12 rounded-full overflow-hidden border border-border bg-muted flex items-center justify-center shadow-sm shrink-0 cursor-pointer">
            {post.author.avatarUrl ? (
-              <img src={post.author.avatarUrl} alt={post.author.firstName || "User"} className="w-full h-full object-cover" />
+              <img src={post.author.avatarUrl} alt={post.author.firstName} className="w-full h-full object-cover" />
            ) : (
               <div className="w-full h-full bg-primary/10 flex items-center justify-center font-bold text-primary uppercase text-[15px]">
-                {post.author.firstName?.[0] ?? post.author.username?.[0] ?? "U"}
+                {post.author.firstName?.[0] ?? "U"}
               </div>
            )}
         </div>
         <div className="flex-1 min-w-0">
            <div className="flex justify-between items-start">
-              <div>
-                 <h3 className="text-[15px] font-bold text-foreground hover:text-primary transition-colors cursor-pointer leading-tight">
-                   {post.author.firstName || post.author.username} {post.author.lastName || ""}
-                 </h3>
-                 <p className="text-[12px] font-semibold text-secondary line-clamp-1 mt-0.5 leading-tight">{post.author.headline || "Connect Plus Member"}</p>
-                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-secondary/60 mt-1 uppercase tracking-wider">
+              <div className="flex flex-col">
+                 <div className="flex items-center gap-1 flex-wrap">
+                    <h3 className="text-[14px] font-bold text-foreground hover:text-primary transition-colors cursor-pointer leading-tight">
+                      {post.author.firstName} {post.author.lastName}
+                    </h3>
+                    <span className="text-[14px] text-secondary/60">•</span>
+                    <span className="text-[14px] text-secondary/60 font-medium">{post.author.connectionDegree || "2nd"}</span>
+                 </div>
+                 <p className="text-[12px] text-secondary/70 line-clamp-1 mt-0.5 leading-tight">{post.author.headline || "Connect Plus Member"}</p>
+                 <div className="flex items-center gap-1.5 text-[11px] text-secondary/60 mt-1">
                     <span>{timeAgo(post.createdAt)}</span>
-                    <span className="w-1 h-1 bg-border rounded-full" />
-                    <Globe className="h-3 w-3" />
+                    <span>•</span>
+                    {post.visibility === "CONNECTIONS" ? (
+                      <span title="Connections Only"><Users className="h-3 w-3" /></span>
+                    ) : (
+                      <span title="Public"><Globe className="h-3 w-3" /></span>
+                    )}
                  </div>
               </div>
-               <div className="relative" ref={optionsRef}>
-                   <button 
-                    onClick={() => setShowOptions(!showOptions)}
-                    aria-label="Post options"
-                    className={`p-2 rounded-lg transition-all ${showOptions ? 'bg-muted text-foreground' : 'hover:bg-muted text-secondary/60 hover:text-foreground'}`}
-                  >
-                    <Ellipsis className="w-5 h-5" />
-                 </button>
 
-                 {showOptions && (
-                    <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-xl shadow-premium border border-border py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
-                      {(user?.id === post.authorId || user?.role === "ADMIN") ? (
-                        <>
-                          <button 
-                            onClick={() => {
-                              if (confirm("Are you sure you want to delete this post?")) {
-                                deletePost(post.id);
-                              }
-                              setShowOptions(false);
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-red-600 hover:bg-red-50 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            <span>Delete post</span>
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button 
-                            onClick={() => {
-                              savePost(post.id);
-                              setShowOptions(false);
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-foreground hover:bg-muted transition-colors"
-                          >
-                            <Bookmark className={`w-4 h-4 ${post.isSaved ? 'fill-primary text-primary' : ''}`} />
-                            <span>{post.isSaved ? 'Unsave' : 'Save post'}</span>
-                          </button>
-                          <button 
-                            onClick={() => {
-                              unfollowUser(post.authorId);
-                              setShowOptions(false);
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-foreground hover:bg-muted transition-colors"
-                          >
-                            <UserMinus className="w-4 h-4" />
-                            <span>Unfollow {post.author.firstName}</span>
-                          </button>
-                          <div className="h-px bg-border my-1" />
-                          <button 
-                            onClick={() => {
-                              hidePost(post.id);
-                              setShowOptions(false);
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-foreground hover:bg-muted transition-colors"
-                          >
-                            <EyeOff className="w-4 h-4" />
-                            <span>Hide this post</span>
-                          </button>
-                          <button 
-                            onClick={() => {
-                              reportPost(post.id);
-                              setShowOptions(false);
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-2 text-[14px] font-bold text-foreground hover:bg-muted transition-colors"
-                          >
-                            <Flag className="w-4 h-4" />
-                            <span>Report post</span>
-                          </button>
-                        </>
-                      )}
-                    </div>
-                 )}
+              <div className="flex items-center gap-1">
+                  {!isAuthor && (
+                    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-muted text-primary font-bold text-[14px] transition-all">
+                      <UserPlus className="w-4 h-4" />
+                      <span>Follow</span>
+                    </button>
+                  )}
+                  <div className="relative" ref={optionsRef}>
+                    <button 
+                      onClick={() => setShowOptions(!showOptions)}
+                      aria-label="Post options"
+                      className={`p-2 rounded-full transition-all ${showOptions ? 'bg-muted text-foreground' : 'hover:bg-muted text-secondary/60 hover:text-foreground'}`}
+                    >
+                      <Ellipsis className="w-5 h-5" />
+                    </button>
+                    {showOptions && (
+                      <div className="absolute right-0 top-full mt-1 w-64 bg-white shadow-dropdown rounded-xl border border-border py-2 z-[60] animate-in fade-in slide-in-from-top-2">
+                        <button onClick={() => { savePost(post.id); setShowOptions(false); }} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-muted text-[14px] font-medium transition-colors">
+                          <Bookmark className={`w-4 h-4 ${post.isSaved ? 'fill-primary text-primary' : ''}`} />
+                          <span>{post.isSaved ? 'Unsave post' : 'Save post'}</span>
+                        </button>
+                        <button onClick={() => { handleSend(); setShowOptions(false); }} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-muted text-[14px] font-medium transition-colors">
+                          <Link2 className="w-4 h-4" />
+                          <span>Copy link to post</span>
+                        </button>
+                        
+                        {!isAuthor && (
+                          <>
+                            <button onClick={() => { unfollowUser(post.authorId); setShowOptions(false); }} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-muted text-[14px] font-medium transition-colors">
+                              <UserMinus className="w-4 h-4" />
+                              <span>Unfollow {post.author.firstName}</span>
+                            </button>
+                            <div className="h-px bg-border my-1" />
+                            <button onClick={() => { hidePost(post.id); setShowOptions(false); }} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-muted text-[14px] font-medium transition-colors">
+                              <EyeOff className="w-4 h-4" />
+                              <span>I don't want to see this</span>
+                            </button>
+                            <button onClick={() => { reportPost(post.id); setShowOptions(false); }} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-muted text-[14px] font-bold text-red-600 transition-colors">
+                              <Flag className="w-4 h-4" />
+                              <span>Report post</span>
+                            </button>
+                          </>
+                        )}
+
+                        {(isAuthor || isAdmin) && (
+                          <>
+                            <div className="h-px bg-border my-1" />
+                            <button 
+                              onClick={() => {
+                                if (confirm("Are you sure you want to delete this post?")) {
+                                  deletePost(post.id);
+                                }
+                                setShowOptions(false);
+                              }}
+                              className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-red-50 text-[14px] font-bold text-red-600 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span>Delete post</span>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                 </div>
               </div>
            </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="px-4 pb-4">
-         <p className="text-[14px] text-foreground leading-relaxed whitespace-pre-line font-medium">
-           {post.content.split(' ').map((word, i) => word.startsWith('#') ? <span key={i} className="text-primary font-bold cursor-pointer hover:underline">{word} </span> : word + ' ')}
+      <div className="px-4 pb-3">
+         <p className="text-[14px] text-foreground leading-[1.5] whitespace-pre-line font-normal">
+           {displayContent.split(' ').map((word, i) => {
+             if (word.startsWith('#')) return <span key={i} className="text-primary font-bold cursor-pointer hover:underline">{word} </span>;
+             if (word.startsWith('@')) return <span key={i} className="text-primary font-bold cursor-pointer hover:underline">{word} </span>;
+             return word + ' ';
+           })}
+           {shouldTruncate && (
+             <button 
+               onClick={() => setIsExpanded(true)}
+               className="text-secondary font-bold hover:text-primary hover:underline ml-1"
+             >
+               ...see more
+             </button>
+           )}
          </p>
       </div>
 
-      {/* Media */}
-      {post.imageUrl && (
-        <div className="mb-4 relative group/img overflow-hidden">
-           <img src={post.imageUrl} className="w-full object-cover max-h-[512px]" alt="Post media" />
-           <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
+      {/* Media Carousel */}
+      {media.length > 0 && (
+        <div className="mb-3 relative group/carousel bg-muted flex items-center justify-center min-h-[300px]">
+           <img 
+             src={media[currentMediaIndex]} 
+             className="w-full object-cover max-h-[600px] bg-muted transition-opacity duration-300" 
+             alt={`Media ${currentMediaIndex + 1}`} 
+             onError={(e) => {
+               (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80";
+             }}
+           />
+           
+           {hasMultipleMedia && (
+             <>
+                <button 
+                  onClick={prevMedia}
+                  title="Previous"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-black/70 animate-in fade-in"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button 
+                  onClick={nextMedia}
+                  title="Next"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-black/70 animate-in fade-in"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+                <div className="absolute top-4 right-4 bg-black/50 text-white text-[12px] font-bold px-2 py-1 rounded theme-blur">
+                  {currentMediaIndex + 1}/{media.length}
+                </div>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {media.map((_, i) => (
+                    <div 
+                      key={i} 
+                      className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentMediaIndex ? 'bg-white scale-125' : 'bg-white/40'}`} 
+                    />
+                  ))}
+                </div>
+             </>
+           )}
         </div>
       )}
 
-      {/* Stats */}
-      <div className="px-4 py-2 flex items-center justify-between">
-         <div className="flex items-center gap-2">
+      {/* Engagement Metrics */}
+      <div className="px-4 py-2 flex items-center justify-between border-b border-border/40 mx-2">
+         <div className="flex items-center gap-1.5 group/likes cursor-pointer">
             <div className="flex items-center -space-x-1">
-               {post._count.likes > 0 && (
-                 <div className="w-5 h-5 rounded-full bg-primary border-2 border-white flex items-center justify-center shadow-sm relative z-20">
-                    <ThumbsUp className="h-2.5 w-2.5 text-white fill-white" />
-                 </div>
-               )}
-               {post._count.likes > 10 && (
-                 <div className="w-5 h-5 rounded-full bg-accent border-2 border-white flex items-center justify-center shadow-sm relative z-10">
-                    <Heart className="h-2.5 w-2.5 text-white fill-white" />
-                 </div>
-               )}
+               <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center border border-white z-20">
+                  <ThumbsUp className="h-2 w-2 text-white fill-white" />
+               </div>
+               <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center border border-white z-10">
+                  <Heart className="h-2 w-2 text-white fill-white" />
+               </div>
             </div>
-            <span className="text-[12px] text-secondary font-bold hover:text-primary hover:underline cursor-pointer">
-              {post._count.likes > 0 ? post._count.likes : ''}
+            <span className="text-[12px] text-secondary font-medium group-hover:text-primary group-hover:underline">
+               {post._count.likes > 0 ? `${post._count.likes.toLocaleString()} likes` : 'Be the first to like'}
             </span>
          </div>
-         <div className="flex items-center gap-3 text-[12px] font-bold text-secondary">
-            <span onClick={() => setShowComments(!showComments)} className="hover:text-primary hover:underline cursor-pointer">{post._count.comments} comments</span>
-            <span className="w-1 h-1 bg-border rounded-full" />
-            <span className="hover:text-primary hover:underline cursor-pointer">{post._count.reposts} reposts</span>
+         <div className="flex items-center gap-2 text-[12px] text-secondary font-medium">
+            <button onClick={() => setShowComments(!showComments)} className="hover:text-primary hover:underline">
+               {post._count.comments.toLocaleString()} comments
+            </button>
+            <span className="text-secondary/40">•</span>
+            <button className="hover:text-primary hover:underline">
+               {post._count.reposts.toLocaleString()} reposts
+            </button>
          </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center justify-between px-2 py-1 border-t border-border">
+      {/* Action Bar */}
+      <div className="flex items-center justify-between px-2 pt-1 pb-1">
          <div 
            className="flex-1 relative"
            onMouseEnter={() => { hoverTimeoutRef.current = setTimeout(() => setShowReactions(true), 500); }}
            onMouseLeave={() => { if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current); }}
          >
            {showReactions && (
-             <div className="absolute bottom-[calc(100%+8px)] left-0 bg-white shadow-dropdown rounded-xl p-1.5 border border-border flex items-center gap-1 animate-pro-fade z-50">
+             <div className="absolute bottom-[calc(100%+8px)] left-0 bg-white shadow-premium rounded-full p-1.5 border border-border flex items-center gap-1 animate-in zoom-in-50 duration-200 z-50">
                 {REACTION_TYPES.map((r) => (
                    <button 
                      key={r.type} 
                      onClick={() => handleReactionClick(r.type)} 
-                     aria-label={r.label}
-                     className="p-2 rounded-lg hover:bg-muted transition-all hover:scale-110 active:scale-95"
+                     title={r.label}
+                     className="w-10 h-10 rounded-full hover:bg-muted transition-all flex items-center justify-center hover:scale-125 active:scale-95 duration-200 group/react"
                    >
-                      <r.icon className={`h-6 w-6 ${r.color}`} />
+                      <r.icon className={`h-6 w-6 ${r.color} transition-transform group-hover/react:-translate-y-1`} />
                    </button>
                 ))}
              </div>
            )}
            <button 
              onClick={() => handleReactionClick(userReaction ? userReaction : 'LIKE')}
-             className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all active:scale-95 group/btn ${userReaction ? 'text-primary' : 'text-secondary hover:bg-muted hover:text-foreground'}`}
+             className={`w-full flex items-center justify-center gap-2 py-3 rounded hover:bg-muted transition-all active:scale-95 group/btn ${userReaction ? 'text-primary' : 'text-secondary font-semibold hover:text-foreground'}`}
            >
               {userReaction ? (
-                <activeReaction.icon className={`h-5 w-5 fill-current transition-transform`} />
+                <activeReaction.icon className={`h-5 w-5 fill-current transition-transform group-hover/btn:scale-110`} />
               ) : (
-                <ThumbsUp className="h-5 w-5 stroke-[2px] transition-transform" />
+                <ThumbsUp className="h-5 w-5 stroke-[2px] transition-transform group-hover/btn:scale-110" />
               )}
-              <span className="text-[13px] font-bold">{userReaction ? activeReaction.label : 'Like'}</span>
+              <span className="text-[14px] font-bold">{userReaction ? activeReaction.label : 'Like'}</span>
            </button>
          </div>
 
-         <button onClick={() => setShowComments(!showComments)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-secondary hover:bg-muted hover:text-foreground transition-all active:scale-95">
-            <MessageSquare className="h-5 w-5 stroke-[2px]" />
-            <span className="text-[13px] font-bold">Comment</span>
+         <button onClick={() => setShowComments(!showComments)} className="flex-1 flex items-center justify-center gap-2 py-3 rounded hover:bg-muted text-secondary font-semibold hover:text-foreground transition-all active:scale-95 group/cmnt">
+            <MessageSquare className="h-5 w-5 stroke-[2px] group-hover/cmnt:scale-110 transition-transform" />
+            <span className="text-[14px] font-bold">Comment</span>
          </button>
 
-         <button onClick={() => sharePost(post.id)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-secondary hover:bg-muted hover:text-foreground transition-all active:scale-95">
-            <Repeat2 className="h-5 w-5 stroke-[2px]" />
-            <span className="text-[13px] font-bold">Repost</span>
+         <button onClick={() => sharePost(post.id)} className="flex-1 flex items-center justify-center gap-2 py-3 rounded hover:bg-muted text-secondary font-semibold hover:text-foreground transition-all active:scale-95 group/rp">
+            <Repeat2 className="h-5 w-5 stroke-[2px] group-hover/rp:scale-110 transition-transform" />
+            <span className="text-[14px] font-bold">Repost</span>
          </button>
 
-         <button onClick={handleSend} className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all active:scale-95 ${isSent ? 'text-green-600 bg-green-50' : 'text-secondary hover:bg-muted hover:text-foreground'}`}>
-            <Send className={`h-5 w-5 stroke-[2px] ${isSent ? 'fill-current' : ''}`} />
-            <span className="text-[13px] font-bold">{isSent ? 'Copied' : 'Send'}</span>
+         <button onClick={handleSend} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded transition-all active:scale-95 group/sd ${isSent ? 'text-green-600 bg-green-50' : 'text-secondary font-semibold hover:bg-muted hover:text-foreground'}`}>
+            <Send className={`h-5 w-5 stroke-[2px] group-hover/sd:scale-110 transition-transform ${isSent ? 'fill-current' : ''}`} />
+            <span className="text-[14px] font-bold">{isSent ? 'Sent' : 'Send'}</span>
          </button>
       </div>
 
-      {/* Comments */}
+      {/* Comments Expansion */}
       {showComments && (
-        <div className="border-t border-border bg-white animate-pro-fade">
+        <div className="border-t border-border bg-white animate-in slide-in-from-top-4 duration-300">
            <CommentSection 
              postId={post.id} 
              onCommentAdded={() => {
