@@ -58,75 +58,69 @@ export function SuggestionsGrid() {
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {suggestions.map((person) => {
         const isConnected = connectedIds.includes(person.id);
         
         return (
-          <div key={person.id} className="relative group border border-slate-100 rounded-[3.5rem] overflow-hidden hover:shadow-[0_40px_80px_rgba(0,0,0,0.1)] transition-all duration-700 bg-white animate-in zoom-in-95 duration-700">
-            {/* Elite Banner */}
-            <div className="h-24 w-full relative overflow-hidden">
-               <img src={person.banner} className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-[3000ms]" alt="" />
+          <div key={person.id} className="relative group border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 bg-white">
+            {/* Banner */}
+            <div className="h-16 w-full relative overflow-hidden bg-slate-100">
+               <img src={person.banner} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
                {!isConnected && (
                  <button 
                    onClick={() => handleDismiss(person.id)}
-                   className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900/40 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-900 border border-white/20"
+                   aria-label={`Dismiss suggestion for ${person.name}`}
+                   className="absolute top-2 right-2 p-1.5 rounded-full bg-black/20 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-black/40"
                  >
                    <X className="h-3.5 w-3.5" />
                  </button>
                )}
-               <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white to-transparent" />
             </div>
             
-            {/* Elite Profiling */}
-            <div className="px-8 pb-10 flex flex-col items-center text-center relative">
-              <Link href={`/profile/${person.id}`} className="-mt-12 mb-6 relative group/avatar z-10 block">
-                <div className={`w-24 h-24 rounded-[2.5rem] border-[8px] border-white overflow-hidden shadow-2xl transition-all duration-700 ${isConnected ? 'scale-90 border-green-50' : 'group-hover:scale-110 group-hover:-rotate-6'}`}>
+            {/* Content */}
+            <div className="px-4 pb-5 flex flex-col items-center text-center">
+              <Link href={`/profile/${person.id}`} className="-mt-9 mb-3 relative z-10 block">
+                <div className={`w-18 h-18 rounded-full border-4 border-white overflow-hidden shadow-md transition-transform ${isConnected ? 'scale-90' : 'group-hover:scale-105'}`}>
                   <img src={person.avatar} alt={person.name} className="w-full h-full object-cover" />
                 </div>
                 {isConnected && (
-                  <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-2xl p-2 border-4 border-white shadow-xl animate-in zoom-in duration-500">
-                     <UserCheck className="h-5 w-5 text-white" />
+                  <div className="absolute -bottom-0.5 -right-0.5 bg-green-500 rounded-full p-1.5 border-2 border-white shadow-sm">
+                     <Check className="h-3 w-3 text-white" />
                   </div>
                 )}
-                {person.verified && !isConnected && (
-                   <div className="absolute -bottom-1 -right-1 bg-blue-600 rounded-2xl p-2 border-4 border-white shadow-xl">
-                      <ShieldCheck className="h-5 w-5 text-white" />
-                   </div>
-                )}
               </Link>
               
-              <Link href={`/profile/${person.id}`} className={`text-xl font-black h-7 leading-none truncate transition-colors italic tracking-tighter ${isConnected ? 'text-green-700' : 'text-slate-800 hover:text-blue-600 hover:underline'}`}>
-                {person.name}
-              </Link>
+              <div className="min-h-[48px] flex flex-col items-center justify-center">
+                <Link href={`/profile/${person.id}`} className="text-[15px] font-bold text-foreground hover:text-primary hover:underline leading-tight line-clamp-1 flex items-center justify-center gap-1">
+                  {person.name}
+                  {person.verified && <ShieldCheck className="w-3.5 h-3.5 text-blue-600 fill-blue-600/10" />}
+                </Link>
+                <p className="text-[13px] text-secondary font-medium mt-1 line-clamp-2 leading-tight">
+                  {person.headline}
+                </p>
+              </div>
               
-              <p className="text-[11px] text-slate-400 mt-4 h-12 line-clamp-3 leading-relaxed font-black uppercase tracking-widest opacity-60 italic group-hover:opacity-100 transition-opacity">
-                "{person.headline}"
-              </p>
-              
-              <div className="flex items-center gap-2 mt-6 mb-8 py-2 px-4 rounded-full bg-slate-50 border border-slate-100 opacity-60 group-hover:opacity-100 transition-all">
-                 <Users className="h-3.5 w-3.5 text-blue-600" />
-                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">{person.mutuals} regional links</span>
+              <div className="flex items-center gap-1.5 mt-4 mb-5 text-[12px] text-secondary font-medium">
+                 <Users className="h-3.5 w-3.5 text-secondary/60" />
+                 <span>{person.mutuals} mutual connections</span>
               </div>
               
               {!isConnected ? (
                 <button 
                   onClick={() => handleConnect(person.id)}
-                  className="w-full h-12 flex items-center justify-center gap-3 px-8 rounded-full bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-95"
+                  className="w-full h-9 flex items-center justify-center gap-2 rounded-lg bg-[#1B5E20] text-white font-bold text-[13px] hover:bg-[#2E7D32] transition-all shadow-sm active:scale-95"
                 >
                   <UserPlus className="h-4 w-4" />
-                  Link Unit
+                  Connect
                 </button>
               ) : (
-                <button className="w-full h-12 flex items-center justify-center gap-3 px-8 rounded-full bg-green-600 text-white font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-green-100 italic opacity-90 cursor-default animate-in slide-in-from-bottom duration-500">
+                <button className="w-full h-9 flex items-center justify-center gap-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 font-bold text-[13px] cursor-default opacity-90 animate-in zoom-in duration-300">
                   <Check className="h-4 w-4" />
                   Pending
                 </button>
               )}
             </div>
-            
-            {/* Infinite background aura */}
-            <div className="absolute -z-10 top-0 left-0 w-full h-full bg-slate-50/10 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         );
       })}

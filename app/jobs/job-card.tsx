@@ -3,6 +3,7 @@
 import { Bookmark, X, Users, Briefcase, MapPin, CheckCircle2, Star, Sparkles, Clock, ShieldCheck, Zap, DollarSign, TrendingUp, ChevronRight, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { EasyApplyModal } from "@/components/jobs/easy-apply-modal";
 
 const featuredJobs = [
   {
@@ -15,6 +16,7 @@ const featuredJobs = [
     applicants: 42,
     benefits: ["Equity", "Health Insurance"],
     isEasyApply: true,
+    website: "https://chippercash.com",
     salary: "UGX 160M - 280M",
     match: "98% Match"
   },
@@ -28,6 +30,7 @@ const featuredJobs = [
     applicants: 124,
     benefits: ["Learning Stipend"],
     isEasyApply: true,
+    website: "https://safeboda.com",
     salary: "UGX 120M - 180M",
     match: "92% Match"
   },
@@ -41,6 +44,7 @@ const featuredJobs = [
     applicants: 89,
     benefits: ["Bonus", "Relocation"],
     isEasyApply: false,
+    website: "https://mtn.co.ug",
     salary: "UGX 140M - 220M",
     match: "85% Match"
   }
@@ -49,6 +53,7 @@ const featuredJobs = [
 export function JobCard() {
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [selectedJob, setSelectedJob] = useState<typeof featuredJobs[0] | null>(null);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   const toggleSave = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -101,7 +106,15 @@ export function JobCard() {
                            {job.title}
                         </h3>
                         <div className="flex items-center gap-3">
-                           <Link href={`/company/${job.company.toLowerCase().replace(' ', '-')}`} className="text-sm font-semibold text-slate-700 hover:text-[#1B5E20] hover:underline transition-all" onClick={(e) => e.stopPropagation()}>{job.company}</Link>
+                           <a 
+                             href={job.website} 
+                             target="_blank" 
+                             rel="noopener noreferrer" 
+                             className="text-sm font-semibold text-slate-700 hover:text-[#1B5E20] hover:underline transition-all" 
+                             onClick={(e) => e.stopPropagation()}
+                           >
+                             {job.company}
+                           </a>
                            <ShieldCheck className="w-4 h-4 text-blue-500/80" />
                            <span className="w-1 h-1 bg-slate-300 rounded-full" />
                            <p className="text-sm text-slate-500 font-medium flex items-center gap-1.5">
@@ -264,18 +277,21 @@ export function JobCard() {
              <div className="p-10 border-t border-slate-100 bg-white/90 backdrop-blur-xl flex flex-col gap-4">
                 <div className="flex items-center gap-3">
                    <button 
-                     onClick={(e) => {
-                       const btn = e.currentTarget;
-                       btn.disabled = true;
-                       btn.innerHTML = `<span class="animate-spin mr-2">🌀</span> Synchronizing...`;
-                       setTimeout(() => {
-                         btn.innerHTML = `<span class="flex items-center gap-2"><Check class="w-4 h-4" /> Application Sent Successfully</span>`;
-                         btn.className = "flex-1 h-14 bg-emerald-600 text-white font-bold text-[11px] uppercase tracking-widest rounded-xl shadow-xl transition-all flex items-center justify-center gap-3";
-                       }, 1500);
+                     onClick={() => {
+                        if (selectedJob.isEasyApply) {
+                          setIsApplyModalOpen(true);
+                        } else {
+                          window.open('https://linkedin.com', '_blank');
+                        }
                      }}
                      className="flex-1 h-14 bg-slate-950 text-white font-bold text-[11px] uppercase tracking-widest rounded-xl shadow-2xl shadow-slate-950/20 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
                    >
-                      Submit Application <ChevronRight className="w-3.5 h-3.5" />
+                      {selectedJob.isEasyApply ? (
+                        <span className="flex items-center gap-2 italic"><Zap className="w-3.5 h-3.5 fill-current" /> Fast Apply Now</span>
+                      ) : (
+                        <span>Apply on Company Site</span>
+                      )}
+                      <ChevronRight className="w-3.5 h-3.5" />
                    </button>
                    <button 
                      aria-label={savedIds.includes(selectedJob?.id || '') ? "Remove from saved jobs" : "Save job"}
@@ -291,6 +307,20 @@ export function JobCard() {
              </div>
           </div>
         </>
+      )}
+
+      {/* Fast Apply Modal */}
+      {selectedJob && (
+        <EasyApplyModal 
+          isOpen={isApplyModalOpen}
+          onClose={() => setIsApplyModalOpen(false)}
+          job={{
+            id: selectedJob.id,
+            title: selectedJob.title,
+            company: selectedJob.company,
+            logo: selectedJob.logo
+          }}
+        />
       )}
     </div>
   );

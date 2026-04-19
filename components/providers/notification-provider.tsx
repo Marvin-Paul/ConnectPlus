@@ -64,18 +64,34 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }
   };
 
+  const realtimeRef = React.useRef<any>(null);
+  const isInitializingRealtime = React.useRef(false);
+
   useEffect(() => {
     fetchCount();
+  }, [fetchCount]);
 
-    // Supabase Realtime for new notifications
-    let channel: any = null;
+  useEffect(() => {
+    if (!user || isInitializingRealtime.current) return;
+    
     const initRealtime = async () => {
-      if (!user) return;
       try {
+        isInitializingRealtime.current = true;
         const { supabase } = await import("@/lib/supabase");
         if (!supabase) return;
 
-        channel = supabase.channel(`notifications_${user.id}`)
+        // Cleanup
+        const channels = supabase.getChannels();
+        for (const c of channels) {
+          if (c.topic.includes('notifications_')) {
+            await supabase.removeChannel(c);
+          }
+        }
+
+        const channelId = `notifications_${user.id}`;
+        const channel = supabase.channel(channelId);
+        
+        channel
           .on(
             'postgres_changes' as any,
             { event: 'INSERT', schema: 'public', table: 'Notification', filter: `userId=eq.${user.id}` },
@@ -87,28 +103,37 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             'postgres_changes' as any,
             { event: 'UPDATE', schema: 'public', table: 'Notification', filter: `userId=eq.${user.id}` },
             (payload: any) => {
-               // If a notification was marked as read, decrease count
                if (payload.new.isRead && !payload.old.isRead) {
                   setUnreadCount(prev => Math.max(0, prev - 1));
                }
             }
-          )
-          .subscribe();
+          );
+          
+        channel.subscribe((status: string) => {
+          if (status === 'SUBSCRIBED') {
+            realtimeRef.current = channel;
+            console.log(`[Realtime] Notifications active: ${channelId}`);
+          }
+        });
       } catch (err) {
-        console.error("Realtime notifications error:", err);
+        console.error("[Realtime] Notifications error:", err);
+      } finally {
+        isInitializingRealtime.current = false;
       }
     };
 
     initRealtime();
 
     return () => {
-      if (channel) {
+      if (realtimeRef.current) {
+        const channelToClose = realtimeRef.current;
+        realtimeRef.current = null;
         import("@/lib/supabase").then(({ supabase }) => {
-          supabase.removeChannel(channel);
+          supabase.removeChannel(channelToClose).catch(() => {});
         });
       }
     };
-  }, [user, fetchCount]);
+  }, [user?.id]); // Only re-init if user ID changes
 
   return (
     <NotificationContext.Provider value={{ unreadCount, refreshCount: fetchCount, markAsRead, markAllAsRead }}>

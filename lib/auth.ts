@@ -31,30 +31,25 @@ export const verifyToken = (token: string): JWTPayload | null => {
 };
 
 export const getAuthUser = async () => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth-token")?.value;
-
-  if (!token) return null;
-
-  const decoded = verifyToken(token);
-  if (!decoded) return null;
-
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth-token")?.value;
+
+    if (!token) return null;
+
+    const decoded = verifyToken(token);
+    if (!decoded || !decoded.userId) return null;
+
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
         id: true,
-        name: true,
         firstName: true,
         lastName: true,
         email: true,
-        phone: true,
         username: true,
         avatarUrl: true,
-        bannerUrl: true,
         headline: true,
-        bio: true,
-        location: true,
         isPremium: true,
         verified: true,
         _count: {
@@ -62,20 +57,21 @@ export const getAuthUser = async () => {
             sentConnections: { where: { status: 'ACCEPTED' } },
             receivedConnections: { where: { status: 'ACCEPTED' } },
             followers: true,
-            following: true,
             posts: true,
           }
         }
       }
     });
     
-    // Normalize user object to include totalConnections
-    if (user) {
-      (user as any).totalConnections = (user._count.sentConnections || 0) + (user._count.receivedConnections || 0);
-    }
-    
-    return user;
+    if (!user) return null;
+
+    // Standardize essential profile metrics
+    return {
+      ...user,
+      totalConnections: (user._count.sentConnections || 0) + (user._count.receivedConnections || 0)
+    };
   } catch (error) {
+    console.error("[Auth] getAuthUser failure:", error);
     return null;
   }
 };

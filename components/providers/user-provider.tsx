@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 
 interface UserProfile {
   id: string;
+  email: string;
   name?: string;
   firstName?: string;
   lastName?: string;
@@ -46,6 +47,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           setUser({
             ...data,
             id: data.id,
+            email: data.email,
             name: data.name,
             firstName: data.firstName || data.name?.split(' ')[0] || "User",
             lastName: data.lastName || data.name?.split(' ').slice(1).join(' ') || "",

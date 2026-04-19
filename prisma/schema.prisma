@@ -277,8 +277,10 @@ model Post {
   id         String    @id @default(cuid())
   authorId   String
   content    String
-  imageUrl   String?
+  imageUrl   String?   // Keep for backward compatibility or as single main image
+  mediaUrls  String[]  // New field for carousel/multiple files
   type       String    @default("POST") // POST, ARTICLE
+  visibility String    @default("ANYONE") // ANYONE, CONNECTIONS
   title      String?   // For Articles
   tags       String[]  // Array of tags
   createdAt  DateTime  @default(now())
@@ -404,15 +406,19 @@ model Job {
   postedById       String
   title            String
   company          String
+  companyLogo      String?          // URL for the company brand
   location         String
   employmentType   EmploymentType
   description      String
   isRemote         Boolean          @default(false)
+  isEasyApply      Boolean          @default(true)  // Enables Fast Apply modal
   salaryMin        Int?
   salaryMax        Int?
   currencyCode     String?          @default("USD")
   applicationUrl   String?
-  matchPercentage  Int?             @default(0) // Mock logic for UI
+  matchPercentage  Int?             @default(0)
+  technicalStack   Json?            // ["React", "Node.js"]
+  screeningQuestions Json?          // List of custom questions
   isActive         Boolean          @default(true)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
@@ -426,14 +432,16 @@ model Job {
 }
 
 model JobApplication {
-  id                    String               @id @default(cuid())
-  jobId                 String
-  applicantId           String
-  status                JobApplicationStatus @default(SUBMITTED)
-  coverLetter           String?
-  profileSnapshotJson   Json?
-  createdAt             DateTime             @default(now())
-  updatedAt             DateTime             @updatedAt
+  id                  String               @id @default(cuid())
+  jobId               String
+  applicantId         String
+  status              JobApplicationStatus @default(SUBMITTED)
+  coverLetter         String?
+  profileSnapshotJson Json?                // Captures candidate profile at time of apply
+  screeningAnswers    Json?                // Captures answers to custom questions
+  resumeUrl           String?              // Link to the attached resume
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 
   job       Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
   applicant User @relation(fields: [applicantId], references: [id], onDelete: Cascade)

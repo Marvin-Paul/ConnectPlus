@@ -2,74 +2,87 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ReactionType } from "@prisma/client";
 
+/**
+ * POST /api/posts/[id]/react
+ * Toggles or updates a reaction on a post.
+ */
 export async function POST(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  let postId: string | undefined;
   try {
     const { id } = await context.params;
+    postId = id;
+
     const body = await request.json();
-    const { userId, type } = body; // type is ReactionType like 'LIKE', 'LOVE', etc.
+    const { userId, type } = body;
 
     if (!userId || !type) {
       return NextResponse.json({ error: "userId and type are required" }, { status: 400 });
     }
 
-    const postId = id;
+    // Verify post exists before reacting
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
 
-    // Check if reaction exists
+    // Check if reaction exists for this user/post combo
     const existingReaction = await prisma.reaction.findUnique({
       where: {
         userId_postId: {
           userId,
-          postId,
+          postId: postId!,
         },
       },
     });
 
     if (existingReaction) {
       if (existingReaction.type === (type as ReactionType)) {
-        // Toggle off if same type
+        // Toggle OFF if same type
         await prisma.reaction.delete({
           where: { id: existingReaction.id },
         });
-        return NextResponse.json({ action: "removed" });
+        return NextResponse.json({ success: true, action: "removed" });
       } else {
-        // Change reaction type
+        // Change reaction type (e.g. LIKE to LOVE)
         const updated = await prisma.reaction.update({
           where: { id: existingReaction.id },
           data: { type: type as ReactionType },
         });
-        return NextResponse.json({ action: "updated", reaction: updated });
+        return NextResponse.json({ success: true, action: "updated", reaction: updated });
       }
     }
 
-    // New reaction
+    // Create new reaction
     const newReaction = await prisma.reaction.create({
       data: {
-        postId,
+        postId: postId!,
         userId,
         type: type as ReactionType,
       },
     });
 
-    // Create notification if target is NOT user's own post
-    const post = await prisma.post.findUnique({ where: { id: postId } });
-    if (post && post.authorId !== userId) {
-      await prisma.notification.create({
+    // Handle notifications (asynchronous, don't block response)
+    if (post.authorId !== userId) {
+      prisma.notification.create({
         data: {
           userId: post.authorId,
           type: "REACTION",
-          content: `someone reacted to your post`,
-          sourceId: postId,
+          content: `reacted to your post`,
+          sourceId: postId!,
           sourceType: "POST",
         },
-      });
+      }).catch(err => console.error("[Notification Error]:", err));
     }
 
-    return NextResponse.json({ action: "created", reaction: newReaction });
-  } catch (error) {
-    console.error("Error reacting to post:", error);
-    return NextResponse.json({ error: "Failed to react to post" }, { status: 500 });
+    return NextResponse.json({ success: true, action: "created", reaction: newReaction });
+  } catch (error: any) {
+    console.error(`[API] Error in post reaction for ${postId || 'unknown'}:`, error);
+    return NextResponse.json(
+      { error: "Failed to process reaction", details: error.message },
+      { status: 500 }
+    );
   }
 }

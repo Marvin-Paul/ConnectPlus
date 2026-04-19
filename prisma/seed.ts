@@ -1,7 +1,25 @@
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const { PrismaClient } = require('@prisma/client');
+const { Pool } = require('pg');
+const { PrismaPg } = require('@prisma/adapter-pg');
+require('dotenv').config();
+
+const connectionString = process.env.DATABASE_URL;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  console.log('--- PURGING LEGACY DATA ---')
+  await prisma.jobApplication.deleteMany()
+  await prisma.job.deleteMany()
+  await prisma.repost.deleteMany()
+  await prisma.comment.deleteMany()
+  await prisma.reaction.deleteMany()
+  await prisma.notification.deleteMany()
+  await prisma.experience.deleteMany()
+  await prisma.post.deleteMany()
+  // Note: Users are handled via upsert to maintain auth stability
+
   console.log('--- DEPLOYING ELITE SEED DATA ---')
 
   // 1. Create Elite Admin User
@@ -92,27 +110,37 @@ async function main() {
   })
 
   // 5. Generate Elite Post Feed (Social Heartbeat)
-  const posts = await prisma.post.createMany({
+  await prisma.post.createMany({
     data: [
       {
         authorId: admin.id,
         content: `Connect+ is more than a platform; it's a regional ecosystem for digital trust. 74% of West African tech hiring is now moving to verified-identity workflows. #ConnectedAfrica #TrustEngine`,
-        imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200',
+        mediaUrls: [
+          'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200',
+          'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1200'
+        ],
         type: 'POST',
+        visibility: 'ANYONE',
         tags: ['ConnectedAfrica', 'TrustEngine']
       },
       {
         authorId: catherine.id,
         content: `Just concluded the Q1 Infrastructure Sync at MTN. The shift toward decentralized edge computing is the next frontier for our regional connectivity. #MTN #TelecomFuture`,
+        mediaUrls: ['https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=1200'],
         type: 'POST',
+        visibility: 'ANYONE',
         tags: ['MTN', 'TelecomFuture']
       },
       {
         authorId: admin.id,
-        content: `If you're not optimizing for AI-driven resource allocation in 2026, you're building for the past. Let's discuss why context-aware systems are winning.`,
-        imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1200',
+        content: `Join us for the East Africa Tech Summit 2026. We'll be deep-diving into AI-driven resource allocation and regional scalability.`,
         type: 'POST',
-        tags: ['AI', 'Innovation']
+        isEvent: true,
+        eventDate: new Date('2026-06-15T09:00:00Z'),
+        eventLocation: 'Kampala Serena Hotel',
+        attendeeCount: 156,
+        mediaUrls: ['https://images.unsplash.com/photo-1540575861501-7ad058a869d4?auto=format&fit=crop&q=80&w=1200'],
+        tags: ['AI', 'TechSummit', 'Kampala']
       }
     ]
   })
@@ -143,13 +171,42 @@ async function main() {
       postedById: catherine.id,
       title: 'Senior Infrastructure Lead',
       company: 'MTN Uganda',
+      companyLogo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=128&h=128',
       location: 'Kampala, Uganda',
       employmentType: 'FULL_TIME',
-      description: 'Overseeing the national fiber expansion and 5G node architecture.',
+      description: 'Overseeing the national fiber expansion and 5G node architecture. We are looking for an executive with deep regional expertise.',
       salaryMin: 4000,
-      salaryMax: 7500,
+      salaryMax: 7000,
       matchPercentage: 94,
-      isRemote: false
+      isRemote: false,
+      isEasyApply: true,
+      technicalStack: ["Fiber Optics", "Infrastructure Architecture", "5G Deployment"],
+      screeningQuestions: {
+        visa: "Do you require visa sponsorship to work in Uganda?",
+        experience: "How many years of infrastructure leadership experience do you have?"
+      }
+    }
+  })
+
+  await prisma.job.create({
+    data: {
+      postedById: admin.id,
+      title: 'Senior AI Engineer',
+      company: 'Connect+ Professional',
+      companyLogo: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=128&h=128',
+      location: 'Remote',
+      employmentType: 'FULL_TIME',
+      description: 'Building the future of African professional identity through agentic AI.',
+      salaryMin: 5000,
+      salaryMax: 9000,
+      matchPercentage: 98,
+      isRemote: true,
+      isEasyApply: true,
+      technicalStack: ["React", "Next.js", "AI/ML", "Prisma"],
+      screeningQuestions: {
+        visa: "Do you require visa sponsorship?",
+        experience: "How many years of experience do you have with Next.js?"
+      }
     }
   })
 
@@ -163,4 +220,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect()
+    pool.end()
   })

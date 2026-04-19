@@ -13,6 +13,10 @@ import {
   Bell,
   MessageCircle,
   Users as UsersIcon,
+  Settings,
+  HelpCircle,
+  ShieldCheck,
+  Briefcase,
 } from "lucide-react";
 
 export function TopNav() {
@@ -92,18 +96,24 @@ export function TopNav() {
         {/* Right: Navigation */}
         <nav className="flex items-center gap-1 h-full">
           {[
-            { label: 'Feed', icon: Grid3X3, href: '/' },
+            { label: 'Feed', icon: Grid3X3, href: '/', mobileHidden: false },
+            { label: 'Network', icon: UsersIcon, href: '/network', mobileHidden: true },
+            { label: 'Jobs', icon: Briefcase, href: '/jobs', mobileHidden: true },
+            { label: 'Notifications', icon: Bell, href: '/notifications', badge: true, mobileHidden: true },
           ].map((item) => (
             <Link 
               key={item.label}
               href={item.href}
-              className={`flex flex-col items-center justify-center min-w-[64px] h-full gap-1 transition-all hover:bg-muted group relative ${pathname === item.href ? 'text-primary' : 'text-secondary'}`}
+              className={`${item.mobileHidden ? 'hidden md:flex' : 'flex'} flex-col items-center justify-center min-w-[64px] h-full gap-1 transition-all hover:bg-muted group relative ${pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)) ? 'text-primary' : 'text-secondary'}`}
             >
               <div className="relative">
-                <item.icon className={`h-5 w-5 stroke-[2.5px] transition-transform group-hover:-translate-y-0.5 ${pathname === item.href ? 'text-primary' : 'group-hover:text-primary'}`} />
+                <item.icon className={`h-5 w-5 stroke-[2.5px] transition-transform group-hover:-translate-y-0.5 ${pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)) ? 'text-primary' : 'group-hover:text-primary'}`} />
+                {item.badge && (
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 border-2 border-white rounded-full animate-pulse shadow-sm" />
+                )}
               </div>
               <span className="text-[10px] font-bold tracking-wider uppercase transition-colors">{item.label}</span>
-              {pathname === item.href && (
+              {(pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))) && (
                 <div className="absolute bottom-0 w-8 h-1 bg-primary rounded-t-full" />
               )}
             </Link>
@@ -140,27 +150,33 @@ export function TopNav() {
                            </div>
                        </div>
                        
-                       <div className="px-2 py-2">
-                           <Link href="/settings" onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2 text-[14px] font-semibold text-secondary hover:text-primary hover:bg-muted rounded-lg transition-colors">
-                              Privacy & Settings
-                           </Link>
-                           <Link href="/help" onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2 text-[14px] font-semibold text-secondary hover:text-primary hover:bg-muted rounded-lg transition-colors">
-                              Help Center
-                           </Link>
-                       </div>
+                        <div className="px-2 py-2 border-t border-border/50">
+                            <div className="px-3 py-1.5 text-[11px] font-bold text-secondary/40 uppercase tracking-wider">Account Settings</div>
+                            <Link href="/settings" onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-semibold text-secondary hover:text-primary hover:bg-muted rounded-lg transition-all active:scale-[0.98]">
+                               <Settings className="w-4 h-4" />
+                               Privacy & Settings
+                            </Link>
+                            <Link href="/help" onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-semibold text-secondary hover:text-primary hover:bg-muted rounded-lg transition-all active:scale-[0.98]">
+                               <HelpCircle className="w-4 h-4" />
+                               Help Center
+                            </Link>
+                        </div>
+
+                        <div className="px-2 py-2 border-t border-border/50">
+                             <button 
+                                onClick={async () => { 
+                                  await fetch("/api/logout", { method: "POST" }); 
+                                  window.location.href = "/login"; 
+                                }}
+                                className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-red-500 hover:bg-red-50 rounded-lg transition-all active:scale-[0.98]"
+                             >
+                                <LogOut className="w-4 h-4" />
+                                Sign Out
+                             </button>
+                        </div>
                      </div>
                   )}
                </div>
-               
-               <button 
-                  onClick={async () => { 
-                    await fetch("/api/logout", { method: "POST" }); 
-                    window.location.href = "/login"; 
-                  }}
-                  className="h-10 px-4 flex items-center justify-center rounded-xl bg-muted text-secondary font-bold text-[13px] hover:bg-red-50 hover:text-red-600 transition-all active:scale-95 border border-transparent hover:border-red-100"
-               >
-                  Sign Out
-               </button>
             </div>
           ) : (
             <div className="flex items-center gap-2 pl-4">
