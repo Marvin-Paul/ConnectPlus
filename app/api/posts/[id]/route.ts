@@ -146,10 +146,10 @@ export async function DELETE(
 
     const deleter = await prisma.user.findUnique({
       where: { id: userId },
-      select: { role: true },
-    });
+      select: { role: true } as any,
+    }) as any;
     
-    if (post.authorId !== userId && deleter?.role !== "ADMIN") {
+    if (post.authorId !== userId && (deleter as any)?.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized: You do not have permission to delete this post" }, { status: 403 });
     }
 
