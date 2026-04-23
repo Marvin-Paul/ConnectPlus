@@ -9,8 +9,8 @@ export function ProfileCard() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-[2.5rem] border border-slate-100 p-12 flex items-center justify-center shadow-xl">
-        <Loader2 className="w-8 h-8 text-slate-200 animate-spin" />
+      <div className="bg-white dark:bg-slate-950 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 p-12 flex items-center justify-center shadow-xl">
+        <Loader2 className="w-8 h-8 text-slate-200 dark:text-slate-800 animate-spin" />
       </div>
     );
   }
@@ -31,7 +31,7 @@ export function ProfileCard() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-border overflow-hidden shadow-soft group sticky top-[84px] animate-pro-fade">
+    <div className="bg-white dark:bg-slate-950 rounded-xl border border-border dark:border-slate-800 overflow-hidden shadow-soft group sticky top-[84px] animate-pro-fade">
       {/* Banner */}
       <div className="h-20 relative overflow-hidden bg-muted">
          {user.banner && <img src={user.banner} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="" />}
@@ -46,7 +46,7 @@ export function ProfileCard() {
         {/* Avatar */}
         <div className="relative -mt-10 mb-4">
           <Link href={`/profile/${user.username}`}>
-             <div className="w-20 h-20 rounded-lg border-4 border-white overflow-hidden bg-muted shadow-md hover:shadow-lg transition-all duration-300">
+             <div className="w-20 h-20 rounded-lg border-4 border-white dark:border-slate-950 overflow-hidden bg-muted dark:bg-slate-800 shadow-md hover:shadow-lg transition-all duration-300">
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
              </div>
           </Link>
@@ -58,52 +58,52 @@ export function ProfileCard() {
         </div>
         
         {/* User Info */}
-        <div className="border-b border-border/50 pb-5">
+        <div className="border-b border-border/50 dark:border-slate-800/50 pb-5">
           <Link href={`/profile/${user.username}`} className="group/name block">
-             <h2 className="text-[18px] font-extrabold text-foreground group-hover/name:text-primary transition-colors leading-tight">
+             <h2 className="text-[18px] font-extrabold text-foreground dark:text-slate-200 group-hover/name:text-primary transition-colors leading-tight">
                {user.name}
              </h2>
           </Link>
-          <p className="text-[12px] font-semibold text-secondary mt-1.5 leading-relaxed">
+          <p className="text-[12px] font-semibold text-secondary dark:text-slate-400 mt-1.5 leading-relaxed">
             {user.headline}
           </p>
         </div>
 
         {/* Stats */}
-        <div className="py-4 border-b border-border/50 space-y-3">
+        <div className="py-4 border-b border-border/50 dark:border-slate-800/50 space-y-3">
           <div className="flex justify-between items-center group/stat cursor-pointer">
             <span className="text-[11px] font-bold text-secondary uppercase tracking-tight group-hover/stat:text-primary transition-colors">Profile viewers</span>
             <span className="text-[12px] font-extrabold text-primary">{user.stats.viewers.toLocaleString()}</span>
           </div>
           <div className="flex justify-between items-center group/stat cursor-pointer">
-            <span className="text-[11px] font-bold text-secondary uppercase tracking-tight group-hover/stat:text-primary transition-colors">Connections</span>
+            <span className="text-[11px] font-bold text-secondary dark:text-slate-500 uppercase tracking-tight group-hover/stat:text-primary transition-colors">Connections</span>
             <span className="text-[12px] font-extrabold text-primary">{user.stats.connections.toLocaleString()}</span>
           </div>
         </div>
 
         {/* CTA */}
         <div className="pt-4">
-           <Link href="/premium" className="flex items-center gap-3 p-3 rounded-lg bg-muted hover:bg-slate-200/50 transition-all group/cta">
+           <Link href="/premium" className="flex items-center gap-3 p-3 rounded-lg bg-muted dark:bg-slate-900 hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-all group/cta">
               <div className="w-8 h-8 rounded bg-accent/20 flex items-center justify-center shrink-0">
                  <Zap className="w-4 h-4 text-accent" />
               </div>
               <div>
-                 <p className="text-[11px] font-extrabold text-foreground uppercase tracking-wider">Try Premium</p>
-                 <p className="text-[10px] font-bold text-secondary mt-0.5">Scale your network faster</p>
+                 <p className="text-[11px] font-extrabold text-foreground dark:text-slate-200 uppercase tracking-wider">Try Premium</p>
+                 <p className="text-[10px] font-bold text-secondary dark:text-slate-400 mt-0.5">Scale your network faster</p>
               </div>
               <ChevronRight className="w-4 h-4 ml-auto text-secondary group-hover/cta:translate-x-0.5 transition-transform" />
            </Link>
         </div>
       </div>
 
-      <div className="px-5 py-3 bg-muted/30 border-t border-border flex flex-col gap-3">
+      <div className="px-5 py-3 bg-muted/30 dark:bg-slate-900/30 border-t border-border dark:border-slate-800 flex flex-col gap-3">
           <Link href="/network/connections" className="flex items-center gap-3 group/link">
-             <Bookmark className="w-4 h-4 text-secondary group-hover/link:text-primary transition-colors" />
-             <span className="text-[12px] font-bold text-secondary group-hover/link:text-foreground transition-colors">Saved items</span>
+             <Bookmark className="w-4 h-4 text-secondary dark:text-slate-500 group-hover/link:text-primary transition-colors" />
+             <span className="text-[12px] font-bold text-secondary dark:text-slate-400 group-hover/link:text-foreground dark:group-hover:text-white transition-colors">Saved items</span>
           </Link>
           <Link href="/network/groups" className="flex items-center gap-3 group/link">
-             <Users className="w-4 h-4 text-secondary group-hover/link:text-primary transition-colors" />
-             <span className="text-[12px] font-bold text-secondary group-hover/link:text-foreground transition-colors">Groups</span>
+             <Users className="w-4 h-4 text-secondary dark:text-slate-500 group-hover/link:text-primary transition-colors" />
+             <span className="text-[12px] font-bold text-secondary dark:text-slate-400 group-hover/link:text-foreground dark:group-hover:text-white transition-colors">Groups</span>
           </Link>
       </div>
     </div>

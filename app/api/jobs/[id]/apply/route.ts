@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NotificationService } from "@/lib/notifications";
 import { getAuthUser } from "@/lib/auth";
 
 /**
@@ -57,16 +58,13 @@ export async function POST(
     });
 
     // 4. System Architecture: Handle Post-Submission Events (ATS Simulation)
-    // - In a real system, we'd trigger a background task for ATS routing here.
-    // - We create a notification for the job poster instantly.
-    await prisma.notification.create({
-      data: {
-        userId: job.postedById,
-        type: "JOB_ALERT",
-        content: `${user.firstName} ${user.lastName} applied for your "${job.title}" position via Fast Apply.`,
-        sourceId: application.id,
-        sourceType: "JOB_APPLICATION"
-      }
+    NotificationService.create({
+      userId: job.postedById,
+      actorId: user.id,
+      type: "JOB_ALERT",
+      sourceId: application.id,
+      sourceType: "JOB_APPLICATION",
+      customContent: `${user.firstName} ${user.lastName} applied for your "${job.title}" position.`
     });
 
     return NextResponse.json({ 

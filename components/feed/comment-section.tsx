@@ -168,11 +168,11 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
   };
 
   return (
-    <div className="bg-[#F8FAFC]/50 px-4 md:px-8 py-8 space-y-8 animate-pro-fade">
+    <div className="bg-[#F8FAFC]/50 dark:bg-slate-950/50 px-4 md:px-8 py-8 space-y-8 animate-pro-fade">
       
       {/* Editorial Comment Hub */}
       <div className="flex gap-4 group/input">
-         <div className="w-10 h-10 rounded-lg overflow-hidden border border-border bg-white shadow-sm shrink-0">
+         <div className="w-10 h-10 rounded-lg overflow-hidden border border-border dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shrink-0">
             {user?.avatarUrl ? (
                <img src={user.avatarUrl} className="w-full h-full object-cover" alt="My Profile" />
             ) : (
@@ -183,9 +183,9 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
          </div>
          
          <form onSubmit={handleSubmit} className="flex-1 relative">
-            <div className="relative overflow-hidden rounded-xl border border-border bg-white focus-within:border-primary/50 transition-all shadow-sm">
+            <div className="relative overflow-hidden rounded-xl border border-border dark:border-slate-800 bg-white dark:bg-slate-900 focus-within:border-primary/50 transition-all shadow-sm">
                {showEmojiPicker && (
-                  <div className="absolute bottom-14 left-2 p-2 bg-white rounded-xl shadow-premium border border-border flex gap-2 animate-in slide-in-from-bottom-2 z-50">
+                  <div className="absolute bottom-14 left-2 p-2 bg-white dark:bg-slate-800 rounded-xl shadow-premium border border-border dark:border-slate-700 flex gap-2 animate-in slide-in-from-bottom-2 z-50">
                      {EMOJIS.map(e => (
                         <button 
                            key={e} 
@@ -267,7 +267,7 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
          ) : (
             comments.map(comment => (
                <div key={comment.id} className="group/comment flex gap-4 pr-1">
-                  <div className="w-10 h-10 rounded-lg overflow-hidden border border-border shrink-0 z-10 bg-white">
+                  <div className="w-10 h-10 rounded-lg overflow-hidden border border-border dark:border-slate-800 shrink-0 z-10 bg-white dark:bg-slate-900">
                      {comment.author.avatarUrl ? (
                         <img src={comment.author.avatarUrl} className="w-full h-full object-cover" alt="" />
                      ) : (
@@ -278,7 +278,7 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
                   </div>
 
                   <div className="flex-1 space-y-1.5 min-w-0">
-                     <div className="bg-white rounded-2xl rounded-tl-none p-4 ring-1 ring-border shadow-sm group-hover/comment:ring-primary/20 transition-all">
+                     <div className="bg-white dark:bg-slate-800 rounded-2xl rounded-tl-none p-4 ring-1 ring-border dark:ring-slate-700 shadow-sm group-hover/comment:ring-primary/20 transition-all">
                         <div className="flex justify-between items-start gap-4">
                            <div className="min-w-0">
                               <h5 className="text-[13px] font-bold text-foreground hover:text-primary transition-colors cursor-pointer truncate">
@@ -305,7 +305,7 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
                         
                         {/* Reaction count bubble */}
                         {(comment.likes_count || 0) > 0 && (
-                           <div className="absolute -bottom-2 -left-2 px-2 py-0.5 bg-white border border-border rounded-full shadow-lg flex items-center gap-1 scale-90">
+                           <div className="absolute -bottom-2 -left-2 px-2 py-0.5 bg-white dark:bg-slate-700 border border-border dark:border-slate-600 rounded-full shadow-lg flex items-center gap-1 scale-90">
                               <div className="flex -space-x-1">
                                  <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center border border-white">
                                     <ThumbsUp className="w-2.5 h-2.5 text-white fill-white" />
@@ -332,7 +332,7 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
          )}
 
          {!loading && comments.length === 0 && (
-            <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-border animate-pro-fade">
+            <div className="text-center py-12 bg-white dark:bg-slate-900/50 rounded-2xl border border-dashed border-border dark:border-slate-800 animate-pro-fade">
                <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                   <MessageSquare className="w-6 h-6 text-secondary/30" />
                </div>
@@ -346,7 +346,7 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
       {activeMore && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/5 backdrop-blur-[2px]">
            <div 
-             className="w-full max-w-xs bg-white rounded-2xl shadow-premium border border-border overflow-hidden animate-in zoom-in-95 duration-200"
+             className="w-full max-w-xs bg-white dark:bg-slate-900 rounded-2xl shadow-premium border border-border dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200"
              onClick={(e) => e.stopPropagation()}
            >
               <div className="p-2">

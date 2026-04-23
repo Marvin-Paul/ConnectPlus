@@ -74,30 +74,31 @@ function FeedContent() {
           </div>
 
           <div className="flex items-center gap-3 py-2">
-            <div className="flex-1 h-px bg-[#E5E7EB]" />
-            <div className="flex items-center gap-1 bg-white border border-[#E5E7EB] p-1 rounded-full shadow-sm">
+            <div className="flex-1 h-px bg-[#E5E7EB] dark:bg-slate-800" />
+            <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-[#E5E7EB] dark:border-slate-800 p-1 rounded-full shadow-sm">
               <button
                 onClick={() => setSortOrder('top')}
                 className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.1em] transition-all duration-200 ${
                   sortOrder === 'top'
-                    ? 'bg-[#0A66C2] text-white shadow-md'
-                    : 'text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F6F8]'
+                    ? 'bg-[#1B5E20] text-white shadow-md'
+                    : 'text-[#6B7280] dark:text-slate-400 hover:text-[#1F2937] dark:hover:text-slate-200 hover:bg-[#F3F6F8] dark:hover:bg-slate-800'
                 }`}
               >
                 Top
               </button>
               <button
-                onClick={() => { setSortOrder('recent'); fetchPosts(1); }}
+                onClick={() => setSortOrder('recent')}
+                aria-label="Sort by recent posts"
                 className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.1em] transition-all duration-200 ${
                   sortOrder === 'recent'
-                    ? 'bg-[#0A66C2] text-white shadow-md'
-                    : 'text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F6F8]'
+                    ? 'bg-[#1B5E20] text-white shadow-md'
+                    : 'text-[#6B7280] dark:text-slate-400 hover:text-[#1F2937] dark:hover:text-slate-200 hover:bg-[#F3F6F8] dark:hover:bg-slate-800'
                 }`}
               >
                 Recent
               </button>
             </div>
-            <div className="flex-1 h-px bg-[#E5E7EB]" />
+            <div className="flex-1 h-px bg-[#E5E7EB] dark:bg-slate-800" />
           </div>
 
           <div className="space-y-4">
@@ -129,13 +130,17 @@ function FeedContent() {
             )}
 
             {!loading && posts.length === 0 && (
-              <div className="p-10 text-center bg-white rounded-[16px] border border-[#E5E7EB] shadow-soft mt-8 animate-fade-in">
-                 <Globe className="w-12 h-12 text-[#E5E7EB] mx-auto mb-4" />
-                 <h2 className="text-[20px] font-bold text-[#1F2937]">Discover Insights</h2>
-                 <p className="text-[#6B7280] font-medium mt-2 leading-relaxed">System is scanning for potential connections. Begin by exploring trends.</p>
-                 <button className="mt-6 px-8 py-2.5 bg-[#0A66C2] text-white font-bold rounded-[8px] hover:bg-[#004182] transition-all active:scale-95 shadow-sm">
-                    Explore Trends
-                 </button>
+              <div className="p-10 text-center bg-white dark:bg-slate-900 rounded-[16px] border border-[#E5E7EB] dark:border-slate-800 shadow-soft dark:shadow-none mt-8 animate-fade-in">
+                 <Globe className="w-12 h-12 text-[#E5E7EB] dark:text-slate-800 mx-auto mb-4" />
+                 <h2 className="text-[20px] font-bold text-[#1F2937] dark:text-slate-100">Discover Insights</h2>
+                 <p className="text-[#6B7280] dark:text-slate-400 font-medium mt-2 leading-relaxed">System is scanning for potential connections. Begin by exploring trends.</p>
+                  <button 
+                    onClick={() => { setSortOrder('recent'); fetchPosts(1); }}
+                    aria-label="Explore trending topics"
+                    className="mt-6 px-8 py-2.5 bg-[#1B5E20] text-white font-bold rounded-[8px] hover:bg-green-700 transition-all active:scale-95 shadow-sm"
+                  >
+                     Explore Trends
+                  </button>
               </div>
             )}
           </div>

@@ -108,10 +108,10 @@ export function SkillsEditModal({ username, skills, isOpen, onClose }: SkillsEdi
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-950 border-none shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Skills</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">Skills</DialogTitle>
+          <DialogDescription className="text-slate-500 dark:text-slate-400">
             Manage and reorganize your professional skills.
           </DialogDescription>
         </DialogHeader>
@@ -141,12 +141,12 @@ export function SkillsEditModal({ username, skills, isOpen, onClose }: SkillsEdi
               <p className="text-xs text-muted-foreground">Pin up to 3 skills to your top</p>
             </div>
             
-            <div className="space-y-2 border rounded-lg p-4 bg-muted/20">
+            <div className="space-y-2 border border-slate-100 dark:border-slate-800 rounded-lg p-4 bg-muted/20 dark:bg-slate-900/50">
               {skills.map((skill) => (
-                <div key={skill.id} className="flex items-center justify-between group py-1.5 border-b last:border-0 border-white/10">
+                <div key={skill.id} className="flex items-center justify-between group py-1.5 border-b last:border-0 border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{skill.name}</span>
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{skill.name}</span>
                     {skill.isPinned && (
                       <Badge variant="secondary" className="text-[10px] py-0 px-1 bg-primary/20 text-primary uppercase font-bold">
                         Pinned
@@ -156,7 +156,7 @@ export function SkillsEditModal({ username, skills, isOpen, onClose }: SkillsEdi
                   <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <button 
                       onClick={() => handleTogglePin(skill.id, skill.isPinned)}
-                      className={`p-1.5 rounded-full hover:bg-muted transition-colors ${skill.isPinned ? 'text-primary' : 'text-muted-foreground'}`}
+                      className={`p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${skill.isPinned ? 'text-primary' : 'text-muted-foreground'}`}
                       title={skill.isPinned ? "Unpin skill" : "Pin skill"}
                     >
                       <Pin className={`h-4 w-4 ${skill.isPinned ? 'fill-current rotate-[45deg]' : ''}`} />

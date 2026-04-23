@@ -1,0 +1,26 @@
+### Connect+ Integrated API Audit
+# Use this file with a REST Client (like VS Code REST Client extension)
+# to verify backend-UI interconnectivity.
+
+@baseUrl = http://localhost:3000/api
+
+### 1. Health Check & Identity
+# Verifies the Auth <-> Database <-> API link.
+GET {{baseUrl}}/me
+Accept: application/json
+
+### 2. Professional Feed
+# Verifies the Post <-> Database <-> API link.
+# Status should be 200 and return a list of posts.
+GET {{baseUrl}}/posts?limit=5&sort=recent
+Accept: application/json
+
+### 3. Real-time Notifications (REST Check)
+# Verifies the Notification <-> Database <-> API link.
+GET {{baseUrl}}/notifications
+Accept: application/json
+
+### 4. Search & Discovery
+# Verifies the Search <-> Database <-> API link.
+GET {{baseUrl}}/search?q=professional
+Accept: application/json

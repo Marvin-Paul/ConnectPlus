@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { getAuthUser } from "@/lib/auth";
 
 const profileUpdateSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  name: z.string().optional(),
   headline: z.string().optional(),
   location: z.string().optional(),
   bio: z.string().optional(),

@@ -42,22 +42,24 @@ export function FeaturedSection({ username, items }: FeaturedSectionProps) {
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm p-6 md:p-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm p-6 md:p-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
         <div className="flex items-center justify-between mb-6">
-           <h2 className="text-[18px] font-bold text-slate-900 tracking-tight">Featured</h2>
-           <button 
-             onClick={() => setIsAddModalOpen(true)}
-             className="p-2 hover:bg-slate-50 rounded-lg transition-all text-slate-400 hover:text-slate-600"
-           >
-             <Plus className="h-5 w-5" />
-           </button>
+           <h2 className="text-[18px] font-bold text-slate-900 dark:text-white tracking-tight">Featured</h2>
+            <button 
+              onClick={() => setIsAddModalOpen(true)}
+              aria-label="Add featured item"
+              title="Add featured item"
+              className="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            >
+              <Plus className="h-5 w-5" />
+            </button>
         </div>
 
         <div className="space-y-6">
           {featured && featured.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {featured.map((item) => (
-                <div key={item.id} className="border border-slate-200 rounded-lg bg-white hover:border-slate-300 transition-all cursor-pointer group shadow-sm flex flex-col overflow-hidden">
+                <div key={item.id} className="border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer group shadow-sm flex flex-col overflow-hidden">
                   {item.imageUrl && (
                     <div className="h-32 overflow-hidden border-b border-slate-100">
                       <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -65,11 +67,11 @@ export function FeaturedSection({ username, items }: FeaturedSectionProps) {
                   )}
                   <div className="p-4 flex-1 flex flex-col justify-between">
                     <div className="space-y-1">
-                      <h4 className="font-bold text-[14px] text-slate-900 leading-tight line-clamp-1">
+                      <h4 className="font-bold text-[14px] text-slate-900 dark:text-slate-100 leading-tight line-clamp-1">
                         {item.title}
                       </h4>
                       {item.description && (
-                        <p className="text-[13px] text-slate-500 line-clamp-2 leading-relaxed">
+                        <p className="text-[13px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                           {item.description}
                         </p>
                       )}

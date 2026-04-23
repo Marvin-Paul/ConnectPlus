@@ -24,33 +24,38 @@ export async function GET(request: Request) {
       ];
     }
 
+    const include: any = {
+      author: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          avatarUrl: true,
+          headline: true,
+        },
+      },
+      _count: {
+        select: {
+          reactions: true,
+          comments: true,
+          reposts: true
+        }
+      },
+    };
+
+    if (userId) {
+      include.reactions = {
+        where: { userId },
+        select: { type: true }
+      };
+    }
+
     const posts = await prisma.post.findMany({
       take: limit,
       skip: skip,
       orderBy,
-      include: {
-        author: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            username: true,
-            avatarUrl: true,
-            headline: true,
-          },
-        },
-        _count: {
-          select: {
-            reactions: true,
-            comments: true,
-            reposts: true
-          }
-        },
-        reactions: userId ? {
-          where: { userId },
-          select: { type: true }
-        } : false,
-      },
+      include
     });
 
     // Normalize post results for the frontend

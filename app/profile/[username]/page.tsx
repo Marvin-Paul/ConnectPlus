@@ -130,39 +130,39 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </div>
 
           {/* Sidebar */}
-          <div className="md:col-span-4 space-y-6">
-             <div className="bg-white border rounded-xl p-8 flex flex-col items-center text-center space-y-6 shadow-soft transition-all hover:shadow-dropdown">
-               <div className="w-14 h-14 bg-primary/5 rounded-full flex items-center justify-center border border-primary/10">
-                  <Sparkles className="w-6 h-6 text-primary" />
-               </div>
-                <div className="space-y-2">
-                  <h3 className="font-bold text-slate-900 uppercase tracking-widest text-[11px]">Connect+ Premium</h3>
-                  <p className="text-[13px] text-slate-500 font-medium leading-relaxed">Increase your profile visibility to industry leaders with our Premium features.</p>
+           <div className="md:col-span-4 space-y-6">
+              <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl p-8 flex flex-col items-center text-center space-y-6 shadow-soft transition-all hover:shadow-dropdown">
+                <div className="w-14 h-14 bg-primary/5 dark:bg-primary/10 rounded-full flex items-center justify-center border border-primary/10 dark:border-primary/20">
+                   <Sparkles className="w-6 h-6 text-primary" />
                 </div>
-                <Link href="/premium" className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-lg font-bold text-[11px] uppercase tracking-widest transition-all shadow-sm">
-                   Upgrade to Premium
-                </Link>
-             </div>
+                 <div className="space-y-2">
+                   <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase tracking-widest text-[11px]">Connect+ Premium</h3>
+                   <p className="text-[13px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed italic opacity-80">Increase your profile visibility to industry leaders with our Premium features.</p>
+                 </div>
+                 <Link href="/premium" className="w-full bg-slate-900 dark:bg-[#1B5E20] hover:bg-slate-800 dark:hover:bg-[#1B5E20]/90 text-white py-3 rounded-lg font-bold text-[11px] uppercase tracking-widest transition-all shadow-sm">
+                    Upgrade to Premium
+                 </Link>
+              </div>
 
-             <div className="bg-white border rounded-xl p-6 space-y-6 shadow-soft">
-               <h3 className="font-extrabold text-[12px] text-foreground uppercase tracking-widest px-2">People also viewed</h3>
-               <div className="space-y-6">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex gap-4 group cursor-pointer items-start px-2">
-                      <div className="w-12 h-12 rounded-full bg-muted shrink-0 border border-border overflow-hidden">
-                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=user${i+10}`} className="w-full h-full object-cover" alt="" />
-                      </div>
-                       <div className="min-w-0">
-                        <h4 className="text-[14px] font-bold text-slate-900 group-hover:text-[#1B5E20] transition-colors truncate">Professional {i}</h4>
-                        <p className="text-[12px] text-slate-500 font-medium line-clamp-1">Senior System Architect</p>
-                        <button className="mt-2 text-[11px] font-bold text-slate-500 border border-slate-200 rounded-lg px-4 py-1.5 hover:bg-slate-50 transition-all uppercase tracking-widest">
-                          Connect
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-               </div>
-             </div>
+              <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl p-6 space-y-6 shadow-soft">
+                <h3 className="font-extrabold text-[12px] text-foreground dark:text-slate-100 uppercase tracking-widest px-2">People also viewed</h3>
+                <div className="space-y-6">
+                   {[1, 2, 3].map((i) => (
+                     <div key={i} className="flex gap-4 group cursor-pointer items-start px-2">
+                       <div className="w-12 h-12 rounded-full bg-muted dark:bg-slate-800 shrink-0 border border-border dark:border-slate-700 overflow-hidden">
+                         <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=user${i+10}`} className="w-full h-full object-cover" alt="" />
+                       </div>
+                        <div className="min-w-0">
+                         <h4 className="text-[14px] font-bold text-slate-900 dark:text-slate-200 group-hover:text-[#1B5E20] dark:group-hover:text-green-500 transition-colors truncate">Professional {i}</h4>
+                         <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium line-clamp-1 italic opacity-80">Senior System Architect</p>
+                         <button className="mt-2 text-[11px] font-bold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all uppercase tracking-widest">
+                           Connect
+                         </button>
+                       </div>
+                     </div>
+                   ))}
+                </div>
+              </div>
           </div>
         </div>
       </div>

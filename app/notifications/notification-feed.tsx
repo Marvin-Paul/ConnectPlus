@@ -39,7 +39,20 @@ export function NotificationFeed({ activeFilter }: NotificationFeedProps) {
 
   useEffect(() => {
     fetchNotifications();
-  }, [user]);
+
+    if (!user?.id) return;
+
+    // Listen for real-time notifications dispatched by the NotificationProvider
+    const handleNewNotification = (event: any) => {
+      const newNotification = event.detail;
+      setNotifications(prev => [newNotification, ...prev]);
+    };
+
+    window.addEventListener("new-notification", handleNewNotification);
+    return () => {
+      window.removeEventListener("new-notification", handleNewNotification);
+    };
+  }, [user?.id]);
 
   const toggleReadStatus = async (id: string) => {
     setNotifications(prev => prev.map(n => 

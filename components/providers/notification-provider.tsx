@@ -72,68 +72,33 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }, [fetchCount]);
 
   useEffect(() => {
-    if (!user || isInitializingRealtime.current) return;
+    if (!user?.id) return;
     
-    const initRealtime = async () => {
+    // Establish real-time connection via Server-Sent Events (SSE)
+    // This is more reliable than direct Supabase Realtime for this custom architecture
+    const eventSource = new EventSource(`/api/notifications/stream?userId=${user.id}`);
+
+    eventSource.onmessage = (event) => {
       try {
-        isInitializingRealtime.current = true;
-        const { supabase } = await import("@/lib/supabase");
-        if (!supabase) return;
-
-        // Cleanup
-        const channels = supabase.getChannels();
-        for (const c of channels) {
-          if (c.topic.includes('notifications_')) {
-            await supabase.removeChannel(c);
-          }
-        }
-
-        const channelId = `notifications_${user.id}`;
-        const channel = supabase.channel(channelId);
+        const newNotification = JSON.parse(event.data);
+        setUnreadCount(prev => prev + 1);
         
-        channel
-          .on(
-            'postgres_changes' as any,
-            { event: 'INSERT', schema: 'public', table: 'Notification', filter: `userId=eq.${user.id}` },
-            () => {
-              setUnreadCount(prev => prev + 1);
-            }
-          )
-          .on(
-            'postgres_changes' as any,
-            { event: 'UPDATE', schema: 'public', table: 'Notification', filter: `userId=eq.${user.id}` },
-            (payload: any) => {
-               if (payload.new.isRead && !payload.old.isRead) {
-                  setUnreadCount(prev => Math.max(0, prev - 1));
-               }
-            }
-          );
-          
-        channel.subscribe((status: string) => {
-          if (status === 'SUBSCRIBED') {
-            realtimeRef.current = channel;
-            console.log(`[Realtime] Notifications active: ${channelId}`);
-          }
-        });
-      } catch (err) {
-        console.error("[Realtime] Notifications error:", err);
-      } finally {
-        isInitializingRealtime.current = false;
+        // Optional: Dispatch a global event for components that don't use this provider
+        window.dispatchEvent(new CustomEvent("new-notification", { detail: newNotification }));
+      } catch (e) {
+        console.error("Failed to parse real-time notification:", e);
       }
     };
 
-    initRealtime();
+    eventSource.onerror = (err) => {
+      console.error("SSE Connection Error:", err);
+      eventSource.close();
+    };
 
     return () => {
-      if (realtimeRef.current) {
-        const channelToClose = realtimeRef.current;
-        realtimeRef.current = null;
-        import("@/lib/supabase").then(({ supabase }) => {
-          supabase.removeChannel(channelToClose).catch(() => {});
-        });
-      }
+      eventSource.close();
     };
-  }, [user?.id]); // Only re-init if user ID changes
+  }, [user?.id]);
 
   return (
     <NotificationContext.Provider value={{ unreadCount, refreshCount: fetchCount, markAsRead, markAllAsRead }}>

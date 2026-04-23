@@ -6,8 +6,8 @@ type ButtonSize = "default" | "sm" | "lg" | "icon";
 
 const variants: Record<ButtonVariant, string> = {
   default: "bg-primary text-primary-foreground hover:opacity-90 shadow-sm",
-  outline: "border border-input bg-white text-slate-800 hover:bg-slate-50",
-  ghost: "bg-transparent text-slate-700 hover:bg-slate-100",
+  outline: "border border-input bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900",
+  ghost: "bg-transparent text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900",
   secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90",
 };
 

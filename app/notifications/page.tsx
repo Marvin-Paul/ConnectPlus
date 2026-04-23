@@ -20,9 +20,9 @@ export default function NotificationsPage() {
 
         {/* Feed */}
         <main className="md:col-span-8 lg:col-span-6 space-y-4 animate-pro-fade">
-           <div className="bg-white rounded-xl border border-border overflow-hidden shadow-soft">
-              <div className="flex p-6 border-b border-border/50 items-center justify-between">
-                 <h2 className="text-[13px] font-extrabold text-foreground uppercase tracking-widest">Recent Intelligence Updates</h2>
+           <div className="bg-white dark:bg-slate-900 rounded-xl border border-border dark:border-slate-800 overflow-hidden shadow-soft dark:shadow-none">
+              <div className="flex p-6 border-b border-border/50 dark:border-slate-800 items-center justify-between">
+                 <h2 className="text-[13px] font-extrabold text-foreground dark:text-slate-100 uppercase tracking-widest">Recent Intelligence Updates</h2>
                  <button className="text-[11px] font-extrabold text-primary hover:underline uppercase tracking-widest">
                     Mark all read
                  </button>
@@ -34,7 +34,7 @@ export default function NotificationsPage() {
         {/* Right Rail */}
         <aside className="hidden lg:block lg:col-span-3 space-y-6 animate-pro-fade">
           
-          <div className="bg-white rounded-xl border border-border p-5 space-y-4 hover:shadow-soft transition-all group cursor-pointer overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-border dark:border-slate-800 p-5 space-y-4 hover:shadow-soft dark:hover:shadow-none transition-all group cursor-pointer overflow-hidden">
              <div className="relative h-28 rounded-lg overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=400" 
@@ -43,10 +43,10 @@ export default function NotificationsPage() {
                 />
              </div>
              <div className="space-y-1">
-                <h3 className="text-[14px] font-bold text-foreground leading-tight">Elevate your connections</h3>
-                <p className="text-[12px] text-secondary font-bold">"Master high-tier system architecture with Connect Plus Learning."</p>
+                <h3 className="text-[14px] font-bold text-foreground dark:text-slate-100 leading-tight">Elevate your connections</h3>
+                <p className="text-[12px] text-secondary dark:text-slate-400 font-bold italic opacity-80">"Master high-tier system architecture with Connect Plus Learning."</p>
              </div>
-              <Link href="/learning" className="w-full py-2.5 rounded-lg border border-primary text-primary font-extrabold text-[11px] uppercase tracking-widest hover:bg-primary/5 transition-all flex items-center justify-center">
+              <Link href="/learning" className="w-full py-2.5 rounded-lg border border-primary dark:border-green-600 text-primary dark:text-green-500 font-extrabold text-[11px] uppercase tracking-widest hover:bg-primary/5 dark:hover:bg-green-900/10 transition-all flex items-center justify-center">
                 View Intelligence Courses
               </Link>
            </div>

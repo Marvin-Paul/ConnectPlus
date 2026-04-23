@@ -93,7 +93,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
   return (
     <>
       <div className="relative group/header animate-in fade-in slide-in-from-top-2 duration-500">
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm relative z-10">
+        <div className="bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm relative z-10">
           
           {/* BANNER SECTION */}
           <div className="relative h-64 bg-slate-100 divide-x divide-slate-200 flex items-center justify-center">
@@ -130,10 +130,10 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                 <button
                   onClick={handleAvatarClick}
                   disabled={avatarUploading}
-                  className="w-40 h-40 rounded-2xl border-[4px] border-white overflow-hidden bg-white shadow-sm relative focus:outline-none hover:scale-105 transition-all duration-300"
+                  className="w-40 h-40 rounded-2xl border-[4px] border-white dark:border-slate-900 overflow-hidden bg-white dark:bg-slate-800 shadow-sm relative focus:outline-none hover:scale-105 transition-all duration-300"
                 >
                   {avatarUploading ? (
-                    <div className="w-full h-full flex items-center justify-center bg-slate-50">
+                    <div className="w-full h-full flex items-center justify-center bg-slate-50 dark:bg-slate-800">
                       <Loader2 className="h-10 w-10 text-primary animate-spin" />
                     </div>
                   ) : avatarUrl ? (
@@ -149,7 +149,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                     <span className="text-white text-[9px] font-black uppercase tracking-widest">Update Portait</span>
                   </div>
                 </button>
-                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl border-4 border-white shadow-xl flex items-center justify-center">
+                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl border-4 border-white dark:border-slate-900 shadow-xl flex items-center justify-center">
                    <ShieldCheck className="w-5 h-5 text-white" />
                 </div>
               </div>
@@ -159,7 +159,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
               <div className="space-y-4 max-w-2xl">
                 <div className="space-y-1">
                   <div className="flex items-center gap-3">
-                    <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-none">
+                    <h1 className="text-[32px] font-bold text-slate-900 dark:text-white tracking-tight leading-none">
                       {user.firstName} {user.lastName}
                     </h1>
                     <button 
@@ -169,7 +169,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                       <Volume2 className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="text-[18px] font-medium text-slate-600 leading-tight tracking-tight">
+                  <p className="text-[18px] font-medium text-slate-600 dark:text-slate-400 leading-tight tracking-tight">
                     {user.headline}
                   </p>
                 </div>
@@ -180,11 +180,11 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                       <MapPin className="h-3.5 w-3.5 text-slate-400" /> {user.location}
                     </div>
                   )}
-                  <div className="flex items-center gap-1 text-[13px] font-bold text-[#0A66C2] hover:underline cursor-pointer">
+                  <div className="flex items-center gap-1 text-[13px] font-bold text-[#0A66C2] dark:text-green-500 hover:underline cursor-pointer">
                     Contact info
                   </div>
                   <div className="flex items-center gap-1 text-[13px] font-bold text-slate-500">
-                    <span className="text-slate-900">{connectionStatus === 'ACCEPTED' ? '501' : '500'}+</span> connections
+                    <span className="text-slate-900 dark:text-slate-200">{connectionStatus === 'ACCEPTED' ? '501' : '500'}+</span> connections
                   </div>
                 </div>
 
@@ -202,25 +202,25 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
               </div>
 
               <div className="flex flex-wrap gap-4 pt-8 w-full xl:w-auto items-center">
-                {isOwner ? (
-                  <>
-                    <button
-                      onClick={() => setIsEditModalOpen(true)}
-                      className="px-6 h-10 rounded-full bg-[#0A66C2] text-white font-bold text-[14px] hover:bg-[#004182] transition-all flex items-center justify-center gap-2"
-                    >
-                      Open to
-                    </button>
-                    <button
-                      className="px-6 h-10 rounded-full border border-[#0A66C2] text-[#0A66C2] font-bold text-[14px] hover:bg-blue-50 transition-all flex items-center justify-center"
-                    >
-                      Add profile section
-                    </button>
-                    <button
-                      className="px-6 h-10 rounded-full border border-slate-400 text-slate-500 font-bold text-[14px] hover:bg-slate-50 transition-all flex items-center justify-center"
-                    >
-                      More
-                    </button>
-                  </>
+                 {isOwner ? (
+                   <>
+                     <button
+                       onClick={() => setIsEditModalOpen(true)}
+                       className="px-6 h-10 rounded-full bg-[#0A66C2] dark:bg-[#1B5E20] text-white font-bold text-[14px] hover:bg-[#004182] dark:hover:bg-green-700 transition-all flex items-center justify-center gap-2"
+                     >
+                       Open to
+                     </button>
+                     <button
+                       className="px-6 h-10 rounded-full border border-[#0A66C2] dark:border-green-600 text-[#0A66C2] dark:text-green-500 font-bold text-[14px] hover:bg-blue-50 dark:hover:bg-green-900/10 transition-all flex items-center justify-center"
+                     >
+                       Add profile section
+                     </button>
+                     <button
+                       className="px-6 h-10 rounded-full border border-slate-400 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-bold text-[14px] hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center"
+                     >
+                       More
+                     </button>
+                   </>
                 ) : (
                   <>
                     {connectionStatus === 'IDLE' ? (
@@ -237,14 +237,14 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                       </button>
                     )}
 
-                    <Link href="/messaging" className="flex-1 xl:flex-none h-14 px-10 rounded-full border-2 border-slate-100 text-slate-800 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-slate-50 transition-all flex items-center justify-center gap-3 active:scale-95 group shadow-sm bg-white">
+                    <Link href="/messaging" className="flex-1 xl:flex-none h-14 px-10 rounded-full border-2 border-slate-100 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-slate-50 dark:hover:bg-slate-900 transition-all flex items-center justify-center gap-3 active:scale-95 group shadow-sm bg-white dark:bg-slate-900">
                       <Mail className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
                       Direct Node
                     </Link>
 
                     <button 
                       aria-label="Save profile to favorites"
-                      className="h-14 w-14 flex items-center justify-center rounded-full border border-slate-100 text-slate-300 hover:text-accent transition-all bg-white shadow-sm"
+                      className="h-14 w-14 flex items-center justify-center rounded-full border border-slate-100 dark:border-slate-800 text-slate-300 hover:text-accent transition-all bg-white dark:bg-slate-900 shadow-sm"
                     >
                        <Star className="w-5 h-5" />
                     </button>

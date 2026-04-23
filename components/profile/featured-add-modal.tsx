@@ -63,9 +63,9 @@ export function FeaturedAddModal({ username, isOpen, onClose }: FeaturedAddModal
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-xl bg-white dark:bg-slate-950 border-none shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Add featured</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">Add featured</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
@@ -84,7 +84,7 @@ export function FeaturedAddModal({ username, isOpen, onClose }: FeaturedAddModal
             <Label htmlFor="description">Description</Label>
             <textarea
               id="description"
-              className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-[100px] w-full rounded-md border border-input bg-background dark:bg-slate-900 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 dark:text-white"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Give a brief overview..."
@@ -111,7 +111,7 @@ export function FeaturedAddModal({ username, isOpen, onClose }: FeaturedAddModal
             />
           </div>
 
-          <DialogFooter className="pt-4 border-t">
+          <DialogFooter className="pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button 
               type="submit" 
               className="rounded-full bg-primary font-bold px-8"

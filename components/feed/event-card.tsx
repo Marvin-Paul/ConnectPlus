@@ -29,7 +29,7 @@ export function EventCard({ item }: EventCardProps) {
   const [showComments, setShowComments] = useState(false);
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl shadow-slate-200/50 overflow-hidden mb-8 group/event hover:border-primary/30 transition-all duration-700 animate-in fade-in slide-in-from-bottom-6">
+    <div className="bg-white dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none overflow-hidden mb-8 group/event hover:border-primary/30 transition-all duration-700 animate-in fade-in slide-in-from-bottom-6">
       
       {/* Visual Header */}
       <div className="relative h-48 md:h-60 overflow-hidden group/banner">
@@ -54,34 +54,44 @@ export function EventCard({ item }: EventCardProps) {
 
       <div className="p-8 pb-10">
          <div className="flex justify-between items-start mb-6">
-            <h2 className="text-2xl font-black text-slate-900 tracking-tighter leading-none group-hover/event:text-primary transition-colors italic">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter leading-none group-hover/event:text-primary transition-colors italic">
                {item.title}
             </h2>
             <div className="flex gap-2">
-               <button 
-                onClick={() => setShowComments(!showComments)}
-                className={`p-3 rounded-2xl hover:bg-slate-50 transition-all active:scale-90 ${showComments ? 'text-primary bg-primary/5' : 'text-slate-400'}`}
-               >
-                  <MessageSquare className="w-5 h-5" />
-               </button>
-               <button className="p-3 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-primary transition-all active:scale-90">
-                  <Bookmark className="w-5 h-5" />
-               </button>
-               <button className="p-3 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-primary transition-all active:scale-90">
-                  <Share2 className="w-5 h-5" />
-               </button>
+                <button 
+                 onClick={() => setShowComments(!showComments)}
+                 aria-label="Toggle comments"
+                 title="Toggle comments"
+                 className={`p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all active:scale-90 ${showComments ? 'text-primary bg-primary/5' : 'text-slate-400'}`}
+                >
+                   <MessageSquare className="w-5 h-5" />
+                </button>
+                <button 
+                  aria-label="Bookmark event"
+                  title="Bookmark event"
+                  className="p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-400 hover:text-primary transition-all active:scale-90"
+                >
+                   <Bookmark className="w-5 h-5" />
+                </button>
+                <button 
+                  aria-label="Share event"
+                  title="Share event"
+                  className="p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-400 hover:text-primary transition-all active:scale-90"
+                >
+                   <Share2 className="w-5 h-5" />
+                </button>
             </div>
          </div>
 
          {/* Event Details Plate */}
-         <div className="grid grid-cols-2 gap-x-8 gap-y-6 mb-10 bg-slate-50/50 rounded-2xl p-6 border border-slate-100 shadow-sm">
+         <div className="grid grid-cols-2 gap-x-8 gap-y-6 mb-10 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
             <div className="flex items-center gap-4 group/detail">
                <div className="p-2.5 rounded-xl bg-orange-100 text-orange-600 group-hover/detail:scale-110 transition-transform">
                   <Calendar className="w-4 h-4" />
                </div>
                <div>
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-0.5">Date</p>
-                  <p className="text-[13px] font-black text-slate-800 leading-none">{item.date}</p>
+                  <p className="text-[13px] font-black text-slate-800 dark:text-slate-200 leading-none">{item.date}</p>
                </div>
             </div>
 
@@ -91,7 +101,7 @@ export function EventCard({ item }: EventCardProps) {
                </div>
                <div>
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-0.5">Time</p>
-                  <p className="text-[13px] font-black text-slate-800 leading-none">{item.eventTime}</p>
+                  <p className="text-[13px] font-black text-slate-800 dark:text-slate-200 leading-none">{item.eventTime}</p>
                </div>
             </div>
 
@@ -101,7 +111,7 @@ export function EventCard({ item }: EventCardProps) {
                </div>
                <div className="min-w-0">
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-0.5">Location</p>
-                  <p className="text-[13px] font-black text-slate-800 truncate leading-none">{item.location}</p>
+                  <p className="text-[13px] font-black text-slate-800 dark:text-slate-200 truncate leading-none">{item.location}</p>
                </div>
             </div>
 
@@ -111,12 +121,12 @@ export function EventCard({ item }: EventCardProps) {
                </div>
                <div>
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-0.5">Network</p>
-                  <p className="text-[11px] font-black text-slate-800 leading-none">{item.attendees.toLocaleString()}+ Linked</p>
+                  <p className="text-[11px] font-black text-slate-800 dark:text-slate-200 leading-none">{item.attendees.toLocaleString()}+ Linked</p>
                </div>
             </div>
          </div>
 
-         <div className="mb-10 text-[15px] text-slate-500 leading-relaxed max-w-[90%] font-medium italic opacity-80 line-clamp-2 hover:line-clamp-none transition-all cursor-help border-l-4 border-slate-100 pl-6">
+         <div className="mb-10 text-[15px] text-slate-500 dark:text-slate-400 leading-relaxed max-w-[90%] font-medium italic opacity-80 line-clamp-2 hover:line-clamp-none transition-all cursor-help border-l-4 border-slate-100 dark:border-slate-800 pl-6">
             "{item.description}"
          </div>
 

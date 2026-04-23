@@ -15,10 +15,11 @@ const connectionString = `${process.env.DATABASE_URL}`;
 // Re-use pool across HMR reloads
 const pool = globalForPrisma.pool ?? new Pool({ connectionString });
 const adapter = globalForPrisma.adapter ?? new PrismaPg(pool);
-
 export const prisma =
   globalForPrisma.prisma ??
-  new PrismaClient({ adapter });
+  new PrismaClient({
+    log: ["error"],
+  });
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;

@@ -55,8 +55,6 @@ export const getAuthUser = async () => {
         role: true,
         _count: {
           select: {
-            sentConnections: { where: { status: 'ACCEPTED' } },
-            receivedConnections: { where: { status: 'ACCEPTED' } },
             followers: true,
             posts: true,
           }
@@ -66,11 +64,19 @@ export const getAuthUser = async () => {
     
     if (!user) return null;
 
-    // Standardize essential profile metrics
-    const u = user as any;
+    // Fetch connection count separately if needed, or simplify for now
+    const connectionCount = await prisma.connection.count({
+      where: {
+        OR: [
+          { requesterId: user.id, status: 'ACCEPTED' },
+          { addresseeId: user.id, status: 'ACCEPTED' }
+        ]
+      }
+    });
+
     return {
       ...user,
-      totalConnections: (u._count.sentConnections || 0) + (u._count.receivedConnections || 0)
+      totalConnections: connectionCount
     };
   } catch (error) {
     console.error("[Auth] getAuthUser failure:", error);

@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "../providers/user-provider";
+import { useNotifications } from "../providers/notification-provider";
 import { 
   Search, 
   ChevronDown, 
@@ -21,6 +22,7 @@ import {
 
 export function TopNav() {
   const { user, loading } = useUser();
+  const { unreadCount } = useNotifications();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMounted, setIsMounted] = useState(false);
@@ -60,7 +62,7 @@ export function TopNav() {
   };
 
   return (
-    <header className="sticky top-0 z-[100] border-b border-border bg-white h-[64px] shadow-soft transition-all duration-200">
+    <header className="sticky top-0 z-[100] border-b border-border bg-white dark:bg-slate-950 h-[64px] shadow-soft transition-all duration-200">
       <div className="mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 justify-between gap-4">
         
         {/* Left: Branding & Search */}
@@ -108,7 +110,12 @@ export function TopNav() {
             >
               <div className="relative">
                 <item.icon className={`h-5 w-5 stroke-[2.5px] transition-transform group-hover:-translate-y-0.5 ${pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)) ? 'text-primary' : 'group-hover:text-primary'}`} />
-                {item.badge && (
+                {item.label === 'Notifications' && unreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 border-2 border-white rounded-full text-[10px] font-black text-white px-1 shadow-sm animate-in zoom-in duration-300">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+                {item.label !== 'Notifications' && item.badge && (
                   <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 border-2 border-white rounded-full animate-pulse shadow-sm" />
                 )}
               </div>
@@ -139,8 +146,8 @@ export function TopNav() {
                   </button>
 
                   {activeDropdown === 'me' && (
-                     <div className="absolute top-[calc(100%+4px)] right-0 w-[240px] bg-white rounded-xl shadow-dropdown border border-border overflow-hidden animate-pro-fade z-[110]">
-                       <div className="p-4 flex items-center gap-3 bg-muted/50">
+                     <div className="absolute top-[calc(100%+4px)] right-0 w-[240px] bg-white dark:bg-slate-900 rounded-xl shadow-dropdown border border-border dark:border-slate-800 overflow-hidden animate-pro-fade z-[110]">
+                       <div className="p-4 flex items-center gap-3 bg-muted/50 dark:bg-slate-800/50">
                            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-[14px] shadow-sm shrink-0 overflow-hidden">
                               {user.avatarUrl ? <img src={user.avatarUrl} className="w-full h-full object-cover" alt="" /> : <span>{getUserInitials()}</span>}
                            </div>
@@ -168,7 +175,7 @@ export function TopNav() {
                                   await fetch("/api/logout", { method: "POST" }); 
                                   window.location.href = "/login"; 
                                 }}
-                                className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-red-500 hover:bg-red-50 rounded-lg transition-all active:scale-[0.98]"
+                                className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all active:scale-[0.98]"
                              >
                                 <LogOut className="w-4 h-4" />
                                 Sign Out

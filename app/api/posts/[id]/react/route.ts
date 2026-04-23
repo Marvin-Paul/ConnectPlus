@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NotificationService } from "@/lib/notifications";
 import { ReactionType } from "@prisma/client";
 
 /**
@@ -64,17 +65,15 @@ export async function POST(
       },
     });
 
-    // Handle notifications (asynchronous, don't block response)
+    // Handle notifications using the professional service
     if (post.authorId !== userId) {
-      prisma.notification.create({
-        data: {
-          userId: post.authorId,
-          type: "REACTION",
-          content: `reacted to your post`,
-          sourceId: postId!,
-          sourceType: "POST",
-        },
-      }).catch(err => console.error("[Notification Error]:", err));
+      NotificationService.create({
+        userId: post.authorId,
+        actorId: userId,
+        type: "REACTION",
+        sourceId: postId!,
+        sourceType: "POST",
+      });
     }
 
     return NextResponse.json({ success: true, action: "created", reaction: newReaction });
