@@ -15,15 +15,15 @@ export function NewsSidebar() {
   return (
     <div className="space-y-6 sticky top-[84px] animate-pro-fade pb-10">
       {/* Trending News */}
-      <div className="bg-white rounded-xl border border-border shadow-soft overflow-hidden">
-        <div className="p-5 flex items-center justify-between border-b border-border/50">
+      <div className="bg-white dark:bg-slate-950 rounded-xl border border-border dark:border-slate-800 shadow-soft overflow-hidden">
+        <div className="p-5 flex items-center justify-between border-b border-border/50 dark:border-slate-800/50">
            <h2 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Connect Plus News</h2>
            <Info className="h-4 w-4 text-secondary hover:text-primary transition-colors cursor-help" />
         </div>
         
         <div className="flex flex-col">
            {newsItems.map((item) => (
-              <div key={item.id} className="p-4 hover:bg-muted transition-all cursor-pointer group/news border-b border-border/30 last:border-0 border-l-4 border-l-transparent hover:border-l-primary">
+              <div key={item.id} className="p-4 hover:bg-muted dark:hover:bg-slate-900 transition-all cursor-pointer group/news border-b border-border/30 dark:border-slate-800/30 last:border-0 border-l-4 border-l-transparent hover:border-l-primary">
                  <h3 className="text-[14px] font-bold text-foreground leading-snug group-hover/news:text-primary transition-colors line-clamp-2">
                     {item.title}
                  </h3>
@@ -36,7 +36,7 @@ export function NewsSidebar() {
            ))}
         </div>
         
-        <button className="w-full py-4 text-[11px] font-extrabold text-secondary hover:text-primary hover:bg-muted transition-all border-t border-border/50 uppercase tracking-widest">
+        <button className="w-full py-4 text-[11px] font-extrabold text-secondary dark:text-slate-500 hover:text-primary hover:bg-muted dark:hover:bg-slate-900 transition-all border-t border-border/50 dark:border-slate-800/50 uppercase tracking-widest">
            Show more <ChevronDown className="h-4 w-4 inline ml-1" />
         </button>
       </div>

@@ -73,10 +73,10 @@ export function QuizPlayer({ quizId, onClose }: QuizPlayerProps) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center p-20 space-y-4 animate-pulse">
-        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
-            <Timer className="w-8 h-8 text-slate-300" />
+        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+            <Timer className="w-8 h-8 text-slate-300 dark:text-slate-700" />
         </div>
-        <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Syncing Knowledge Hub...</p>
+        <p className="text-slate-400 dark:text-slate-600 font-bold uppercase tracking-widest text-[10px]">Syncing Knowledge Hub...</p>
       </div>
     );
   }
@@ -145,15 +145,15 @@ export function QuizPlayer({ quizId, onClose }: QuizPlayerProps) {
      return (
        <div className="p-10 space-y-8 animate-in fade-in zoom-in-95 duration-700 text-center">
           <div className="space-y-4">
-             <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto border-4 border-white shadow-premium relative">
+             <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto border-4 border-white dark:border-slate-900 shadow-premium relative">
                 <Sparkles className="w-12 h-12 text-primary animate-pulse" />
-                <div className="absolute -top-2 -right-2 bg-emerald-500 text-white p-1.5 rounded-full border-2 border-white shadow-sm">
+                <div className="absolute -top-2 -right-2 bg-emerald-500 text-white p-1.5 rounded-full border-2 border-white dark:border-slate-900 shadow-sm">
                    <CheckCircle2 className="w-4 h-4" />
                 </div>
              </div>
              <div>
-                <h2 className="text-3xl font-black text-slate-800 tracking-tight">Congratulations!</h2>
-                <p className="text-slate-500 font-bold mt-1">You've mastered the <span className="text-primary">{currentLevel.title}</span> stage.</p>
+                <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Congratulations!</h2>
+                <p className="text-slate-500 dark:text-slate-400 font-bold mt-1">You've mastered the <span className="text-primary">{currentLevel.title}</span> stage.</p>
              </div>
           </div>
 
@@ -171,7 +171,7 @@ export function QuizPlayer({ quizId, onClose }: QuizPlayerProps) {
              </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 italic text-sm text-slate-500 font-medium leading-relaxed">
+          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 italic text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
              &ldquo;You've demonstrated consistent competence in core architectural patterns. The next level will challenge your ability to optimize for regional scalability.&rdquo;
           </div>
 
@@ -193,43 +193,43 @@ export function QuizPlayer({ quizId, onClose }: QuizPlayerProps) {
     return (
       <div className="p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <div className="text-center space-y-4">
-           <div className="w-24 h-24 bg-[#FFD700]/10 rounded-full flex items-center justify-center mx-auto border-4 border-white shadow-premium">
+           <div className="w-24 h-24 bg-[#FFD700]/10 rounded-full flex items-center justify-center mx-auto border-4 border-white dark:border-slate-900 shadow-premium">
               <Trophy className="w-12 h-12 text-[#B8860B]" />
            </div>
            <div className="space-y-1">
-             <h2 className="text-3xl font-black text-slate-800 tracking-tight">Grand Mastery Achieved!</h2>
-             <p className="text-slate-500 font-medium">You have completed all levels of the {quiz.title} assessment.</p>
+             <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Grand Mastery Achieved!</h2>
+             <p className="text-slate-500 dark:text-slate-400 font-medium">You have completed all levels of the {quiz.title} assessment.</p>
            </div>
         </div>
 
         <div className="grid grid-cols-3 gap-6">
-           <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 text-center">
-             <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Overall Depth</span>
-             <span className="text-3xl font-black text-slate-800">{score}/{total}</span>
+           <div className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-center">
+             <span className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Overall Depth</span>
+             <span className="text-3xl font-black text-slate-800 dark:text-slate-200">{score}/{total}</span>
            </div>
-           <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 text-center">
-             <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Technical IQ</span>
+           <div className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-center">
+             <span className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Technical IQ</span>
              <span className="text-3xl font-black text-primary">{Math.round(percentage)}%</span>
            </div>
-           <div className="p-6 rounded-3xl bg-emerald-50 border border-emerald-100 text-center">
-             <span className="block text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Status</span>
-             <span className="text-3xl font-black text-emerald-700">VERIFIED</span>
+           <div className="p-6 rounded-3xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-center">
+             <span className="block text-[10px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest mb-1">Status</span>
+             <span className="text-3xl font-black text-emerald-700 dark:text-emerald-400">VERIFIED</span>
            </div>
         </div>
 
         <div className="space-y-4">
-           <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+           <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
              <BookOpen className="w-4 h-4 text-primary" /> Mastery Breakdown
            </h3>
            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
               {levelResults.map((res, lIdx) => (
-                <div key={res.levelId} className="p-6 rounded-2xl border border-slate-100 bg-white shadow-sm">
+                <div key={res.levelId} className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                          <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center">
                             <Award className="w-4 h-4 text-primary" />
                          </div>
-                         <h4 className="font-bold text-slate-800">{quiz.levels[lIdx].title}</h4>
+                         <h4 className="font-bold text-slate-800 dark:text-slate-200">{quiz.levels[lIdx].title}</h4>
                       </div>
                       <span className="text-sm font-black text-primary">{res.score}/{res.total}</span>
                    </div>
@@ -257,26 +257,26 @@ export function QuizPlayer({ quizId, onClose }: QuizPlayerProps) {
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-4">
            <div>
-              <h2 className="text-2xl font-black text-slate-800 tracking-tight">{quiz.title}</h2>
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">{quiz.title}</h2>
               <p className="text-xs font-black text-primary uppercase tracking-widest mt-1 flex items-center gap-2">
                  <Sparkles className="w-3 h-3" /> Level {currentLevelIdx + 1}: {currentLevel.title}
               </p>
            </div>
            <div className="text-right">
-              <span className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Overall {Math.round(overallProgress)}%</span>
+              <span className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Overall {Math.round(overallProgress)}%</span>
            </div>
         </div>
-        <Progress value={overallProgress} className="h-2 rounded-full bg-slate-100" />
+        <Progress value={overallProgress} className="h-2 rounded-full bg-slate-100 dark:bg-slate-900" />
       </div>
 
       {/* Question */}
-      <div className="bg-slate-50 rounded-[2.5rem] p-10 border border-slate-100 shadow-inner group transition-all">
+      <div className="bg-slate-50 dark:bg-slate-900 rounded-[2.5rem] p-10 border border-slate-100 dark:border-slate-800 shadow-inner group transition-all">
          <div className="flex justify-center mb-4">
-            <span className="px-3 py-1 bg-white rounded-full border border-slate-200 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+            <span className="px-3 py-1 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                Question {currentQuestionIdx + 1} of {currentLevel.questions.length}
             </span>
          </div>
-         <h3 className="text-xl font-bold text-slate-800 leading-tight text-center">
+         <h3 className="text-xl font-bold text-slate-800 dark:text-white leading-tight text-center">
            {currentQuestion.question}
          </h3>
       </div>
@@ -284,21 +284,21 @@ export function QuizPlayer({ quizId, onClose }: QuizPlayerProps) {
       {/* Options */}
       <div className="grid grid-cols-1 gap-4">
          {currentQuestion.options.map((option, idx) => {
-           let style = "bg-white border-slate-200 hover:border-primary/50 hover:shadow-lg";
+           let style = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:shadow-lg";
            let icon = null;
 
            if (showExplanation) {
              if (idx === currentQuestion.correctAnswer) {
-               style = "bg-emerald-50 border-emerald-500 ring-1 ring-emerald-500";
+               style = "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-500 dark:border-emerald-900 ring-1 ring-emerald-500";
                icon = <CheckCircle2 className="w-5 h-5 text-emerald-600" />;
              } else if (idx === selectedAnswer) {
-               style = "bg-red-50 border-red-500 ring-1 ring-red-500";
+               style = "bg-red-50 dark:bg-red-950/20 border-red-500 dark:border-red-900 ring-1 ring-red-500";
                icon = <XCircle className="w-5 h-5 text-red-600" />;
              } else {
-               style = "bg-white border-slate-100 opacity-50";
+               style = "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 opacity-50";
              }
            } else if (selectedAnswer === idx) {
-             style = "bg-primary/5 border-primary ring-1 ring-primary";
+             style = "bg-primary/5 dark:bg-primary/10 border-primary ring-1 ring-primary";
            }
 
            return (
@@ -308,7 +308,7 @@ export function QuizPlayer({ quizId, onClose }: QuizPlayerProps) {
                onClick={() => handleAnswerSelect(idx)}
                className={`p-5 rounded-2xl border-2 transition-all flex items-center justify-between group active:scale-[0.98] ${style}`}
              >
-               <span className={`text-[15px] font-bold ${showExplanation ? 'text-slate-800' : 'text-slate-600 group-hover:text-primary transition-colors'}`}>
+               <span className={`text-[15px] font-bold ${showExplanation ? 'text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors'}`}>
                   {option}
                </span>
                {icon}
@@ -320,13 +320,13 @@ export function QuizPlayer({ quizId, onClose }: QuizPlayerProps) {
       {/* Explanation Action Area */}
       {showExplanation && (
         <div className="animate-in slide-in-from-top-4 duration-500 space-y-6">
-           <div className="p-6 rounded-3xl bg-primary/5 border border-primary/10 flex gap-4 items-start">
-              <div className="p-2 bg-white rounded-xl shadow-sm">
+           <div className="p-6 rounded-3xl bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/20 flex gap-4 items-start">
+              <div className="p-2 bg-white dark:bg-slate-900 rounded-xl shadow-sm">
                  <AlertCircle className="w-5 h-5 text-primary" />
               </div>
               <div className="space-y-1">
                  <span className="text-[10px] font-black text-primary uppercase tracking-widest">Architect's Note</span>
-                 <p className="text-[13px] font-medium text-slate-700 leading-relaxed italic">&ldquo;{currentQuestion.explanation}&rdquo;</p>
+                 <p className="text-[13px] font-medium text-slate-700 dark:text-slate-300 leading-relaxed italic">&ldquo;{currentQuestion.explanation}&rdquo;</p>
               </div>
            </div>
 

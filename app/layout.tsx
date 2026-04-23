@@ -9,6 +9,8 @@ import { NotificationProvider } from "../components/providers/notification-provi
 import { PulseGuide } from "../components/features/pulse-guide";
 import { Inter } from "next/font/google"; 
 import { SplashScreen } from "../components/ui/splash-screen";
+import { ThemeProvider } from "../components/providers/theme-provider";
+import { LanguageProvider } from "../components/providers/language-provider";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,23 +29,27 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="antialiased selection:bg-primary/10 selection:text-primary">
-        <SplashScreen />
-        <QueryProvider>
-          <UserProvider>
-            <FeedProvider>
-              <NotificationProvider>
-                <TopNav />
-                <main className="md:pt-[56px] min-h-screen">
-                   {children}
-                </main>
-                <MobileBottomNav />
-                <PulseGuide />
-              </NotificationProvider>
-            </FeedProvider>
-          </UserProvider>
-        </QueryProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <LanguageProvider>
+            <SplashScreen />
+            <QueryProvider>
+              <UserProvider>
+                <FeedProvider>
+                  <NotificationProvider>
+                    <TopNav />
+                    <main className="md:pt-[56px] min-h-screen">
+                       {children}
+                    </main>
+                    <MobileBottomNav />
+                    <PulseGuide />
+                  </NotificationProvider>
+                </FeedProvider>
+              </UserProvider>
+            </QueryProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

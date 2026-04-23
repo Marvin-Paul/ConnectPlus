@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NotificationService } from "@/lib/notifications";
 
 const db = prisma as any;
 
@@ -71,16 +72,14 @@ export async function POST(request: Request) {
       }
     });
 
-    // Create a notification for the addressee
-    const requester = await db.user.findUnique({ where: { id: requesterId }, select: { firstName: true, lastName: true } });
-    await db.notification.create({
-      data: {
-        userId: addresseeId,
-        type: "CONNECTION_REQUEST",
-        content: `${requester.firstName} ${requester.lastName} requested to join your professional circle.`,
-        sourceId: connection.id,
-        sourceType: "CONNECTION"
-      }
+    // Create a notification for the addressee using professional service
+    NotificationService.create({
+      userId: addresseeId,
+      actorId: requesterId,
+      type: "CONNECTION_REQUEST",
+      sourceId: connection.id,
+      sourceType: "CONNECTION",
+      customContent: `requested to join your professional circle.` // Service will prepend name
     });
 
     return NextResponse.json(connection);

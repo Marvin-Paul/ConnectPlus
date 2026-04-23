@@ -39,11 +39,13 @@ export function EducationSection({ username, educations }: EducationSectionProps
 
   return (
     <>
-      <Card className="mb-6 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <Card className="mb-6 overflow-hidden bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-xl font-bold">Education</CardTitle>
           <button 
             onClick={() => setIsAddModalOpen(true)}
+            aria-label="Add education"
+            title="Add education"
             className="p-1 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-primary"
           >
             <Plus className="h-6 w-6" />
@@ -51,31 +53,35 @@ export function EducationSection({ username, educations }: EducationSectionProps
         </CardHeader>
         <CardContent className="px-6 pb-6 pt-2 space-y-6">
           {items.map((edu) => (
-            <div key={edu.id} className="flex gap-4 border-b last:border-0 pb-6 last:pb-0 group relative">
-              <div className="w-12 h-12 bg-muted rounded shrink-0 flex items-center justify-center font-bold text-muted-foreground text-xl">
+            <div key={edu.id} className="flex gap-4 border-b dark:border-slate-800 last:border-0 pb-6 last:pb-0 group relative">
+              <div className="w-12 h-12 bg-muted dark:bg-slate-900 rounded shrink-0 flex items-center justify-center font-bold text-muted-foreground dark:text-slate-400 text-xl">
                 {edu.school[0]}
               </div>
-              <div className="space-y-1 w-full pr-8">
-                <h4 className="font-bold text-md leading-tight">{edu.school}</h4>
-                <p className="text-sm text-foreground/90">
+               <div className="space-y-1 w-full pr-8">
+                <h4 className="font-bold text-md leading-tight dark:text-slate-100">{edu.school}</h4>
+                <p className="text-sm text-foreground/90 dark:text-slate-300">
                   {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground dark:text-slate-500">
                   {edu.startDate ? new Date(edu.startDate).getFullYear() : ''} – 
                   {edu.endDate ? ` ${new Date(edu.endDate).getFullYear()}` : ' Present'}
                 </p>
                 {edu.grade && (
-                  <p className="text-sm mt-1 font-medium text-foreground/80">Grade: {edu.grade}</p>
+                  <p className="text-sm mt-1 font-medium text-foreground/80 dark:text-slate-400">Grade: {edu.grade}</p>
                 )}
                 {edu.description && (
-                  <p className="text-sm mt-2 text-foreground/70 whitespace-pre-line leading-relaxed italic">
+                  <p className="text-sm mt-2 text-foreground/70 dark:text-slate-400 whitespace-pre-line leading-relaxed italic opacity-80">
                     {edu.description}
                   </p>
                 )}
               </div>
-              <button className="absolute right-0 top-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted rounded-full text-primary">
-                <PenLine className="h-4 w-4" />
-              </button>
+               <button 
+                 aria-label="Edit education"
+                 title="Edit education"
+                 className="absolute right-0 top-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted dark:hover:bg-slate-800 rounded-full text-primary dark:text-green-500"
+                >
+                 <PenLine className="h-4 w-4" />
+               </button>
             </div>
           ))}
           {items.length === 0 && (

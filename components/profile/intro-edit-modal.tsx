@@ -73,10 +73,10 @@ export function IntroEditModal({ user, isOpen, onClose }: IntroEditModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-950 border-none shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Edit intro</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">Edit intro</DialogTitle>
+          <DialogDescription className="text-slate-500 dark:text-slate-400">
             Update your basic information and profile headline.
           </DialogDescription>
         </DialogHeader>
@@ -137,7 +137,7 @@ export function IntroEditModal({ user, isOpen, onClose }: IntroEditModalProps) {
             />
           </div>
 
-          <DialogFooter className="pt-4 border-t sticky bottom-0 bg-background py-4">
+          <DialogFooter className="pt-4 border-t border-slate-100 dark:border-slate-800 sticky bottom-0 bg-white dark:bg-slate-950 py-4">
             <Button 
               type="submit" 
               className="rounded-full bg-primary font-bold px-8"

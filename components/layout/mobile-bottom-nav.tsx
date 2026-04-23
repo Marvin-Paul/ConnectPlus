@@ -34,17 +34,17 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-[#E5E7EB] flex items-center justify-around h-[56px] pb-[4px] safe-area-bottom shadow-[0_-4px_16px_rgba(0,0,0,0.03)] backdrop-blur-md">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white dark:bg-slate-950 border-t border-[#E5E7EB] dark:border-slate-800 flex items-center justify-around h-[56px] pb-[4px] safe-area-bottom shadow-[0_-4px_16px_rgba(0,0,0,0.03)] dark:shadow-none backdrop-blur-md">
         {navItems.map((item) => {
           const isActive = isActivePath(item.href);
           
           const iconContent = (
             <div className="relative">
               <item.icon 
-                className={`h-[24px] w-[24px] transition-all duration-200 ${isActive ? 'text-[#0A66C2] scale-110 stroke-[2.2px]' : 'text-[#6B7280] stroke-[1.8px] hover:text-[#1F2937]'}`} 
+                className={`h-[24px] w-[24px] transition-all duration-200 ${isActive ? 'text-primary scale-110 stroke-[2.2px]' : 'text-slate-500 dark:text-slate-400 stroke-[1.8px] hover:text-slate-900 dark:hover:text-white'}`} 
               />
               {item.badge !== undefined && item.badge > 0 && (
-                <span className="absolute top-0 right-0 -translate-y-1/3 translate-x-1/3 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full min-w-[16px] h-[16px] flex items-center justify-center border-2 border-white shadow-sm z-10">
+                <span className="absolute top-0 right-0 -translate-y-1/3 translate-x-1/3 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full min-w-[16px] h-[16px] flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-sm z-10">
                   {Math.min(item.badge, 99)}
                 </span>
               )}

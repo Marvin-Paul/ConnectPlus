@@ -18,21 +18,26 @@ export function CreatePost() {
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-border p-6 shadow-soft relative overflow-hidden transition-all duration-300 hover:shadow-premium animate-pro-fade">
+      <div className="bg-white dark:bg-slate-950 rounded-xl border border-border dark:border-slate-800 p-6 shadow-soft relative overflow-hidden transition-all duration-300 hover:shadow-premium animate-pro-fade">
         <div className="flex items-center gap-4 relative z-10">
           <div className="shrink-0">
-             <div className="w-12 h-12 rounded-lg overflow-hidden border border-border shadow-sm transform transition-hover hover:scale-105 active:scale-95 cursor-pointer bg-muted">
-                <img src={user.avatar} alt="Me" className="w-full h-full object-cover" />
-             </div>
+              <div 
+                title="Your Profile"
+                aria-label="Your Profile"
+                className="w-12 h-12 rounded-lg overflow-hidden border border-border dark:border-slate-800 shadow-sm transform transition-hover hover:scale-105 active:scale-95 cursor-pointer bg-muted dark:bg-slate-900"
+              >
+                 <img src={user.avatar} alt="Me" className="w-full h-full object-cover" />
+              </div>
           </div>
           
           <div className="flex-1">
-             <button 
-               onClick={() => setIsModalOpen(true)}
-               className="w-full h-12 rounded-lg border border-border px-6 text-left bg-muted hover:bg-slate-200/50 hover:border-slate-300 transition-all text-secondary font-bold text-[14px]"
-             >
-                Share an editorial insight...
-             </button>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                aria-label="Share an editorial insight"
+                className="w-full h-12 rounded-lg border border-border dark:border-slate-800 px-6 text-left bg-muted dark:bg-slate-900 hover:bg-slate-200/50 dark:hover:bg-slate-800 hover:border-slate-300 transition-all text-secondary dark:text-slate-400 font-bold text-[14px]"
+              >
+                 Share an editorial insight...
+              </button>
           </div>
         </div>
 
@@ -44,23 +49,26 @@ export function CreatePost() {
                 { label: "Event", icon: Calendar, color: "text-accent" },
                 { label: "Article", icon: Newspaper, color: "text-orange-600" }
               ].map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted transition-all group/item active:scale-95"
-                >
-                   <item.icon className={`h-5 w-5 stroke-[2px] ${item.color} group-hover/item:scale-110 transition-transform`} />
-                   <span className="text-[14px] font-extrabold text-secondary group-hover:text-foreground transition-colors">{item.label}</span>
-                </button>
+                 <button
+                   key={i}
+                   onClick={() => setIsModalOpen(true)}
+                   title={`Add ${item.label}`}
+                   aria-label={`Add ${item.label}`}
+                   className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted dark:hover:bg-slate-900 transition-all group/item active:scale-95"
+                 >
+                    <item.icon className={`h-5 w-5 stroke-[2px] ${item.color} group-hover/item:scale-110 transition-transform`} />
+                    <span className="text-[14px] font-extrabold text-secondary dark:text-slate-400 group-hover:text-foreground dark:group-hover:text-white transition-colors">{item.label}</span>
+                 </button>
               ))}
            </div>
            
-           <button 
-             onClick={() => setIsModalOpen(true)}
-             className="hidden lg:flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white font-bold text-[13px] uppercase tracking-wider hover:bg-primary/90 transition-all shadow-premium active:scale-95"
-           >
-              Post <Sparkles className="w-4 h-4" />
-           </button>
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              aria-label="Create a post"
+              className="hidden lg:flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white font-bold text-[13px] uppercase tracking-wider hover:bg-primary/90 transition-all shadow-premium active:scale-95"
+            >
+               Post <Sparkles className="w-4 h-4" />
+            </button>
         </div>
         
         {/* Subtle decorative glow */}

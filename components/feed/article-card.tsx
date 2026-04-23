@@ -46,7 +46,7 @@ export function ArticleCard({ item }: ArticleCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden mb-6 group/card hover:border-primary/20 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
+    <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none overflow-hidden mb-6 group/card hover:border-primary/20 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
       {/* Header */}
       <div className="p-6 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -55,7 +55,7 @@ export function ArticleCard({ item }: ArticleCardProps) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
-               <h3 className="text-[14px] font-black text-slate-800 tracking-tight leading-none truncate">{item.author?.name}</h3>
+               <h3 className="text-[14px] font-black text-slate-800 dark:text-slate-200 tracking-tight leading-none truncate">{item.author?.name}</h3>
                <span className="text-slate-300 font-bold">•</span>
                <span className="text-[10px] font-black text-primary uppercase tracking-widest">Follow</span>
             </div>
@@ -69,7 +69,9 @@ export function ArticleCard({ item }: ArticleCardProps) {
         </div>
         <button
           onClick={() => setShowOptions(true)}
-          className="p-2 rounded-full hover:bg-slate-50 text-slate-400 transition-colors"
+          aria-label="More options"
+          title="More options"
+          className="p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-400 transition-colors"
         >
           <MoreHorizontal className="w-5 h-5" />
         </button>
@@ -77,7 +79,7 @@ export function ArticleCard({ item }: ArticleCardProps) {
 
       {/* Content */}
       <div className="px-6 pb-6 pt-2">
-         <h2 className="text-xl font-black text-slate-900 leading-tight mb-4 group-hover/card:text-primary transition-colors italic tracking-tighter">
+         <h2 className="text-xl font-black text-slate-900 dark:text-white leading-tight mb-4 group-hover/card:text-primary transition-colors italic tracking-tighter">
             {item.title}
          </h2>
          
@@ -91,14 +93,18 @@ export function ArticleCard({ item }: ArticleCardProps) {
                         <span key={tag} className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-black text-white uppercase tracking-widest">#{tag}</span>
                      ))}
                   </div>
-                  <button className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all">
+                  <button 
+                    aria-label="Share article"
+                    title="Share article"
+                    className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all"
+                  >
                      <Share2 className="w-4.5 h-4.5" />
                   </button>
                </div>
             </div>
          )}
 
-         <p className="text-[15px] text-slate-600 leading-relaxed line-clamp-3 mb-6 font-medium">
+         <p className="text-[15px] text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3 mb-6 font-medium">
             {item.content}
          </p>
 
@@ -108,7 +114,7 @@ export function ArticleCard({ item }: ArticleCardProps) {
       </div>
 
       {/* Interactions */}
-      <div className="px-6 py-4 border-t border-slate-50 bg-slate-50/20 flex items-center justify-between">
+      <div className="px-6 py-4 border-t border-slate-50 dark:border-slate-800 bg-slate-50/20 dark:bg-slate-900/50 flex items-center justify-between">
          <div className="flex items-center gap-6">
             <button 
               onClick={handleLike}
@@ -129,9 +135,13 @@ export function ArticleCard({ item }: ArticleCardProps) {
                <span className="text-[12px] font-black">{item.reposts.toLocaleString()}</span>
             </button>
          </div>
-         <button className="p-2 rounded-xl text-slate-300 hover:text-primary transition-colors">
+          <button 
+            aria-label="Bookmark article"
+            title="Bookmark article"
+            className="p-2 rounded-xl text-slate-300 dark:text-slate-600 hover:text-primary dark:hover:text-green-500 transition-colors"
+          >
             <Bookmark className="w-5 h-5" />
-         </button>
+          </button>
       </div>
 
       {showComments && (
@@ -149,15 +159,15 @@ export function ArticleCard({ item }: ArticleCardProps) {
             onClick={() => setShowOptions(false)}
             className="absolute inset-0 bg-black/20"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
-            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
-            <button onClick={() => setShowOptions(false)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+          <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 dark:border-slate-800 py-2 animate-in slide-in-from-bottom-4 duration-200">
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 mx-auto my-3" />
+            <button onClick={() => setShowOptions(false)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
               Save article
             </button>
-            <button onClick={() => setShowOptions(false)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+            <button onClick={() => setShowOptions(false)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
               Share via
             </button>
-            <button onClick={() => setShowOptions(false)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+            <button onClick={() => setShowOptions(false)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
               Not interested
             </button>
           </div>

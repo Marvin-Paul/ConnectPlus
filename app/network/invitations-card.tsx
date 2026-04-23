@@ -51,31 +51,37 @@ export function InvitationsCard() {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-border overflow-hidden shadow-sm">
-      <div className="flex items-center justify-between p-5 border-b border-border bg-slate-50/50">
+    <div className="bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow animate-pro-fade">
+      <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-border shadow-sm">
-            <UserPlus className="w-5 h-5 text-primary" />
+          <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm">
+            <UserPlus className="w-5 h-5 text-primary dark:text-green-500" />
           </div>
           <div>
-            <h2 className="text-[14px] font-bold text-foreground">Invitations</h2>
-            <p className="text-[12px] text-secondary font-medium">Review your connection requests</p>
+            <h2 className="text-[14px] font-bold text-slate-900 dark:text-slate-100 leading-tight">Invitations</h2>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold tracking-wide uppercase opacity-80 mt-0.5">Manage Requests</p>
           </div>
         </div>
-        <Link href="/network/invitations" className="text-[13px] font-bold text-primary hover:underline">
-          Manage
+        <Link 
+          href="/network/invitations" 
+          aria-label="Manage connection invitations"
+          title="Manage invitations"
+          className="group/manage flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+        >
+          <span className="text-[13px] font-bold text-primary dark:text-green-500 group-hover/manage:underline">Manage</span>
+          <ChevronRight className="w-4 h-4 text-primary dark:text-green-500 transition-transform group-hover/manage:translate-x-0.5" />
         </Link>
       </div>
       
-      <div className="divide-y divide-border">
+      <div className="divide-y divide-slate-100 dark:divide-slate-800">
         {invitations.map((inv) => {
           const isAccepted = acceptedIds.includes(inv.id);
           
           return (
-            <div key={inv.id} className={`p-5 transition-colors ${isAccepted ? 'bg-green-50/20' : 'hover:bg-slate-50'}`}>
+            <div key={inv.id} className={`p-5 transition-colors ${isAccepted ? 'bg-green-50/20 dark:bg-green-950/10' : 'hover:bg-slate-50 dark:hover:bg-slate-900/40'}`}>
               <div className="flex gap-4">
                 <Link href={`/profile/${inv.id}`} className="shrink-0">
-                  <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${isAccepted ? 'border-green-500' : 'border-white shadow-sm'}`}>
+                  <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${isAccepted ? 'border-green-500' : 'border-white dark:border-slate-800 shadow-sm'}`}>
                     <img src={inv.avatar} alt={inv.name} className="w-full h-full object-cover" />
                   </div>
                 </Link>
@@ -84,12 +90,12 @@ export function InvitationsCard() {
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <Link href={`/profile/${inv.id}`} className="text-[15px] font-bold text-foreground hover:text-primary hover:underline leading-tight">
+                        <Link href={`/profile/${inv.id}`} className="text-[15px] font-bold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-green-500 hover:underline leading-tight transition-colors">
                           {inv.name}
                         </Link>
-                        {inv.role === "Leadership" && <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">Executive</span>}
+                        {inv.role === "Leadership" && <span className="text-[10px] font-black text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800 uppercase tracking-tight">Executive</span>}
                       </div>
-                      <p className="text-[13px] text-secondary font-medium mt-0.5 line-clamp-1">
+                      <p className="text-[13px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 line-clamp-1 opacity-90">
                         {inv.headline}
                       </p>
                       
@@ -109,13 +115,17 @@ export function InvitationsCard() {
                       <div className="flex items-center gap-2 mt-3 sm:mt-0 shrink-0">
                         <button 
                           onClick={() => handleDismiss(inv.id)}
-                          className="min-h-[34px] py-1.5 px-4 rounded-full text-slate-500 font-bold text-[13px] hover:bg-slate-100 transition-all flex items-center justify-center whitespace-nowrap shrink-0"
+                          aria-label={`Ignore ${inv.name}'s invitation`}
+                          title="Ignore"
+                          className="min-h-[34px] py-1.5 px-4 rounded-full text-slate-500 dark:text-slate-400 font-bold text-[13px] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-center whitespace-nowrap shrink-0"
                         >
                           Ignore
                         </button>
                         <button 
                           onClick={() => handleAccept(inv.id)}
-                          className="min-h-[34px] py-1.5 px-6 rounded-full border-2 border-[#1B5E20] text-[#1B5E20] font-bold text-[13px] hover:bg-[#1B5E20]/5 transition-all flex items-center justify-center whitespace-nowrap shadow-sm shrink-0"
+                          aria-label={`Accept ${inv.name}'s invitation`}
+                          title="Accept"
+                          className="min-h-[34px] py-1.5 px-6 rounded-full border-2 border-[#1B5E20] text-[#1B5E20] dark:border-green-500 dark:text-green-500 font-bold text-[13px] hover:bg-[#1B5E20]/5 dark:hover:bg-green-500/10 transition-all flex items-center justify-center whitespace-nowrap shadow-sm shrink-0"
                         >
                           Accept
                         </button>
@@ -127,8 +137,9 @@ export function InvitationsCard() {
                           Accepted
                         </div>
                         <button 
-                          aria-label="Send message"
-                          className="h-9 w-9 flex items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-all shrink-0 shadow-sm"
+                          aria-label={`Send message to ${inv.name}`}
+                          title="Message"
+                          className="h-9 w-9 flex items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shrink-0 shadow-sm"
                         >
                            <MessageSquare className="w-3.5 h-3.5" />
                         </button>
@@ -137,9 +148,9 @@ export function InvitationsCard() {
                   </div>
 
                   {inv.message && !isAccepted && (
-                    <div className="mt-3 p-3 rounded-lg border border-border bg-slate-50 relative group/msg">
+                    <div className="mt-3 p-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 relative group/msg">
                       <div className="flex items-start gap-2">
-                         <p className="text-[13px] text-foreground font-medium italic">
+                         <p className="text-[13px] text-slate-700 dark:text-slate-300 font-medium italic leading-relaxed">
                            &ldquo;{inv.message}&rdquo;
                          </p>
                       </div>
@@ -152,7 +163,10 @@ export function InvitationsCard() {
         })}
       </div>
       
-      <button className="w-full py-3 text-[13px] font-bold text-secondary hover:text-primary hover:bg-slate-50 transition-all border-t border-border flex items-center justify-center gap-1">
+      <button 
+        aria-label="Show more connection invitations"
+        className="w-full py-4 text-[13px] font-bold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-green-500 hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-all border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1"
+      >
         Show more <ChevronRight className="w-4 h-4" />
       </button>
     </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NotificationService } from "@/lib/notifications";
 
 /**
  * GET /api/posts/[id]/comment
@@ -83,17 +84,15 @@ export async function POST(
       },
     });
 
-    // Notify post author (asynchronous)
+    // Notify post author using professional service
     if (post.authorId !== userId) {
-      prisma.notification.create({
-        data: {
-          userId: post.authorId,
-          type: "COMMENT",
-          content: `commented on your post`,
-          sourceId: postId!,
-          sourceType: "POST",
-        },
-      }).catch(err => console.error("[Notification Error]:", err));
+      NotificationService.create({
+        userId: post.authorId,
+        actorId: userId,
+        type: "COMMENT",
+        sourceId: postId!,
+        sourceType: "POST",
+      });
     }
 
     return NextResponse.json(comment);

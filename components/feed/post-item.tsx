@@ -27,6 +27,7 @@ export function PostItem({ post }: PostItemProps) {
   const [isSent, setIsSent] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
   const optionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,11 +87,11 @@ export function PostItem({ post }: PostItemProps) {
   const displayContent = shouldTruncate ? post.content.slice(0, contentThreshold) + "..." : post.content;
 
   return (
-    <div className="bg-white rounded-xl border border-border shadow-soft overflow-hidden transition-all duration-300 hover:shadow-premium animate-pro-fade group/card">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-border dark:border-slate-800 shadow-soft overflow-hidden transition-all duration-300 hover:shadow-premium animate-pro-fade group/card">
       
       {/* Header */}
       <div className="p-4 flex items-start gap-3">
-        <div className="w-12 h-12 rounded-full overflow-hidden border border-border bg-muted flex items-center justify-center shadow-sm shrink-0 cursor-pointer">
+        <div className="w-12 h-12 rounded-full overflow-hidden border border-border dark:border-slate-800 bg-muted dark:bg-slate-800 flex items-center justify-center shadow-sm shrink-0 cursor-pointer">
            {post.author.avatarUrl ? (
               <img src={post.author.avatarUrl} alt={post.author.firstName} className="w-full h-full object-cover" />
            ) : (
@@ -103,7 +104,7 @@ export function PostItem({ post }: PostItemProps) {
            <div className="flex justify-between items-start">
               <div className="flex flex-col">
                  <div className="flex items-center gap-1 flex-wrap">
-                    <h3 className="text-[14px] font-bold text-foreground hover:text-primary transition-colors cursor-pointer leading-tight">
+                    <h3 className="text-[14px] font-bold text-foreground dark:text-slate-200 hover:text-primary transition-colors cursor-pointer leading-tight">
                       {post.author.firstName} {post.author.lastName}
                     </h3>
                     <span className="text-[14px] text-secondary/60">•</span>
@@ -122,21 +123,30 @@ export function PostItem({ post }: PostItemProps) {
               </div>
               <div className="flex items-center gap-1">
                   {!isAuthor && (
-                    <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-muted text-primary font-bold text-[14px] transition-all">
-                      <UserPlus className="w-4 h-4" />
-                      <span>Follow</span>
+                    <button 
+                      onClick={() => setIsFollowing(!isFollowing)}
+                      aria-label={isFollowing ? "Unfollow user" : "Follow user"}
+                      title={isFollowing ? "Unfollow" : "Follow"}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all font-bold text-[14px] ${isFollowing ? 'bg-muted text-secondary hover:bg-slate-200 dark:hover:bg-slate-800' : 'hover:bg-muted text-primary'}`}
+                    >
+                      {isFollowing ? (
+                        <><span>Following</span></>
+                      ) : (
+                        <><UserPlus className="w-4 h-4" /><span>Follow</span></>
+                      )}
                     </button>
                   )}
                   <div className="relative" ref={optionsRef}>
                     <button 
                       onClick={() => setShowOptions(!showOptions)}
                       title="More options"
-                      className={`p-2 rounded-full transition-all ${showOptions ? 'bg-muted text-foreground' : 'hover:bg-muted text-secondary/60 hover:text-foreground'}`}
+                      aria-label="More options"
+                      className={`p-2 rounded-full transition-all ${showOptions ? 'bg-muted dark:bg-slate-800 text-foreground dark:text-slate-200' : 'hover:bg-muted dark:hover:bg-slate-800 text-secondary/60 dark:text-slate-500 hover:text-foreground dark:hover:text-slate-200'}`}
                     >
                       <Ellipsis className="w-5 h-5" />
                     </button>
                     {showOptions && (
-                      <div className="absolute right-0 top-full mt-1 w-64 bg-white shadow-dropdown rounded-xl border border-border py-2 z-[60] animate-in fade-in slide-in-from-top-2">
+                      <div className="absolute right-0 top-full mt-1 w-64 bg-white dark:bg-slate-800 shadow-dropdown rounded-xl border border-border dark:border-slate-700 py-2 z-[60] animate-in fade-in slide-in-from-top-2">
                         <button onClick={() => savePost(post.id)} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-muted text-[14px] font-medium transition-colors">
                           <Bookmark className="w-4 h-4" />
                           <span>{post.isSaved ? 'Unsave post' : 'Save post'}</span>
@@ -176,7 +186,7 @@ export function PostItem({ post }: PostItemProps) {
 
       {/* Content */}
       <div className="px-4 pb-3">
-         <p className="text-[14px] text-foreground leading-[1.5] whitespace-pre-line font-normal">
+         <p className="text-[14px] text-foreground dark:text-slate-300 leading-[1.5] whitespace-pre-line font-normal">
            {displayContent.split(' ').map((word, i) => {
              if (word.startsWith('#')) return <span key={i} className="text-primary font-bold cursor-pointer hover:underline">{word} </span>;
              if (word.startsWith('@')) return <span key={i} className="text-primary font-bold cursor-pointer hover:underline">{word} </span>;
@@ -210,6 +220,7 @@ export function PostItem({ post }: PostItemProps) {
                 <button 
                   onClick={prevMedia}
                   title="Previous"
+                  aria-label="Previous media"
                   className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-black/70 animate-in fade-in"
                 >
                   <ChevronLeft className="w-6 h-6" />
@@ -217,6 +228,7 @@ export function PostItem({ post }: PostItemProps) {
                 <button 
                   onClick={nextMedia}
                   title="Next"
+                  aria-label="Next media"
                   className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-black/70 animate-in fade-in"
                 >
                   <ChevronRight className="w-6 h-6" />
@@ -271,13 +283,14 @@ export function PostItem({ post }: PostItemProps) {
            onMouseLeave={() => { if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current); }}
          >
            {showReactions && (
-             <div className="absolute bottom-[calc(100%+8px)] left-0 bg-white shadow-premium rounded-full p-1.5 border border-border flex items-center gap-1 animate-in zoom-in-50 duration-200 z-50">
+             <div className="absolute bottom-[calc(100%+8px)] left-0 bg-white dark:bg-slate-800 shadow-premium rounded-full p-1.5 border border-border dark:border-slate-700 flex items-center gap-1 animate-in zoom-in-50 duration-200 z-50">
                 {REACTION_TYPES.map((r) => (
                    <button 
                      key={r.type} 
                      onClick={() => handleReactionClick(r.type)} 
                      title={r.label}
-                     className="w-10 h-10 rounded-full hover:bg-muted transition-all flex items-center justify-center hover:scale-125 active:scale-95 duration-200 group/react"
+                     aria-label={r.label}
+                     className="w-10 h-10 rounded-full hover:bg-muted dark:hover:bg-slate-700 transition-all flex items-center justify-center hover:scale-125 active:scale-95 duration-200 group/react"
                    >
                       <r.icon className={`h-6 w-6 ${r.color} transition-transform group-hover/react:-translate-y-1`} />
                    </button>
@@ -286,7 +299,7 @@ export function PostItem({ post }: PostItemProps) {
            )}
            <button 
              onClick={() => handleReactionClick(userReaction ? userReaction : 'LIKE')}
-             className={`w-full flex items-center justify-center gap-2 py-3 rounded hover:bg-muted transition-all active:scale-95 group/btn ${userReaction ? 'text-primary' : 'text-secondary font-semibold hover:text-foreground'}`}
+             className={`w-full flex items-center justify-center gap-2 py-3 rounded hover:bg-muted dark:hover:bg-slate-800 transition-all active:scale-95 group/btn ${userReaction ? 'text-primary' : 'text-secondary font-semibold hover:text-foreground dark:hover:text-slate-200'}`}
            >
               {userReaction ? (
                 <activeReaction.icon className={`h-5 w-5 fill-current transition-transform group-hover/btn:scale-110`} />
@@ -297,17 +310,32 @@ export function PostItem({ post }: PostItemProps) {
            </button>
          </div>
 
-         <button onClick={() => setShowComments(!showComments)} className="flex-1 flex items-center justify-center gap-2 py-3 rounded hover:bg-muted text-secondary font-semibold hover:text-foreground transition-all active:scale-95 group/cmnt">
+         <button 
+           onClick={() => setShowComments(!showComments)} 
+           aria-label="Comment on post"
+           title="Comment"
+           className="flex-1 flex items-center justify-center gap-2 py-3 rounded hover:bg-muted dark:hover:bg-slate-800 text-secondary font-semibold hover:text-foreground dark:hover:text-slate-200 transition-all active:scale-95 group/cmnt"
+         >
             <MessageSquare className="h-5 w-5 stroke-[2px] group-hover/cmnt:scale-110 transition-transform" />
             <span className="text-[14px] font-bold">Comment</span>
          </button>
 
-         <button onClick={() => sharePost(post.id)} className="flex-1 flex items-center justify-center gap-2 py-3 rounded hover:bg-muted text-secondary font-semibold hover:text-foreground transition-all active:scale-95 group/rp">
+         <button 
+           onClick={() => sharePost(post.id)} 
+           aria-label="Repost this post"
+           title="Repost"
+           className="flex-1 flex items-center justify-center gap-2 py-3 rounded hover:bg-muted dark:hover:bg-slate-800 text-secondary font-semibold hover:text-foreground dark:hover:text-slate-200 transition-all active:scale-95 group/rp"
+         >
             <Repeat2 className="h-5 w-5 stroke-[2px] group-hover/rp:scale-110 transition-transform" />
             <span className="text-[14px] font-bold">Repost</span>
          </button>
 
-         <button onClick={handleSend} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded transition-all active:scale-95 group/sd ${isSent ? 'text-green-600 bg-green-50' : 'text-secondary font-semibold hover:bg-muted hover:text-foreground'}`}>
+         <button 
+           onClick={handleSend} 
+           aria-label="Send post via link"
+           title="Send"
+           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded transition-all active:scale-95 group/sd ${isSent ? 'text-green-600 bg-green-50 dark:bg-green-950/20' : 'text-secondary font-semibold hover:bg-muted dark:hover:bg-slate-800 hover:text-foreground dark:hover:text-slate-200'}`}
+         >
             <Send className={`h-5 w-5 stroke-[2px] group-hover/sd:scale-110 transition-transform ${isSent ? 'fill-current' : ''}`} />
             <span className="text-[14px] font-bold">{isSent ? 'Sent' : 'Send'}</span>
          </button>
@@ -315,7 +343,7 @@ export function PostItem({ post }: PostItemProps) {
 
       {/* Comments Expansion */}
       {showComments && (
-        <div className="border-t border-border bg-white animate-in slide-in-from-top-4 duration-300">
+        <div className="border-t border-border dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 animate-in slide-in-from-top-4 duration-300">
            <CommentSection 
              postId={post.id} 
              onCommentAdded={() => {

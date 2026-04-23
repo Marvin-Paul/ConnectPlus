@@ -26,9 +26,13 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json(notifications);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Notifications fetch error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ 
+      error: "Internal Server Error", 
+      details: error.message || String(error),
+      code: error.code
+    }, { status: 500 });
   }
 }
 
