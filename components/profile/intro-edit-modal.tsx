@@ -60,8 +60,14 @@ export function IntroEditModal({ user, isOpen, onClose }: IntroEditModalProps) {
         router.refresh()
         onClose()
       } else {
-        const err = await res.json()
-        alert(err.error || "Failed to update profile")
+        let errorMessage = "Failed to update profile";
+        try {
+          const err = await res.json();
+          errorMessage = err.message || err.error || errorMessage;
+        } catch (e) {
+          // If response is not JSON, use default error message
+        }
+        alert(errorMessage);
       }
     } catch (err) {
       console.error(err)

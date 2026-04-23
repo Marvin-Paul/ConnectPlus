@@ -26,6 +26,9 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
   const { createPost } = useFeed();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [postType, setPostType] = useState<"POST" | "POLL" | "DOCUMENT">("POST");
+  const [pollOptions, setPollOptions] = useState(["", ""]);
+  const [documentFile, setDocumentFile] = useState<{ name: string; size: string } | null>(null);
 
   if (!isOpen) return null;
 
@@ -41,36 +44,39 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const ext = file.name.split(".").pop();
-        const fileName = `posts/${Date.now()}_${i}.${ext}`;
-        const [emailPart] = user.name.split(" ");
-        const userPath = emailPart || "anon";
         
-        const { data, error } = await supabase.storage.from("post-images").upload(`${userPath}/${fileName}`, file);
+        // Always generate a local preview first for immediate feedback
+        const localUrl = URL.createObjectURL(file);
         
-        if (error) {
-          if (error.message?.toLowerCase().includes("bucket not found") || error.message?.includes("404")) {
-            console.warn("Supabase bucket 'post-images' not found. Falling back to placeholder.");
-            const samples = [
-              "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80",
-              "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
-              "https://images.unsplash.com/photo-1522071823991-b1ae5e6a2681?auto=format&fit=crop&w=1200&q=80"
-            ];
-            newImageUrls.push(samples[Math.floor(Math.random() * samples.length)]);
-            continue;
+        try {
+          const ext = file.name.split(".").pop();
+          const fileName = `posts/${Date.now()}_${i}.${ext}`;
+          const [emailPart] = user.name.split(" ");
+          const userPath = emailPart || "anon";
+          
+          const { data, error } = await supabase.storage.from("post-images").upload(`${userPath}/${fileName}`, file);
+          
+          if (error) {
+             console.warn("Supabase Upload Error (using local preview):", error.message);
+             // Keep the local URL as a fallback if upload fails (useful for demo/dev)
+             newImageUrls.push(localUrl);
+          } else {
+             const { data: urlData } = supabase.storage.from("post-images").getPublicUrl(data.path);
+             newImageUrls.push(urlData.publicUrl);
+             // Revoke the local URL to save memory if upload was successful
+             URL.revokeObjectURL(localUrl);
           }
-          throw error;
+        } catch (uploadErr) {
+          console.error("Upload process failed:", uploadErr);
+          newImageUrls.push(localUrl);
         }
-        
-        const { data: urlData } = supabase.storage.from("post-images").getPublicUrl(data.path);
-        newImageUrls.push(urlData.publicUrl);
       }
       
       setImages(prev => [...prev, ...newImageUrls]);
       if (images.length === 0) setCurrentPreviewIndex(0);
     } catch (err: any) {
-      console.error("Storage Error:", err);
-      setPostError(`Storage Issue: ${err.message || "Upload failed"}.`);
+      console.error("Selection Error:", err);
+      setPostError(`Issue: ${err.message || "Failed to process selection"}.`);
     } finally {
       setUploading(false);
     }
@@ -84,6 +90,24 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
     }
   };
 
+  const fileToBase64 = (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (!url.startsWith('blob:')) {
+        resolve(url);
+        return;
+      }
+      fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        })
+        .catch(reject);
+    });
+  };
+
   const handlePost = async () => {
     if (((!content.trim() && images.length === 0)) || isPosting) return;
     if (content.length > 5000) return;
@@ -91,8 +115,11 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
     setIsPosting(true);
     setPostError(null);
     try {
-      await createPost(content, images[0] || undefined, {
-        mediaUrls: images,
+      // Process all images: if any are still local blobs, convert to Base64 for the post
+      const finalizedImages = await Promise.all(images.map(img => fileToBase64(img)));
+      
+      await createPost(content, finalizedImages[0] || undefined, {
+        mediaUrls: finalizedImages,
         visibility: visibility
       });
       setContent("");
@@ -227,7 +254,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
               </div>
             )}
 
-           {images.length > 0 && !uploading && (
+           {images.length > 0 && !uploading && postType === "POST" && (
              <div className="relative rounded-xl overflow-hidden group mt-6 animate-in zoom-in-95 duration-500 shadow-lg border border-border">
                 <img src={images[currentPreviewIndex]} className="w-full h-auto object-cover max-h-[400px]" alt="" />
                 
@@ -265,6 +292,51 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
                 </button>
              </div>
            )}
+
+           {postType === "POLL" && (
+             <div className="mt-6 p-4 rounded-xl border border-border dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-3">
+                <p className="text-[14px] font-bold text-secondary uppercase tracking-wider">Poll Options</p>
+                {pollOptions.map((opt, i) => (
+                  <input 
+                    key={i}
+                    placeholder={`Option ${i + 1}`}
+                    value={opt}
+                    onChange={(e) => {
+                      const next = [...pollOptions];
+                      next[i] = e.target.value;
+                      setPollOptions(next);
+                    }}
+                    className="w-full p-2.5 rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 text-[14px] outline-none focus:border-primary transition-all"
+                  />
+                ))}
+                <button 
+                  onClick={() => setPollOptions([...pollOptions, ""])}
+                  className="text-primary text-[13px] font-bold hover:underline flex items-center gap-1"
+                >
+                  <PlusSquare className="w-4 h-4" /> Add option
+                </button>
+             </div>
+           )}
+
+           {postType === "DOCUMENT" && documentFile && (
+             <div className="mt-6 p-6 rounded-xl border border-border dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg bg-red-100 dark:bg-red-950/30 flex items-center justify-center">
+                   <FileText className="w-6 h-6 text-red-600" />
+                </div>
+                <div className="flex-1">
+                   <p className="text-[14px] font-bold text-foreground">{documentFile.name}</p>
+                   <p className="text-[12px] text-secondary">{documentFile.size}</p>
+                </div>
+                <button 
+                  onClick={() => setDocumentFile(null)} 
+                  title="Remove document"
+                  aria-label="Remove document"
+                  className="p-2 text-secondary hover:text-red-600 transition-colors"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+             </div>
+           )}
            
            <input 
              type="file" 
@@ -294,22 +366,31 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
                   <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} title="Emoji picker" aria-label="Emoji picker" className={`p-3 rounded-xl transition-all ${showEmojiPicker ? 'bg-primary/10 text-primary' : 'hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400'}`}>
                      <Smile className="w-7 h-7" />
                   </button>
-                  <button 
-                    onClick={() => fileInputRef.current?.click()} 
-                    disabled={uploading || isPosting} 
-                    title="Add photo" 
-                    aria-label="Add photo"
-                    className="p-3 rounded-xl hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-primary transition-all"
-                  >
-                     <Camera className="w-7 h-7" />
-                  </button>
-                  <button 
-                    title="More options" 
-                    aria-label="More options"
-                    className="p-3 rounded-xl hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400 transition-all"
-                  >
-                    <PlusSquare className="w-7 h-7" />
-                  </button>
+                   <button 
+                     onClick={() => { setPostType("POST"); fileInputRef.current?.click(); }} 
+                     disabled={uploading || isPosting} 
+                     title="Add photo" 
+                     aria-label="Add photo"
+                     className={`p-3 rounded-xl transition-all ${postType === "POST" && images.length > 0 ? 'bg-primary/10 text-primary' : 'hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-primary'}`}
+                   >
+                      <Camera className="w-7 h-7" />
+                   </button>
+                   <button 
+                     onClick={() => { setPostType("DOCUMENT"); setDocumentFile({ name: "Q3_Strategy.pdf", size: "1.2 MB" }); }}
+                     title="Add document" 
+                     aria-label="Add document"
+                     className={`p-3 rounded-xl transition-all ${postType === "DOCUMENT" ? 'bg-red-50 text-red-600' : 'hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400'}`}
+                   >
+                     <FileText className="w-7 h-7" />
+                   </button>
+                   <button 
+                     onClick={() => setPostType("POLL")}
+                     title="Create poll" 
+                     aria-label="Create poll"
+                     className={`p-3 rounded-xl transition-all ${postType === "POLL" ? 'bg-green-50 text-green-600' : 'hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400'}`}
+                   >
+                     <Briefcase className="w-7 h-7" />
+                   </button>
                </div>
             </div>
          </div>

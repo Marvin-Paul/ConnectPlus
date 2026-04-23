@@ -68,7 +68,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   };
 
   const realtimeRef = React.useRef<any>(null);
-  const isInitializingRealtime = React.useRef(false);
 
   useEffect(() => {
     fetchCount();
@@ -81,24 +80,35 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     // This is more reliable than direct Supabase Realtime for this custom architecture
     const eventSource = new EventSource(`/api/notifications/stream?userId=${user.id}`);
 
+    eventSource.onopen = () => {
+      console.log("[SSE] Connection established for user:", user.id);
+    };
+
     eventSource.onmessage = (event) => {
       try {
+        if (event.data === ": heartbeat") return;
         const newNotification = JSON.parse(event.data);
         setUnreadCount(prev => prev + 1);
-        
-        // Optional: Dispatch a global event for components that don't use this provider
         window.dispatchEvent(new CustomEvent("new-notification", { detail: newNotification }));
       } catch (e) {
-        console.error("Failed to parse real-time notification:", e);
+        console.error("[SSE] Failed to parse message:", e);
       }
     };
 
     eventSource.onerror = (err) => {
-      console.error("SSE Connection Error:", err);
-      eventSource.close();
+      // EventSource will automatically attempt to reconnect unless we call .close()
+      // We log the error but let the browser handle the retry logic
+      console.error("[SSE] Connection Error. ReadyState:", eventSource.readyState, err);
+      
+      if (eventSource.readyState === EventSource.CLOSED) {
+        console.log("[SSE] Connection closed. Will not reconnect.");
+      } else if (eventSource.readyState === EventSource.CONNECTING) {
+        console.log("[SSE] Connection lost. Attempting to reconnect...");
+      }
     };
 
     return () => {
+      console.log("[SSE] Closing connection for user:", user.id);
       eventSource.close();
     };
   }, [user?.id]);
