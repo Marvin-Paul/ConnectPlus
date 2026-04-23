@@ -30,7 +30,25 @@ export const verifyToken = (token: string): JWTPayload | null => {
   }
 };
 
-export const getAuthUser = async () => {
+export type AuthUser = {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string;
+  username: string | null;
+  avatarUrl: string | null;
+  headline: string | null;
+  isPremium: boolean;
+  verified: boolean;
+  role: string;
+  totalConnections: number;
+  _count?: {
+    followers: number;
+    posts: number;
+  };
+};
+
+export const getAuthUser = async (): Promise<AuthUser | null> => {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("auth-token")?.value;
@@ -59,24 +77,25 @@ export const getAuthUser = async () => {
             posts: true,
           }
         }
-      } as any
+      }
     });
     
     if (!user) return null;
 
-    // Fetch connection count separately if needed, or simplify for now
+    // Fetch connection count separately if needed
     const connectionCount = await prisma.connection.count({
       where: {
         status: 'ACCEPTED',
         OR: [
-          { requesterId: user.id as string },
-          { addresseeId: user.id as string }
+          { requesterId: user.id },
+          { addresseeId: user.id }
         ]
       }
     });
 
     return {
       ...user,
+      role: user.role as string,
       totalConnections: connectionCount
     };
   } catch (error) {
@@ -84,6 +103,7 @@ export const getAuthUser = async () => {
     return null;
   }
 };
+
 
 export const setAuthCookie = async (token: string) => {
   const cookieStore = await cookies();
