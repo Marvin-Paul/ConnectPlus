@@ -24,9 +24,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     try {
       const res = await fetch(`/api/notifications?username=${user.username}`);
       if (res.ok) {
-        const notifications = await res.json();
-        const unread = notifications.filter((n: any) => !n.isRead).length;
-        setUnreadCount(unread);
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const notifications = await res.json();
+          const unread = notifications.filter((n: any) => !n.isRead).length;
+          setUnreadCount(unread);
+        }
       }
     } catch (err) {
       console.error("Failed to fetch notification count:", err);

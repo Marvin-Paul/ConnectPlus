@@ -78,13 +78,15 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const res = await fetch(`/api/posts?page=${pageNum}&limit=10&userId=${user?.id || 'demo-user'}&sort=${currentSort}`);
-      const data = await res.json();
-
-      if (!res.ok) {
-        console.error("Feed API Error:", {
-          status: res.status,
-          payload: data
-        });
+      
+      // Professional check for empty or non-JSON response
+      const contentType = res.headers.get("content-type");
+      let data: any = [];
+      if (res.ok && contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else if (!res.ok) {
+        const errorText = await res.text().catch(() => "Unknown error");
+        console.error("Feed API Error:", { status: res.status, errorText });
         setLoading(false);
         return;
       }
@@ -147,11 +149,14 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
             try {
               const res = await fetch(`/api/posts/${payload.new.id}`);
               if (res.ok) {
-                const fullPost = await res.json();
-                setPosts(prev => {
-                  if (prev.some(p => p.id === fullPost.id)) return prev;
-                  return [fullPost, ...prev];
-                });
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                  const fullPost = await res.json();
+                  setPosts(prev => {
+                    if (prev.some(p => p.id === fullPost.id)) return prev;
+                    return [fullPost, ...prev];
+                  });
+                }
               }
             } catch (err) {
               console.error("[Realtime] Handler error:", err);
@@ -212,10 +217,16 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
         ...options
       }),
     });
-    const data = await res.json();
+    
+    let data: any = {};
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      data = await res.json();
+    }
+
     if (!res.ok) {
       console.error("[FeedProvider] POST /api/posts failed:", data);
-      throw new Error(data?.details || data?.error || JSON.stringify(data) || "Failed to create post");
+      throw new Error(data?.details || data?.error || "Failed to create post");
     }
     // Normalize the response as a safety net
     const newPost: Post = {
@@ -372,7 +383,10 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (!res.ok) {
-        const data = await res.json();
+        const contentType = res.headers.get("content-type");
+        const data = (contentType && contentType.includes("application/json")) 
+          ? await res.json() 
+          : { error: await res.text() };
         throw new Error(data.error || "Failed to delete post");
       }
     } catch (error) {

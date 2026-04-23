@@ -257,7 +257,6 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
                 
                 <button 
                   onClick={() => removeImage(currentPreviewIndex)}
-                  aria-label="Remove image"
                   title="Remove image"
                   aria-label="Remove image"
                   className="absolute top-4 right-4 p-2 bg-red-600 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"

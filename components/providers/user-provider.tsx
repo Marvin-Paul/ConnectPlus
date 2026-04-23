@@ -44,29 +44,32 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       let authRes = await fetch(`/api/me`);
       
       if (authRes.ok) {
-        const data = await authRes.json();
-        if (data.id) {
-          setUser({
-            ...data,
-            id: data.id,
-            email: data.email,
-            name: data.name,
-            firstName: data.firstName || data.name?.split(' ')[0] || "User",
-            lastName: data.lastName || data.name?.split(' ').slice(1).join(' ') || "",
-            username: data.username || data.name?.toLowerCase().replace(/\s+/g, '-'),
-            headline: data.headline || "Connect+ Member",
-            location: data.location || "Earth",
-            avatarUrl: data.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${data.name || data.email}`,
-            bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
-            gitlabUsername: data.gitlabUsername || null,
-            isPremium: !!data.isPremium,
-            verified: !!data.verified,
-            role: data.role || "USER",
-            totalConnections: data.totalConnections || 0,
-            _count: data._count
-          });
-          setLoading(false);
-          return;
+        const contentType = authRes.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await authRes.json();
+          if (data && data.id) {
+            setUser({
+              ...data,
+              id: data.id,
+              email: data.email,
+              name: data.name,
+              firstName: data.firstName || data.name?.split(' ')[0] || "User",
+              lastName: data.lastName || data.name?.split(' ').slice(1).join(' ') || "",
+              username: data.username || data.name?.toLowerCase().replace(/\s+/g, '-'),
+              headline: data.headline || "Connect+ Member",
+              location: data.location || "Earth",
+              avatarUrl: data.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${data.name || data.email}`,
+              bannerUrl: data.bannerUrl || "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200",
+              gitlabUsername: data.gitlabUsername || null,
+              isPremium: !!data.isPremium,
+              verified: !!data.verified,
+              role: data.role || "USER",
+              totalConnections: data.totalConnections || 0,
+              _count: data._count
+            });
+            setLoading(false);
+            return;
+          }
         }
       }
 

@@ -38,8 +38,11 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
       setLoading(true);
       const res = await fetch(`/api/posts/${postId}/comment`);
       if (res.ok) {
-        const data = await res.json();
-        setComments(data);
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json();
+          setComments(data);
+        }
       }
     } catch (error) {
        console.error("Error fetching comments:", error);
@@ -70,14 +73,17 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
             { event: 'INSERT', schema: 'public', table: 'Comment', filter: `postId=eq.${postId}` },
             async (payload: any) => {
                try {
-                  const res = await fetch(`/api/comment/${payload.new.id}`);
-                  if (res.ok) {
-                     const fullComment = await res.json();
-                     setComments(prev => {
-                        if (prev.find(c => c.id === fullComment.id)) return prev;
-                        return [fullComment, ...prev];
-                     });
-                  }
+                   const res = await fetch(`/api/comment/${payload.new.id}`);
+                   if (res.ok) {
+                      const contentType = res.headers.get("content-type");
+                      if (contentType && contentType.includes("application/json")) {
+                         const fullComment = await res.json();
+                         setComments(prev => {
+                            if (prev.find(c => c.id === fullComment.id)) return prev;
+                            return [fullComment, ...prev];
+                         });
+                      }
+                   }
                } catch (e) {
                   console.error("Error fetching realtime comment:", e);
                }
@@ -116,10 +122,13 @@ export function CommentSection({ postId, onCommentAdded }: CommentSectionProps) 
         body: JSON.stringify({ userId: senderId, content: newComment }),
       });
       if (res.ok) {
-        const comment = await res.json();
-        setComments(prev => [comment, ...prev]);
-        setNewComment("");
-        onCommentAdded();
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const comment = await res.json();
+          setComments(prev => [comment, ...prev]);
+          setNewComment("");
+          onCommentAdded();
+        }
       }
     } catch (error) {
       console.error("Error posting comment:", error);

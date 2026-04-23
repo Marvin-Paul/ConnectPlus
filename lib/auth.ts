@@ -67,9 +67,10 @@ export const getAuthUser = async () => {
     // Fetch connection count separately if needed, or simplify for now
     const connectionCount = await prisma.connection.count({
       where: {
+        status: 'ACCEPTED',
         OR: [
-          { requesterId: user.id, status: 'ACCEPTED' },
-          { addresseeId: user.id, status: 'ACCEPTED' }
+          { requesterId: user.id as string },
+          { addresseeId: user.id as string }
         ]
       }
     });
