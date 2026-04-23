@@ -26,29 +26,34 @@ export async function POST(req: Request) {
     }
 
     const { identifier, password } = validatedData.data;
+    let email = identifier;
 
-    // 2. Authenticate with Supabase
-    // Note: identifier could be email or phone. Supabase supports both but usually via different methods.
-    // We'll try as email first.
-    let authResponse = await supabase.auth.signInWithPassword({
-      email: identifier,
+    // 2. Identify if identifier is email or phone
+    const isEmail = identifier.includes('@');
+    
+    if (!isEmail) {
+      // Try finding user by phone in Prisma to get the email
+      const userWithPhone = await prisma.user.findFirst({
+        where: { phone: identifier },
+        select: { email: true }
+      });
+
+      if (userWithPhone) {
+        email = userWithPhone.email;
+      } else {
+        // If not found in Prisma by phone, we can't proceed to Supabase with an email
+        return NextResponse.json(
+          { message: "Invalid email/phone or password" },
+          { status: 401 }
+        );
+      }
+    }
+
+    // 3. Authenticate with Supabase
+    const authResponse = await supabase.auth.signInWithPassword({
+      email: email,
       password: password,
     });
-
-    // If email login fails, try finding user by phone in Prisma to get the email
-    if (authResponse.error && !identifier.includes('@')) {
-       const userWithPhone = await prisma.user.findFirst({
-         where: { phone: identifier },
-         select: { email: true }
-       });
-
-       if (userWithPhone) {
-         authResponse = await supabase.auth.signInWithPassword({
-           email: userWithPhone.email,
-           password: password,
-         });
-       }
-    }
 
     if (authResponse.error) {
       return NextResponse.json(

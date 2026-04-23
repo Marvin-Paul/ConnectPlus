@@ -10,7 +10,10 @@ const globalForPrisma = globalThis as unknown as {
   adapter?: any;
 };
 
-const connectionString = `${process.env.DATABASE_URL}`;
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error("DATABASE_URL is not defined in environment variables");
+}
 
 // Re-use pool across HMR reloads
 const pool = globalForPrisma.pool ?? new Pool({ connectionString });
@@ -18,6 +21,7 @@ const adapter = globalForPrisma.adapter ?? new PrismaPg(pool);
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
+    adapter,
     log: ["error"],
   });
 
