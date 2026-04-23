@@ -5,11 +5,13 @@ import { useUser } from "./user-provider";
 
 export interface PostAuthor {
   id: string;
-  firstName: string;
-  lastName: string;
-  username: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  username?: string | null;
   avatarUrl: string | null;
   headline: string | null;
+  verified?: boolean;
+  isPremium?: boolean;
   connectionDegree?: string; // e.g. "1st", "2nd"
 }
 
@@ -223,11 +225,13 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       createdAt: new Date().toISOString(),
       author: {
         id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        avatarUrl: user.avatarUrl,
-        headline: user.headline,
+        firstName: user.firstName || "Professional",
+        lastName: user.lastName || "User",
+        username: user.username || "user",
+        avatarUrl: user.avatarUrl || null,
+        headline: user.headline || "Connect+ Member",
+        verified: user.verified,
+        isPremium: user.isPremium,
       },
       _count: { likes: 0, comments: 0, reposts: 0 },
       reactions: [],

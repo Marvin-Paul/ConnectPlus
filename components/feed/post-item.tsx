@@ -118,13 +118,13 @@ export function PostItem({ post }: PostItemProps) {
       {/* Header */}
       <div className="p-4 flex items-start gap-3">
         <div className="w-12 h-12 rounded-full overflow-hidden border border-border dark:border-slate-800 bg-muted dark:bg-slate-800 flex items-center justify-center shadow-sm shrink-0 cursor-pointer">
-           {post.author.avatarUrl ? (
-              <img src={post.author.avatarUrl} alt={post.author.firstName} className="w-full h-full object-cover" />
-           ) : (
-              <div className="w-full h-full bg-primary/10 flex items-center justify-center font-bold text-primary uppercase text-[15px]">
-                {post.author.firstName?.[0] ?? "U"}
-              </div>
-           )}
+            {post.author.avatarUrl ? (
+               <img src={post.author.avatarUrl} alt={post.author.firstName || "User"} className="w-full h-full object-cover" />
+            ) : (
+               <div className="w-full h-full bg-primary/10 flex items-center justify-center font-bold text-primary uppercase text-[15px]">
+                 {(post.author.firstName && post.author.firstName[0]) || "U"}
+               </div>
+            )}
         </div>
         <div className="flex-1 min-w-0">
            <div className="flex justify-between items-start">
