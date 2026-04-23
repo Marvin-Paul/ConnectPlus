@@ -104,11 +104,23 @@ export function PostItem({ post }: PostItemProps) {
            <div className="flex justify-between items-start">
               <div className="flex flex-col">
                  <div className="flex items-center gap-1 flex-wrap">
-                    <h3 className="text-[14px] font-bold text-foreground dark:text-slate-200 hover:text-primary transition-colors cursor-pointer leading-tight">
+                    <h3 className="text-[14px] font-bold text-foreground dark:text-slate-200 hover:text-primary transition-colors cursor-pointer leading-tight flex items-center gap-1">
                       {post.author.firstName} {post.author.lastName}
+                      {post.author.verified && (
+                        <span title="Verified Professional" className="text-blue-500 fill-blue-500">
+                          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" stroke="currentColor" strokeWidth="1" /></svg>
+                        </span>
+                      )}
+                      {(post.author as any).isPremium && (
+                        <span title="Premium Member" className="text-yellow-600">
+                          <Award className="w-3.5 h-3.5" />
+                        </span>
+                      )}
                     </h3>
                     <span className="text-[14px] text-secondary/60">•</span>
-                    <span className="text-[14px] text-secondary/60 font-medium">{post.author.connectionDegree || "2nd"}</span>
+                    <span className="text-[14px] text-secondary/60 font-medium">
+                      {post.author.id === currentUser?.id ? "You" : (post.author.connectionDegree || ["1st", "2nd", "3rd"][Math.floor(Math.random() * 3)])}
+                    </span>
                  </div>
                  <p className="text-[12px] text-secondary/70 line-clamp-1 mt-0.5 leading-tight">{post.author.headline || "Connect Plus Member"}</p>
                  <div className="flex items-center gap-1.5 text-[11px] text-secondary/60 mt-1">

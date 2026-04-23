@@ -14,7 +14,15 @@ const profileUpdateSchema = z.object({
   bannerUrl: z.string().optional(),
 });
 
+export async function POST(req: Request) {
+  return handleUpdate(req);
+}
+
 export async function PATCH(req: Request) {
+  return handleUpdate(req);
+}
+
+async function handleUpdate(req: Request) {
   try {
     const authUser = await getAuthUser();
     

@@ -11,6 +11,8 @@ import { Inter } from "next/font/google";
 import { SplashScreen } from "../components/ui/splash-screen";
 import { ThemeProvider } from "../components/providers/theme-provider";
 import { LanguageProvider } from "../components/providers/language-provider";
+import { Toaster } from "sonner";
+import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -29,10 +31,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
-      <body className="antialiased selection:bg-primary/10 selection:text-primary">
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} antialiased selection:bg-primary/10 selection:text-primary`} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LanguageProvider>
+            <NextTopLoader 
+              color="#0A66C2"
+              initialPosition={0.08}
+              crawlSpeed={200}
+              height={3}
+              crawl={true}
+              showSpinner={false}
+              easing="ease"
+              speed={200}
+              shadow="0 0 10px #0A66C2,0 0 5px #0A66C2"
+            />
+            <Toaster position="top-center" richColors />
             <SplashScreen />
             <QueryProvider>
               <UserProvider>

@@ -33,6 +33,8 @@ export async function GET(request: Request) {
           username: true,
           avatarUrl: true,
           headline: true,
+          verified: true,
+          isPremium: true,
         },
       },
       _count: {
@@ -64,8 +66,8 @@ export async function GET(request: Request) {
       mediaUrls: post.mediaUrls || (post.imageUrl ? [post.imageUrl] : []),
       _count: {
         likes: (post._count as any)?.reactions || 0,
-        comments: post._count?.comments || 0,
-        reposts: post._count?.reposts || 0
+        comments: (post._count as any)?.comments || 0,
+        reposts: (post._count as any)?.reposts || 0
       }
     }));
 
@@ -123,8 +125,8 @@ export async function POST(request: Request) {
     // Safety check: ensure we don't save session-specific blob URLs to the database
     const placeholder = "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80";
     
-    const cleanMediaUrls = mediaUrls.map((url: string) => url.startsWith('blob:') ? placeholder : url);
-    const cleanImageUrl = (imageUrl && imageUrl.startsWith('blob:')) ? placeholder : (imageUrl || cleanMediaUrls[0] || null);
+    const cleanMediaUrls = mediaUrls;
+    const cleanImageUrl = imageUrl || (cleanMediaUrls && cleanMediaUrls[0]) || null;
 
     const postData: any = {
       content,

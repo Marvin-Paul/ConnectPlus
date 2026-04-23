@@ -202,34 +202,21 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
     visibility?: string;
   }) => {
     if (!user) throw new Error("User not authenticated");
-    const res = await fetch("/api/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content,
-        imageUrl,
-        authorId: user.id,
-        ...options
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      console.error("[FeedProvider] POST /api/posts failed:", data);
-      throw new Error(data?.details || data?.error || JSON.stringify(data) || "Failed to create post");
-    }
-    // Normalize the response as a safety net
-    const newPost: Post = {
-      id: data.id,
-      authorId: data.authorId,
-      content: data.content,
-      imageUrl: data.imageUrl || null,
-      mediaUrls: data.mediaUrls || (data.imageUrl ? [data.imageUrl] : []),
-      type: data.type || "POST",
-      visibility: data.visibility || "ANYONE",
-      title: data.title || null,
-      tags: data.tags || [],
-      createdAt: data.createdAt,
-      author: data.author || {
+
+    // Optimistic Update
+    const tempId = `temp-${Date.now()}`;
+    const optimisticPost: Post = {
+      id: tempId,
+      authorId: user.id,
+      content,
+      imageUrl: imageUrl || null,
+      mediaUrls: options?.mediaUrls || (imageUrl ? [imageUrl] : []),
+      type: options?.type || "POST",
+      visibility: options?.visibility || "ANYONE",
+      title: options?.title || null,
+      tags: options?.tags || [],
+      createdAt: new Date().toISOString(),
+      author: {
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -237,15 +224,44 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
         avatarUrl: user.avatarUrl,
         headline: user.headline,
       },
-      _count: {
-        likes: data._count?.likes ?? data._count?.reactions ?? 0,
-        comments: data._count?.comments ?? 0,
-        reposts: data._count?.reposts ?? 0,
-      },
-      reactions: data.reactions || [],
+      _count: { likes: 0, comments: 0, reposts: 0 },
+      reactions: [],
       isSaved: false,
     };
-    setPosts(prev => [newPost, ...prev]);
+
+    setPosts(prev => [optimisticPost, ...prev]);
+
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content,
+          imageUrl,
+          authorId: user.id,
+          ...options
+        }),
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data?.details || data?.error || "Failed to create post");
+      }
+
+      // Replace optimistic post with actual data from server
+      setPosts(prev => prev.map(p => p.id === tempId ? {
+        ...data,
+        author: optimisticPost.author, // Keep the hydrated author info
+        _count: data._count || { likes: 0, comments: 0, reposts: 0 }
+      } : p));
+
+    } catch (error) {
+      console.error("[FeedProvider] Post creation failed:", error);
+      // Rollback optimistic update
+      setPosts(prev => prev.filter(p => p.id !== tempId));
+      throw error;
+    }
   };
 
   const reactToPost = async (postId: string, type: string) => {

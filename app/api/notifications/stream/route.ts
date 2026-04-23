@@ -19,26 +19,42 @@ export async function GET(request: NextRequest) {
 
   const stream = new ReadableStream({
     start(controller) {
-      // Send initial heartbeat
-      controller.enqueue(encoder.encode(": heartbeat\n\n"));
+      const safeEnqueue = (data: string) => {
+        try {
+          controller.enqueue(encoder.encode(data));
+        } catch (err) {
+          console.warn("[SSE] Enqueue failed (stream likely closed):", err);
+          cleanup();
+        }
+      };
+
+      // Send initial heartbeat and retry interval
+      safeEnqueue("retry: 5000\n\n");
+      safeEnqueue(": heartbeat\n\n");
 
       // Subscribe to real-time events from the NotificationService
       const unsubscribe = NotificationService.subscribe(userId, (notification) => {
         const data = JSON.stringify(notification);
-        controller.enqueue(encoder.encode(`data: ${data}\n\n`));
+        safeEnqueue(`data: ${data}\n\n`);
       });
 
       // Keep connection alive with heartbeats every 30 seconds
       const heartbeat = setInterval(() => {
-        controller.enqueue(encoder.encode(": heartbeat\n\n"));
+        safeEnqueue(": heartbeat\n\n");
       }, 30000);
 
-      // Clean up on close
-      request.signal.addEventListener("abort", () => {
+      const cleanup = () => {
         unsubscribe();
         clearInterval(heartbeat);
-        controller.close();
-      });
+        try {
+          controller.close();
+        } catch (e) {
+          // Ignore if already closed
+        }
+      };
+
+      // Clean up on close
+      request.signal.addEventListener("abort", cleanup);
     },
   });
 
