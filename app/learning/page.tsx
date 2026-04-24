@@ -124,7 +124,7 @@ export default function LearningPage() {
                           <div className="space-y-4 mt-auto">
                               <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
                                 <div 
-                                  ref={el => progressRefs.current[idx] = el}
+                                  ref={el => { progressRefs.current[idx] = el; }}
                                   className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-1000 shadow-[0_0_12px_rgba(16,185,129,0.5)]" 
                                 />
                               </div>
