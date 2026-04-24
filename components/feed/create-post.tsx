@@ -59,17 +59,29 @@ export function CreatePost() {
     if (!content.trim() || isRewriting) return;
     setIsRewriting(true);
     
-    // Professional delay to simulate deep analysis
-    await new Promise(resolve => setTimeout(resolve, 1800));
-    
     const strategies = [
-      (c: string) => `Refined Perspective: ${c} \n\nLooking forward to hearing thoughts from my network. #Leadership #Strategy`,
-      (c: string) => `Editorial Insight: ${c} \n\nHow is your team approaching this? #ProfessionalGrowth #Innovation`,
-      (c: string) => `Executive Summary: ${c} \n\nKey takeaways for Q2. #BusinessIntelligence #ConnectPlus`
+      {
+        name: "Strategic",
+        prefix: "Strategic Insight:",
+        suffix: "\n\nHow does this align with your team's long-term objectives? #Strategy #Leadership #BusinessGrowth",
+        prompt: (c: string) => `As we evaluate the current landscape, ${c.charAt(0).toLowerCase()}${c.slice(1)} remains a pivotal factor for success.`
+      },
+      {
+        name: "Editorial",
+        prefix: "Editorial Perspective:",
+        suffix: "\n\nI'm curious to hear how others in the industry are navigating this shift. #IndustryTrends #Innovation",
+        prompt: (c: string) => `The nuances of ${c.charAt(0).toLowerCase()}${c.slice(1)} deserve a closer look as we head into the next quarter.`
+      },
+      {
+        name: "Executive",
+        prefix: "Executive Summary:",
+        suffix: "\n\nKey takeaways for leadership teams. #ExecutiveInsights #ConnectPlus",
+        prompt: (c: string) => `Focusing on high-impact outcomes: ${c}. This represents a core opportunity for organizational excellence.`
+      }
     ];
     
-    const generator = strategies[Math.floor(Math.random() * strategies.length)];
-    const polished = generator(content);
+    const strategy = strategies[Math.floor(Math.random() * strategies.length)];
+    const polished = `${strategy.prefix} ${strategy.prompt(content)} ${strategy.suffix}`;
     
     // Animated typing effect for the "AI" feel
     let i = 0;
@@ -80,7 +92,7 @@ export function CreatePost() {
         clearInterval(interval);
         setIsRewriting(false);
       }
-    }, 15);
+    }, 10);
   };
 
   return (

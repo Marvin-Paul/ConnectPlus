@@ -43,81 +43,93 @@ export default function MyJobsPage() {
   const [activeTab, setActiveTab] = useState<"saved" | "applied">("saved");
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
-      <aside className="lg:col-span-3">
-        <JobsSidebar />
-      </aside>
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 transition-colors duration-500 pb-20">
+      <div className="max-w-7xl mx-auto py-12 px-6 grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <aside className="lg:col-span-3">
+          <JobsSidebar />
+        </aside>
 
-      <main className="lg:col-span-9 space-y-6">
-        <div className="bg-white rounded-xl border border-[#e0e0e0] overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-[#e0e0e0]">
-             <h1 className="text-2xl font-bold text-slate-800">My jobs</h1>
-             <div className="flex gap-4 mt-6">
-               <button 
-                 onClick={() => setActiveTab("saved")}
-                 className={`pb-3 text-sm font-bold border-b-2 transition-all ${activeTab === "saved" ? "border-[#0a66c2] text-[#0a66c2]" : "border-transparent text-[#666666] hover:text-black"}`}
-               >
-                 Saved ({savedJobs.length})
-               </button>
-               <button 
-                 onClick={() => setActiveTab("applied")}
-                 className={`pb-3 text-sm font-bold border-b-2 transition-all ${activeTab === "applied" ? "border-[#0a66c2] text-[#0a66c2]" : "border-transparent text-[#666666] hover:text-black"}`}
-               >
-                 Applied ({appliedJobs.length})
-               </button>
-             </div>
-          </div>
+        <main className="lg:col-span-9 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-soft transition-all">
+            <div className="p-10 border-b border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl">
+               <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Career Hub <span className="text-[#0a66c2] dark:text-blue-400">Inventory</span></h1>
+               <div className="flex gap-8 mt-10">
+                 <button 
+                   onClick={() => setActiveTab("saved")}
+                   className={`pb-4 text-[13px] font-black uppercase tracking-widest border-b-4 transition-all duration-300 ${activeTab === "saved" ? "border-[#0a66c2] dark:border-blue-400 text-[#0a66c2] dark:text-blue-400" : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white"}`}
+                 >
+                   Saved Roles ({savedJobs.length})
+                 </button>
+                 <button 
+                   onClick={() => setActiveTab("applied")}
+                   className={`pb-4 text-[13px] font-black uppercase tracking-widest border-b-4 transition-all duration-300 ${activeTab === "applied" ? "border-[#0a66c2] dark:border-blue-400 text-[#0a66c2] dark:text-blue-400" : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white"}`}
+                 >
+                   Applications ({appliedJobs.length})
+                 </button>
+               </div>
+            </div>
 
-          <div className="p-4">
-             {activeTab === "saved" ? (
-               <div className="space-y-4">
-                 {savedJobs.map((job) => (
-                   <div key={job.id} className="p-4 rounded-lg hover:bg-slate-50 border border-transparent hover:border-[#e0e0e0] transition-all group cursor-pointer">
-                      <div className="flex gap-4">
-                         <img src={job.logo} className="w-14 h-14 rounded border" alt="" />
-                         <div className="flex-1">
-                            <h3 className="font-bold text-[#0a66c2] group-hover:underline text-base">{job.title}</h3>
-                            <p className="text-sm text-slate-700 font-medium">{job.company}</p>
-                            <p className="text-xs text-[#666666] mt-1">{job.location}</p>
-                            <div className="flex items-center gap-4 mt-3 text-xs font-bold text-[#057642]">
-                               <span>{job.salary}</span>
-                               <span className="text-[#666666] font-normal flex items-center gap-1">
-                                 <Clock className="w-3 h-3" /> Saved {job.savedDate}
-                               </span>
-                            </div>
-                         </div>
-                         <button className="h-10 px-4 rounded-full border border-[#0a66c2] text-[#0a66c2] font-bold text-xs hover:bg-[#0a66c2]/5 transition-colors">
-                            Apply now
-                         </button>
-                      </div>
-                   </div>
-                 ))}
-               </div>
-             ) : (
-               <div className="space-y-4">
-                 {appliedJobs.map((job) => (
-                   <div key={job.id} className="p-4 flex items-center justify-between hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-[#e0e0e0]">
-                      <div className="flex gap-4 items-center">
-                         <img src={job.logo} className="w-12 h-12 rounded border" alt="" />
-                         <div>
-                            <h3 className="font-bold text-slate-800 text-sm">{job.title}</h3>
-                            <p className="text-xs text-[#666666]">{job.company}</p>
-                            <p className="text-[10px] text-[#666666] mt-1">Applied {job.appliedDate}</p>
-                         </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                         <div className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider">
-                           {job.status}
-                         </div>
-                         <ChevronRight className="w-5 h-5 text-[#666666]" />
-                      </div>
-                   </div>
-                 ))}
-               </div>
-             )}
+            <div className="p-6">
+               {activeTab === "saved" ? (
+                 <div className="space-y-4">
+                   {savedJobs.map((job) => (
+                     <div key={job.id} className="p-8 rounded-3xl hover:bg-slate-50 dark:hover:bg-slate-800/50 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all duration-500 group cursor-pointer">
+                        <div className="flex flex-col md:flex-row gap-8 items-center">
+                           <div className="w-20 h-20 rounded-2xl border border-slate-100 dark:border-slate-700 p-2 bg-white dark:bg-slate-800 shadow-sm group-hover:scale-105 transition-transform duration-500">
+                              <img src={job.logo} className="w-full h-full object-contain rounded-xl" alt="" />
+                           </div>
+                           <div className="flex-1 text-center md:text-left">
+                              <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-[#0a66c2] dark:group-hover:text-blue-400 transition-colors tracking-tight">{job.title}</h3>
+                              <p className="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1 italic">{job.company}</p>
+                              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-3 flex items-center justify-center md:justify-start gap-2 italic">
+                                 <Bookmark className="w-3.5 h-3.5" /> {job.location}
+                              </p>
+                              <div className="flex items-center justify-center md:justify-start gap-6 mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-[#057642] dark:text-emerald-400">
+                                 <span className="bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-lg border border-emerald-100 dark:border-emerald-800">{job.salary}</span>
+                                 <span className="text-slate-400 dark:text-slate-500 flex items-center gap-2">
+                                   <Clock className="w-3.5 h-3.5" /> Saved {job.savedDate}
+                                 </span>
+                              </div>
+                           </div>
+                           <button className="w-full md:w-auto h-12 px-10 rounded-full bg-[#0a66c2] dark:bg-blue-600 text-white font-black text-[11px] uppercase tracking-widest hover:bg-[#004182] dark:hover:bg-blue-500 transition-all active:scale-95 shadow-xl shadow-blue-900/10 dark:shadow-blue-500/10">
+                              Finalize Application
+                           </button>
+                        </div>
+                     </div>
+                   ))}
+                 </div>
+               ) : (
+                 <div className="space-y-4">
+                   {appliedJobs.map((job) => (
+                     <div key={job.id} className="p-8 flex flex-col md:flex-row items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-3xl transition-all duration-500 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 group">
+                        <div className="flex flex-col md:flex-row gap-8 items-center">
+                           <div className="w-16 h-16 rounded-2xl border border-slate-100 dark:border-slate-700 p-2 bg-white dark:bg-slate-800 shadow-sm group-hover:rotate-3 transition-transform">
+                              <img src={job.logo} className="w-full h-full object-contain rounded-xl" alt="" />
+                           </div>
+                           <div className="text-center md:text-left">
+                              <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{job.title}</h3>
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1 italic">{job.company}</p>
+                              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-3 flex items-center justify-center md:justify-start gap-2">
+                                 <ClipboardCheck className="w-3.5 h-3.5" /> Applied {job.appliedDate}
+                              </p>
+                           </div>
+                        </div>
+                        <div className="flex items-center gap-6 mt-6 md:mt-0">
+                           <div className="px-6 py-2 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] border border-blue-100 dark:border-blue-800 shadow-sm">
+                             {job.status}
+                           </div>
+                           <div className="w-10 h-10 rounded-full border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-400 group-hover:text-blue-400 group-hover:translate-x-1 transition-all">
+                              <ChevronRight className="w-5 h-5" />
+                           </div>
+                        </div>
+                     </div>
+                   ))}
+                 </div>
+               )}
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

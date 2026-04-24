@@ -34,7 +34,16 @@ export function ProfileCard() {
     <div className="bg-white dark:bg-slate-950 rounded-xl border border-border dark:border-slate-800 overflow-hidden shadow-soft group sticky top-[84px] animate-pro-fade">
       {/* Banner */}
       <div className="h-20 relative overflow-hidden bg-muted">
-         {user.banner && <img src={user.banner} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="" />}
+         {user.banner && (
+           <img 
+             src={user.banner} 
+             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+             alt="" 
+             onError={(e) => {
+               (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=400&h=200";
+             }}
+           />
+         )}
          {user.isPremium && (
             <div className="absolute top-3 right-3 px-2.5 py-1 rounded bg-accent text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
                <Sparkles className="w-3 h-3" /> Premium
@@ -46,13 +55,20 @@ export function ProfileCard() {
         {/* Avatar */}
         <div className="relative -mt-10 mb-4">
           <Link href={`/profile/${user.username}`}>
-             <div className="w-20 h-20 rounded-lg border-4 border-white dark:border-slate-950 overflow-hidden bg-muted dark:bg-slate-800 shadow-md hover:shadow-lg transition-all duration-300">
-                <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+             <div className="w-24 h-24 rounded-2xl border-4 border-white dark:border-slate-950 overflow-hidden bg-muted dark:bg-slate-800 shadow-xl hover:shadow-2xl transition-all duration-300 ring-4 ring-primary/10">
+                <img 
+                  src={user.avatar} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://api.dicebear.com/8.x/initials/svg?seed=${user.name}&backgroundColor=0a66c2&fontFamily=Arial&fontWeight=bold`;
+                  }}
+                />
              </div>
           </Link>
           {user.verified && (
-            <div className="absolute bottom-1 right-1/2 translate-x-12 bg-primary p-1 rounded-full border-2 border-white shadow-sm">
-               <ShieldCheck className="w-3.5 h-3.5 text-white" />
+            <div className="absolute bottom-0 right-0 bg-primary p-0.5 rounded-full border-2 border-white dark:border-slate-950 shadow-sm">
+               <ShieldCheck className="w-2.5 h-2.5 text-white" />
             </div>
           )}
         </div>

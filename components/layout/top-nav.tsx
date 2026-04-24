@@ -137,7 +137,7 @@ export function TopNav() {
                   >
                      <div className={`w-6 h-6 rounded-full flex items-center justify-center bg-primary text-white font-bold text-[10px] border-2 transition-all overflow-hidden shrink-0 ${activeDropdown === 'me' ? 'border-primary ring-2 ring-primary/20' : 'border-white'}`}>
                        {user.avatarUrl ? (
-                         <img src={user.avatarUrl} alt="Me" className="w-full h-full object-cover" />
+                         <img src={user.avatarUrl} alt="Me" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = `https://api.dicebear.com/8.x/initials/svg?seed=${user.firstName}%20${user.lastName}&backgroundColor=0a66c2&fontFamily=Arial&fontWeight=bold` }} />
                        ) : (
                          <span className="leading-none">{getUserInitials()}</span>
                        )}
@@ -149,7 +149,18 @@ export function TopNav() {
                      <div className="absolute top-[calc(100%+4px)] right-0 w-[240px] bg-white dark:bg-slate-900 rounded-xl shadow-dropdown border border-border dark:border-slate-800 overflow-hidden animate-pro-fade z-[110]">
                        <div className="p-4 flex items-center gap-3 bg-muted/50 dark:bg-slate-800/50">
                            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-[14px] shadow-sm shrink-0 overflow-hidden">
-                              {user.avatarUrl ? <img src={user.avatarUrl} className="w-full h-full object-cover" alt="" /> : <span>{getUserInitials()}</span>}
+                              {user.avatarUrl ? (
+                                <img 
+                                  src={user.avatarUrl} 
+                                  className="w-full h-full object-cover" 
+                                  alt="" 
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = `https://api.dicebear.com/8.x/initials/svg?seed=${user.firstName}%20${user.lastName}&backgroundColor=0a66c2&fontFamily=Arial&fontWeight=bold`;
+                                  }}
+                                />
+                              ) : (
+                                <span>{getUserInitials()}</span>
+                              )}
                            </div>
                            <div className="min-w-0 pr-2">
                              <h4 className="font-bold text-foreground tracking-tight truncate leading-none text-[15px]">{user.firstName} {user.lastName}</h4>

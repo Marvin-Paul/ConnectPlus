@@ -81,41 +81,41 @@ export function SuggestionsGrid() {
             {/* Content */}
             <div className="px-4 pb-5 flex flex-col items-center text-center">
               <Link href={`/profile/${person.id}`} className="-mt-9 mb-3 relative z-10 block">
-                <div className={`w-18 h-18 rounded-full border-4 border-white overflow-hidden shadow-md transition-transform ${isConnected ? 'scale-90' : 'group-hover:scale-105'}`}>
-                  <img src={person.avatar} alt={person.name} className="w-full h-full object-cover" />
+                <div className={`w-18 h-18 rounded-full border-4 border-white dark:border-slate-800 overflow-hidden shadow-md transition-transform ${isConnected ? 'scale-90' : 'group-hover:scale-105'}`}>
+                   <img src={person.avatar} alt={person.name} className="w-full h-full object-cover" />
                 </div>
                 {isConnected && (
-                  <div className="absolute -bottom-0.5 -right-0.5 bg-green-500 rounded-full p-1.5 border-2 border-white shadow-sm">
+                  <div className="absolute -bottom-0.5 -right-0.5 bg-green-500 rounded-full p-1.5 border-2 border-white dark:border-slate-800 shadow-sm">
                      <Check className="h-3 w-3 text-white" />
                   </div>
                 )}
               </Link>
               
               <div className="min-h-[48px] flex flex-col items-center justify-center">
-                <Link href={`/profile/${person.id}`} className="text-[15px] font-bold text-foreground hover:text-primary hover:underline leading-tight line-clamp-1 flex items-center justify-center gap-1">
+                <Link href={`/profile/${person.id}`} className="text-[15px] font-bold text-foreground dark:text-slate-100 hover:text-primary hover:underline leading-tight line-clamp-1 flex items-center justify-center gap-1">
                   {person.name}
-                  {person.verified && <ShieldCheck className="w-3.5 h-3.5 text-blue-600 fill-blue-600/10" />}
+                  {person.verified && <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 fill-blue-600/10" />}
                 </Link>
-                <p className="text-[13px] text-secondary font-medium mt-1 line-clamp-2 leading-tight">
+                <p className="text-[13px] text-secondary/70 dark:text-slate-400 font-medium mt-1 line-clamp-2 leading-tight">
                   {person.headline}
                 </p>
               </div>
               
-              <div className="flex items-center gap-1.5 mt-4 mb-5 text-[12px] text-secondary font-medium">
-                 <Users className="h-3.5 w-3.5 text-secondary/60" />
+              <div className="flex items-center gap-1.5 mt-4 mb-5 text-[11px] text-secondary/50 dark:text-slate-500 font-bold uppercase tracking-wider">
+                 <Users className="h-3.5 w-3.5 text-primary" />
                  <span>{person.mutuals} mutual connections</span>
               </div>
               
               {!isConnected ? (
                 <button 
                   onClick={() => handleConnect(person.id)}
-                  className="w-full h-9 flex items-center justify-center gap-2 rounded-lg bg-[#1B5E20] text-white font-bold text-[13px] hover:bg-[#2E7D32] transition-all shadow-sm active:scale-95"
+                  className="w-full h-9 flex items-center justify-center gap-2 rounded-lg bg-primary text-white font-bold text-[12px] uppercase tracking-wider hover:bg-primary/90 transition-all shadow-sm active:scale-95"
                 >
                   <UserPlus className="h-4 w-4" />
                   Connect
                 </button>
               ) : (
-                <button className="w-full h-9 flex items-center justify-center gap-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 font-bold text-[13px] cursor-default opacity-90 animate-in zoom-in duration-300">
+                <button className="w-full h-9 flex items-center justify-center gap-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-500 border border-emerald-100 dark:border-emerald-900/50 font-bold text-[12px] uppercase tracking-wider cursor-default opacity-90 animate-in zoom-in duration-300">
                   <Check className="h-4 w-4" />
                   Pending
                 </button>

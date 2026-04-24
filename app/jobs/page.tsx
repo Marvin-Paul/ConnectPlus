@@ -3,13 +3,14 @@
 import { JobsSidebar } from "./jobs-sidebar";
 import { JobsSearch } from "./jobs-search";
 import { JobCard } from "./job-card";
-import { Sparkles, Star, Target, ChevronRight, Zap } from "lucide-react";
+import { Sparkles, Star, Target, ChevronRight, Zap, Loader2 } from "lucide-react";
 import Link from 'next/link';
 import { useState, useEffect } from "react";
 import { JobSkeleton } from "./job-skeleton";
 
 export default function JobsPage() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -18,8 +19,16 @@ export default function JobsPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleSearch = (query: string, location: string, filters: any) => {
+    setIsFiltering(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsFiltering(false);
+    }, 800);
+  };
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-24">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-24 transition-colors duration-500">
       <div className="max-w-7xl mx-auto pt-10 px-6 grid grid-cols-1 lg:grid-cols-12 gap-10">
         
         {/* SIDEBAR */}
@@ -30,30 +39,38 @@ export default function JobsPage() {
         {/* MAIN CONTENT Area */}
         <main className="lg:col-span-9 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
            
-           <div className="bg-white rounded-xl border border-slate-200 p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
+           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm transition-all hover:shadow-md">
               <div className="space-y-1">
-                 <div className="flex items-center gap-2 text-[#0A66C2]">
+                 <div className="flex items-center gap-2 text-[#0A66C2] dark:text-blue-400">
                     <Target className="w-4 h-4" />
                     <span className="text-[11px] font-bold uppercase tracking-widest">Career Hub</span>
                  </div>
-                 <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Discover your <span className="text-[#0A66C2]">next career milestone</span></h1>
-                 <p className="text-[14px] text-slate-500 font-medium opacity-90">
+                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Discover your <span className="text-[#0A66C2] dark:text-blue-400">next career milestone</span></h1>
+                 <p className="text-[14px] text-slate-500 dark:text-slate-400 font-medium opacity-90 leading-relaxed italic">
                     Explore high-impact roles tailored to your professional expertise and career goals.
                  </p>
               </div>
            </div>
 
-           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-8 relative overflow-hidden group/search">
-              <JobsSearch />
+           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-8 relative group/search">
+              <JobsSearch onSearch={handleSearch} />
            </div>
            
            <div className="space-y-4">
               <div className="flex items-center justify-between px-2">
-                 <h2 className="text-[14px] font-bold text-slate-900 uppercase tracking-tight">Recommended for you</h2>
-                 <Link href="/jobs/all" className="text-[12px] font-semibold text-[#0A66C2] hover:text-blue-700 transition-colors">Explore All Roles</Link>
+                 <h2 className="text-[14px] font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight">Recommended for you</h2>
+                 <Link href="/jobs/all" className="text-[12px] font-semibold text-[#0A66C2] dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">Explore All Roles</Link>
               </div>
               
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 gap-6 relative">
+                 {isFiltering && (
+                    <div className="absolute inset-0 bg-white/50 dark:bg-slate-950/50 backdrop-blur-[2px] z-10 flex items-center justify-center rounded-xl animate-in fade-in duration-300">
+                       <div className="flex flex-col items-center gap-3">
+                          <Loader2 className="w-8 h-8 animate-spin text-[#0A66C2] dark:text-blue-400" />
+                          <span className="text-[12px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Updating Market Results...</span>
+                       </div>
+                    </div>
+                 )}
                  {isLoading ? (
                     <>
                        <JobSkeleton />

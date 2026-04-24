@@ -47,110 +47,114 @@ export default function GroupsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div className="max-w-6xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pro-fade">
       <aside className="lg:col-span-3">
         <NetworkSidebar />
       </aside>
 
       <main className="lg:col-span-9 space-y-6">
-        <div className="bg-white rounded-2xl border border-[#e0e0e0] shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-border dark:border-slate-800 shadow-soft overflow-hidden">
            {/* Header */}
-           <div className="p-8 border-b border-[#e0e0e0] bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+           <div className="p-6 md:p-8 border-b border-border dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                 <h1 className="text-3xl font-black text-slate-800 flex items-center gap-3">
-                    <Users className="w-8 h-8 text-[#0a66c2]" /> Groups ({groups.filter(g => g.joined).length} Joined)
+                 <h1 className="text-2xl md:text-3xl font-bold text-foreground dark:text-white flex items-center gap-3 tracking-tight">
+                    <Users className="w-8 h-8 text-primary" /> Groups
                  </h1>
-                 <p className="text-sm text-[#666666] mt-1 font-medium">Connect with professionals in specialized communities.</p>
+                 <p className="text-[14px] text-secondary/70 dark:text-slate-400 mt-1.5 font-medium">Connect with professionals in specialized communities.</p>
               </div>
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 px-8 py-3 rounded-full bg-[#0a66c2] text-white font-black text-xs hover:bg-[#004182] transition-all shadow-blue-100 shadow-xl tracking-widest"
+                className="flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-primary text-white font-bold text-[14px] hover:bg-primary/90 transition-all shadow-premium active:scale-95"
               >
                  <Plus className="w-4 h-4" /> Create group
               </button>
            </div>
 
-           <div className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                 <div className="p-10 rounded-[40px] bg-gradient-to-br from-[#0a66c2] to-[#004182] text-white shadow-2xl relative overflow-hidden group">
-                    <h3 className="text-lg font-black mb-4 tracking-tight leading-none">Find your tribe ✨</h3>
-                    <p className="text-sm font-medium opacity-80 leading-relaxed mb-8">
-                       Discover professional communities tailored to your industry, skills, and professional journey.
-                    </p>
-                    <button 
-                       onClick={() => {
-                         setActiveTab('discovery');
-                         document.getElementById('discovery-section')?.scrollIntoView({ behavior: 'smooth' });
-                       }}
-                       className="px-10 py-3 rounded-full bg-white text-[#0a66c2] font-black text-sm hover:scale-105 transition-all shadow-xl shadow-blue-900/40 tracking-wider">
-                       Browse Discovery
-                    </button>
+           <div className="p-6 md:p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
+                 <div className="p-8 md:p-10 rounded-[32px] bg-gradient-to-br from-primary to-[#004182] text-white shadow-xl relative overflow-hidden group">
+                    <div className="relative z-10">
+                       <h3 className="text-xl font-bold mb-4 tracking-tight">Find your tribe ✨</h3>
+                       <p className="text-[14px] font-medium text-white/80 leading-relaxed mb-8">
+                          Discover professional communities tailored to your industry, skills, and professional journey.
+                       </p>
+                       <button 
+                          onClick={() => {
+                            setActiveTab('discovery');
+                            document.getElementById('discovery-section')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="px-8 py-3 rounded-full bg-white text-primary font-bold text-[14px] hover:bg-slate-50 transition-all shadow-lg active:scale-95">
+                          Browse Discovery
+                       </button>
+                    </div>
                     <Sparkles className="absolute -bottom-10 -right-10 w-48 h-48 opacity-10 group-hover:scale-110 transition-transform duration-500" />
                  </div>
 
-                 <div className="p-8 rounded-3xl border border-slate-100 bg-white hover:shadow-2xl transition-all cursor-pointer group">
+                 <div className="p-8 rounded-[32px] border border-border dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:shadow-premium transition-all cursor-pointer group flex flex-col justify-center">
                     <div className="flex gap-4 items-center mb-6">
-                       <div className="p-3 bg-blue-50 rounded-xl group-hover:scale-110 transition-transform">
-                          <Globe className="w-6 h-6 text-[#0a66c2]" />
+                       <div className="p-3 bg-primary/5 dark:bg-primary/10 rounded-2xl group-hover:scale-110 transition-transform">
+                          <Globe className="w-6 h-6 text-primary" />
                        </div>
                        <div>
-                          <h3 className="text-base font-black text-slate-800">Global Communities</h3>
-                          <p className="text-[10px] text-[#666666] font-black uppercase tracking-widest mt-1">Networking beyond borders</p>
+                          <h3 className="text-lg font-bold text-foreground dark:text-slate-100">Global Communities</h3>
+                          <p className="text-[10px] text-secondary/60 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Networking beyond borders</p>
                        </div>
                     </div>
-                    <div className="space-y-3">
-                       <p className="text-xs text-[#666666] font-medium leading-relaxed italic">"Join over 50,000 African professionals in regional and global tech hubs."</p>
-                    </div>
+                    <p className="text-[14px] text-secondary/80 dark:text-slate-400 font-medium leading-relaxed italic border-l-2 border-primary/20 pl-4 py-1">
+                      "Join over 50,000 African professionals in regional and global tech hubs."
+                    </p>
                  </div>
               </div>
 
-              <div id="discovery-section" className="flex items-center gap-4 mb-8 border-b border-slate-100 pb-6 pt-2">
+              <div id="discovery-section" className="flex items-center gap-2 mb-8 border-b border-border dark:border-slate-800 pb-6 pt-2">
                  <button 
                     onClick={() => setActiveTab('all')}
-                    className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'all' ? 'bg-[#0a66c2] text-white shadow-lg shadow-blue-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                    className={`px-6 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all ${activeTab === 'all' ? 'bg-primary text-white shadow-md' : 'bg-muted dark:bg-slate-800 text-secondary dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
                  >
                     All Communities
                  </button>
                  <button 
                     onClick={() => setActiveTab('discovery')}
-                    className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'discovery' ? 'bg-[#0a66c2] text-white shadow-lg shadow-blue-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                    className={`px-6 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all ${activeTab === 'discovery' ? 'bg-primary text-white shadow-md' : 'bg-muted dark:bg-slate-800 text-secondary dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
                  >
                     Discovery
                  </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 pb-10">
                  {groups.filter(g => activeTab === 'all' ? true : !g.joined).map((group) => (
-                   <div key={group.id} className="relative group/card bg-white rounded-[32px] overflow-hidden border border-slate-100 hover:shadow-2xl hover:border-[#0a66c2]/20 transition-all duration-500">
-                      <div className="h-28 overflow-hidden relative">
-                         <img src={group.banner} className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-1000 ease-out" alt="" />
-                         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/80 to-transparent" />
-                      </div>
-                      
-                      <div className="p-8 pt-0 -mt-10 relative">
-                         <div className="w-20 h-20 rounded-[2rem] bg-white border border-slate-100 shadow-xl flex items-center justify-center font-black text-[#0a66c2] text-xl group-hover/card:rotate-6 transition-transform">
-                            {group.avatar}
-                         </div>
-                         <h3 className="text-xl font-black text-slate-800 tracking-tight mt-6 leading-tight group-hover/card:text-[#0a66c2] transition-colors">{group.name}</h3>
-                         <p className="text-[10px] text-[#666666] font-black uppercase tracking-widest mt-2">{group.count.toLocaleString()} members</p>
-                         <p className="text-xs text-slate-500 font-medium leading-relaxed mt-4 italic line-clamp-2 h-9 opacity-80">{group.description}</p>
-                         
-                         <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
-                            <button 
-                              onClick={() => handleJoin(group.id)}
-                              className={`flex-1 h-10 rounded-full font-black text-[10px] uppercase tracking-widest transition-all ${group.joined ? 'bg-slate-100 text-[#0a66c2]' : 'bg-[#0a66c2] text-white hover:bg-[#004182] shadow-blue-100 shadow-lg'}`}
-                            >
-                               {group.joined ? 'Dismiss' : 'Join Community'}
-                            </button>
-                            <button
-                              onClick={() => setActiveGroupMenuId(group.id)}
-                              className="p-2.5 rounded-full text-slate-400 hover:text-slate-600 ml-2 transition-colors"
-                            >
-                               <MoreHorizontal className="w-5 h-5" />
-                            </button>
-                         </div>
-                      </div>
-                   </div>
+                    <div key={group.id} className="relative group/card bg-white dark:bg-slate-900 rounded-[24px] overflow-hidden border border-border dark:border-slate-800 hover:shadow-premium hover:border-primary/20 transition-all duration-500 flex flex-col h-full">
+                       <div className="h-28 overflow-hidden relative shrink-0">
+                          <img src={group.banner} className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-1000 ease-out" alt="" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-white/90 dark:from-slate-900/90 via-transparent to-transparent" />
+                       </div>
+                       
+                       <div className="p-6 md:p-8 pt-0 -mt-10 relative flex flex-col flex-1">
+                          <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 border border-border dark:border-slate-700 shadow-xl flex items-center justify-center font-bold text-primary text-xl group-hover/card:rotate-6 transition-transform">
+                             {group.avatar}
+                          </div>
+                          <h3 className="text-xl font-bold text-foreground dark:text-slate-100 tracking-tight mt-5 leading-tight group-hover/card:text-primary transition-colors">{group.name}</h3>
+                          <p className="text-[10px] text-secondary/60 dark:text-slate-500 font-bold uppercase tracking-widest mt-2">{group.count.toLocaleString()} members</p>
+                          <p className="text-[13px] text-secondary/80 dark:text-slate-400 font-medium leading-relaxed mt-4 line-clamp-2 h-10 opacity-90">{group.description}</p>
+                          
+                          <div className="mt-8 pt-6 border-t border-border/50 dark:border-slate-800/50 flex items-center justify-between mt-auto">
+                             <button 
+                               onClick={() => handleJoin(group.id)}
+                               className={`flex-1 h-10 rounded-full font-bold text-[12px] uppercase tracking-wider transition-all ${group.joined ? 'bg-muted dark:bg-slate-800 text-primary dark:text-primary-light hover:bg-slate-200 dark:hover:bg-slate-700' : 'bg-primary text-white hover:bg-primary/90 shadow-md active:scale-95'}`}
+                             >
+                                {group.joined ? 'Joined' : 'Join Community'}
+                             </button>
+                             <button
+                               onClick={() => setActiveGroupMenuId(group.id)}
+                               aria-label="More options"
+                               title="More options"
+                               className="p-2.5 rounded-full text-secondary/60 hover:text-foreground dark:hover:text-slate-200 ml-2 transition-colors hover:bg-muted dark:hover:bg-slate-800"
+                             >
+                                <MoreHorizontal className="w-5 h-5" />
+                             </button>
+                          </div>
+                       </div>
+                    </div>
                  ))}
               </div>
            </div>
@@ -159,13 +163,15 @@ export default function GroupsPage() {
 
       {/* Create Group Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-8 py-6 border-b border-[#e0e0e0] flex items-center justify-between bg-slate-50/50">
-              <h2 className="text-xl font-black text-slate-800">Create New Group</h2>
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-[24px] w-full max-w-lg shadow-premium overflow-hidden animate-in zoom-in-95 duration-200 border border-border dark:border-slate-800">
+            <div className="px-8 py-6 border-b border-border dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
+              <h2 className="text-xl font-bold text-foreground dark:text-white tracking-tight">Create New Group</h2>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors shadow-sm"
+                aria-label="Close modal"
+                title="Close modal"
+                className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-border dark:border-slate-700 flex items-center justify-center text-secondary hover:text-foreground dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -173,38 +179,38 @@ export default function GroupsPage() {
             
             <div className="p-8 space-y-6">
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Group Name</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-secondary/60 dark:text-slate-500 mb-2.5">Group Name</label>
                 <input 
                   type="text" 
                   value={newGroup.name}
                   onChange={(e) => setNewGroup({...newGroup, name: e.target.value})}
-                  className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-[#0a66c2] focus:ring-2 focus:ring-[#0a66c2]/20 transition-all font-medium text-slate-800 outline-none placeholder:text-slate-400"
+                  className="w-full h-12 px-4 rounded-xl border border-border dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 focus:bg-white dark:focus:bg-slate-950 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-medium text-foreground dark:text-slate-200 outline-none placeholder:text-secondary/40"
                   placeholder="e.g. Next.js Enthusiasts Africa"
                 />
               </div>
               
               <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Description</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-secondary/60 dark:text-slate-500 mb-2.5">Description</label>
                 <textarea 
                   value={newGroup.description}
                   onChange={(e) => setNewGroup({...newGroup, description: e.target.value})}
-                  className="w-full h-32 p-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-[#0a66c2] focus:ring-2 focus:ring-[#0a66c2]/20 transition-all font-medium text-slate-800 outline-none resize-none placeholder:text-slate-400"
+                  className="w-full h-32 p-4 rounded-xl border border-border dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 focus:bg-white dark:focus:bg-slate-950 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-medium text-foreground dark:text-slate-200 outline-none resize-none placeholder:text-secondary/40"
                   placeholder="What is this group about?"
                 />
               </div>
             </div>
             
-            <div className="px-8 py-6 border-t border-[#e0e0e0] bg-slate-50/50 flex items-center justify-end gap-3">
+            <div className="px-8 py-6 border-t border-border dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-end gap-3">
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="px-6 py-2.5 rounded-full text-xs font-black tracking-wider text-slate-600 hover:bg-slate-200 transition-colors"
+                className="px-6 py-2.5 rounded-full text-[13px] font-bold text-secondary dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleCreateGroup}
                 disabled={!newGroup.name.trim()}
-                className="px-6 py-2.5 rounded-full text-xs font-black tracking-wider text-white bg-[#0a66c2] hover:bg-[#004182] disabled:opacity-50 disabled:hover:bg-[#0a66c2] shadow-lg shadow-blue-100 transition-all"
+                className="px-8 py-2.5 rounded-full text-[13px] font-bold text-white bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:hover:bg-primary shadow-premium transition-all active:scale-95"
               >
                 Create Community
               </button>
@@ -214,27 +220,31 @@ export default function GroupsPage() {
       )}
 
       {activeGroupMenuId && (
-        <div className="fixed inset-0 z-[140]">
+        <div className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center p-4">
           <button
             type="button"
             aria-label="Close group options"
             onClick={() => setActiveGroupMenuId(null)}
-            className="absolute inset-0 bg-black/20"
+            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
-            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
-            <button
-              onClick={() => {
-                handleJoin(activeGroupMenuId);
-                setActiveGroupMenuId(null);
-              }}
-              className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-            >
-              Join / Leave group
-            </button>
-            <button onClick={() => setActiveGroupMenuId(null)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-              Report group
-            </button>
+          <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[24px] shadow-premium border border-border dark:border-slate-800 py-3 animate-in slide-in-from-bottom-10 duration-300 overflow-hidden">
+            <div className="w-12 h-1.5 rounded-full bg-border dark:bg-slate-800 mx-auto mb-4" />
+            <div className="px-2">
+              <button
+                onClick={() => {
+                  handleJoin(activeGroupMenuId);
+                  setActiveGroupMenuId(null);
+                }}
+                className="w-full text-left px-6 py-4 text-[16px] font-bold text-foreground dark:text-slate-200 hover:bg-muted dark:hover:bg-slate-800 rounded-xl transition-colors flex items-center gap-3"
+              >
+                <Users className="w-5 h-5 text-secondary" />
+                Join / Leave group
+              </button>
+              <button onClick={() => setActiveGroupMenuId(null)} className="w-full text-left px-6 py-4 text-[16px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors flex items-center gap-3">
+                <X className="w-5 h-5 text-red-500" />
+                Report group
+              </button>
+            </div>
           </div>
         </div>
       )}

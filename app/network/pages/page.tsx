@@ -95,6 +95,8 @@ export default function PagesManagementPage() {
                             </button>
                             <button
                               onClick={() => setActivePageMenuId(brand.id)}
+                              aria-label="More options"
+                              title="More options"
                               className="p-3 rounded-full text-slate-400 hover:text-slate-600 border border-slate-100 transition-colors"
                             >
                                <MoreHorizontal className="w-5 h-5 font-black" />

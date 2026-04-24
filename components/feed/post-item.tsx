@@ -23,7 +23,10 @@ import {
   ChevronRight, 
   UserPlus, 
   Link2, 
-  Users 
+  Users,
+  FileText,
+  ExternalLink,
+  PlaySquare
 } from "lucide-react";
 import { Post, useFeed } from "../providers/feed-provider";
 import { useUser } from "../providers/user-provider";
@@ -76,7 +79,8 @@ export function PostItem({ post }: PostItemProps) {
   };
 
   const handleSend = () => {
-    const postUrl = `${window.location.origin}/post/${post.id}`;
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const postUrl = `${origin}/post/${post.id}`;
     navigator.clipboard.writeText(postUrl).then(() => {
       setIsSent(true);
       setTimeout(() => setIsSent(false), 2000);
@@ -112,6 +116,15 @@ export function PostItem({ post }: PostItemProps) {
   const shouldTruncate = post.content.length > contentThreshold && !isExpanded;
   const displayContent = shouldTruncate ? post.content.slice(0, contentThreshold) + "..." : post.content;
 
+  // Link Detection
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const links = post.content.match(urlRegex);
+  const primaryLink = links?.[0];
+
+  const isVideo = (url: string) => {
+    return url.match(/\.(mp4|webm|ogg)$/i) || url.startsWith('data:video') || url.includes('blob:') || url.includes('video');
+  };
+
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl border border-border dark:border-slate-800 shadow-soft overflow-hidden transition-all duration-300 hover:shadow-premium animate-pro-fade group/card">
       
@@ -119,7 +132,14 @@ export function PostItem({ post }: PostItemProps) {
       <div className="p-4 flex items-start gap-3">
         <div className="w-12 h-12 rounded-full overflow-hidden border border-border dark:border-slate-800 bg-muted dark:bg-slate-800 flex items-center justify-center shadow-sm shrink-0 cursor-pointer">
             {post.author.avatarUrl ? (
-               <img src={post.author.avatarUrl} alt={post.author.firstName || "User"} className="w-full h-full object-cover" />
+               <img 
+                 src={post.author.avatarUrl} 
+                 alt={post.author.firstName || "User"} 
+                 className="w-full h-full object-cover"
+                 onError={(e) => {
+                   (e.target as HTMLImageElement).src = `https://api.dicebear.com/8.x/initials/svg?seed=${post.author.firstName || 'User'}&backgroundColor=0a66c2&fontFamily=Arial&fontWeight=bold`;
+                 }}
+               />
             ) : (
                <div className="w-full h-full bg-primary/10 flex items-center justify-center font-bold text-primary uppercase text-[15px]">
                  {(post.author.firstName && post.author.firstName[0]) || "U"}
@@ -145,7 +165,7 @@ export function PostItem({ post }: PostItemProps) {
                     </h3>
                     <span className="text-[14px] text-secondary/60">•</span>
                     <span className="text-[14px] text-secondary/60 font-medium">
-                      {post.author.id === currentUser?.id ? "You" : (post.author.connectionDegree || ["1st", "2nd", "3rd"][Math.floor(Math.random() * 3)])}
+                      {post.author.id === currentUser?.id ? "You" : (post.author.connectionDegree || "2nd")}
                     </span>
                  </div>
                  <p className="text-[12px] text-secondary/70 line-clamp-1 mt-0.5 leading-tight">{post.author.headline || "Connect Plus Member"}</p>
@@ -232,7 +252,7 @@ export function PostItem({ post }: PostItemProps) {
                         )}
                       </div>
                     )}
-                 </div>
+                  </div>
               </div>
            </div>
         </div>
@@ -255,19 +275,84 @@ export function PostItem({ post }: PostItemProps) {
              </button>
            )}
          </p>
-      </div>
+
+          {/* Document / Article Preview */}
+          {post.type === "ARTICLE" && (
+            <div className="mt-4 p-4 rounded-xl border border-border dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 flex items-center gap-4 group/doc cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-sm">
+               <div className="w-12 h-12 rounded-lg bg-red-100 dark:bg-red-950/30 flex items-center justify-center shrink-0 group-hover/doc:scale-110 transition-transform">
+                  <FileText className="w-6 h-6 text-red-600" />
+               </div>
+               <div className="flex-1 min-w-0">
+                  <p className="text-[14px] font-bold text-foreground truncate">{post.title || "Industry Insights & Strategic Analysis"}</p>
+                  <p className="text-[11px] text-secondary font-bold uppercase tracking-wider mt-0.5">Professional Document • PDF</p>
+               </div>
+               <button 
+                 title="View Document"
+                 aria-label="View Document"
+                 className="p-2 rounded-full hover:bg-white dark:hover:bg-slate-700 text-secondary transition-colors shadow-sm border border-transparent hover:border-border"
+               >
+                  <Link2 className="w-4 h-4" />
+               </button>
+            </div>
+          )}
+
+          {/* Poll Preview */}
+          {post.type === "POLL" && (
+            <div className="mt-4 p-4 rounded-xl border border-border dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 space-y-3">
+               <p className="text-[13px] font-bold text-secondary uppercase tracking-widest">Active Professional Poll</p>
+               <div className="space-y-2">
+                  {[1, 2].map(i => (
+                    <button key={i} className="w-full p-2.5 rounded-lg border border-border bg-white dark:bg-slate-900 text-[14px] font-bold text-left hover:bg-primary/5 hover:border-primary/30 transition-all">
+                       Option {i}
+                    </button>
+                  ))}
+               </div>
+               <p className="text-[11px] text-secondary/60 font-medium">Poll ends in 3 days • 12 votes so far</p>
+            </div>
+          )}
+          {/* Link Preview */}
+          {primaryLink && (
+            <div className="mt-4 rounded-xl border border-border dark:border-slate-800 overflow-hidden bg-slate-50 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group/link cursor-pointer" onClick={() => window.open(primaryLink, '_blank')}>
+               <div className="p-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                     <ExternalLink className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                     <p className="text-[14px] font-bold text-foreground truncate">
+                       {(() => {
+                         try {
+                           return new URL(primaryLink).hostname;
+                         } catch (e) {
+                           return "External Link";
+                         }
+                       })()}
+                     </p>
+                     <p className="text-[12px] text-primary font-medium truncate">{primaryLink}</p>
+                  </div>
+               </div>
+            </div>
+          )}
+       </div>
 
       {/* Media Carousel */}
       {media.length > 0 && (
         <div className="mb-3 relative group/carousel bg-muted flex items-center justify-center min-h-[300px]">
-           <img 
-             src={media[currentMediaIndex]} 
-             className="w-full object-cover max-h-[600px] bg-muted transition-opacity duration-300" 
-             alt={`Media ${currentMediaIndex + 1}`} 
-             onError={(e) => {
-               (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80";
-             }}
-           />
+           {isVideo(media[currentMediaIndex]) ? (
+             <video 
+               src={media[currentMediaIndex]} 
+               controls 
+               className="w-full h-auto max-h-[600px] bg-black"
+             />
+           ) : (
+             <img 
+               src={media[currentMediaIndex]} 
+               className="w-full object-cover max-h-[600px] bg-muted transition-opacity duration-300" 
+               alt={`Media ${currentMediaIndex + 1}`} 
+               onError={(e) => {
+                 (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80";
+               }}
+             />
+           )}
            
            {hasMultipleMedia && (
              <>

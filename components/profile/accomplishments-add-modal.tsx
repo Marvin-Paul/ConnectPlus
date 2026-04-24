@@ -21,12 +21,18 @@ interface AccomplishmentsAddModalProps {
   username: string
   isOpen: boolean
   onClose: () => void
+  initialType?: AccomplishmentType
 }
 
-export function AccomplishmentsAddModal({ username, isOpen, onClose }: AccomplishmentsAddModalProps) {
+export function AccomplishmentsAddModal({ username, isOpen, onClose, initialType }: AccomplishmentsAddModalProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [type, setType] = useState<AccomplishmentType>("CERTIFICATION")
+  const [type, setType] = useState<AccomplishmentType>(initialType || "CERTIFICATION")
+  
+  // Update type when initialType changes or modal opens
+  React.useEffect(() => {
+    if (initialType) setType(initialType)
+  }, [initialType, isOpen])
   
   const [formData, setFormData] = useState({
     title: "", // used for certification name, project name, honor title, or volunteer role

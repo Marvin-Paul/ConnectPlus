@@ -5,7 +5,12 @@ import { useState, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Link as LinkIcon, Volume2, PenLine, UserPlus, MessageCircle, Check, Camera, Loader2, Sparkles, Star, Globe, ShieldCheck, Mail, Zap, MoreHorizontal, ChevronDown, Plus, GraduationCap, Briefcase, Award, FolderGit2, MessageSquareQuote, Heart, ScrollText, Trophy, Send, FileDown, FileText, Info } from "lucide-react"
 import { IntroEditModal } from "./intro-edit-modal"
+import { ExperienceAddModal } from "./experience-add-modal"
+import { EducationAddModal } from "./education-add-modal"
+import { AccomplishmentsAddModal } from "./accomplishments-add-modal"
+import { ProfileInfoModal } from "./profile-info-modal"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import Link from "next/link"
 import { useUser } from "../providers/user-provider"
 import { supabase } from "@/lib/supabase"
@@ -20,7 +25,10 @@ interface ProfileHeaderProps {
     pronouns?: string | null
     avatarUrl?: string | null
     bannerUrl?: string | null
+    bannerColor?: string | null
     isHiring?: boolean
+    createdAt?: string | Date
+    verified?: boolean
   }
 }
 
@@ -29,14 +37,33 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
   const isOwner = currentUser?.username === user.username
   const router = useRouter()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isExperienceModalOpen, setIsExperienceModalOpen] = useState(false)
+  const [isEducationModalOpen, setIsEducationModalOpen] = useState(false)
+  const [isAccomplishmentsModalOpen, setIsAccomplishmentsModalOpen] = useState(false)
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
+  const [accomplishmentType, setAccomplishmentType] = useState<"CERTIFICATION" | "PROJECT" | "VOLUNTEER" | "HONOR">("CERTIFICATION")
   const [connectionStatus, setConnectionStatus] = useState<'IDLE' | 'PENDING' | 'ACCEPTED' | 'CONNECTED'>('IDLE')
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl || null)
   const [avatarUploading, setAvatarUploading] = useState(false)
+  const [bannerUrl, setBannerUrl] = useState(user.bannerUrl || null)
+  const [bannerColor, setBannerColor] = useState(user.bannerColor || '#0f172a')
+  const [bannerUploading, setBannerUploading] = useState(false)
+  const [showBannerMenu, setShowBannerMenu] = useState(false)
   const [showAddSection, setShowAddSection] = useState(false)
   const [showMoreMenu, setShowMoreMenu] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const bannerInputRef = useRef<HTMLInputElement>(null)
   const addSectionRef = useRef<HTMLDivElement>(null)
   const moreMenuRef = useRef<HTMLDivElement>(null)
+  const bannerMenuRef = useRef<HTMLDivElement>(null)
+  const bannerRef = useRef<HTMLDivElement>(null)
+
+  // Imperative style management to avoid linting warnings for dynamic CSS
+  React.useEffect(() => {
+    if (bannerRef.current) {
+      bannerRef.current.style.backgroundColor = bannerColor || '#0f172a';
+    }
+  }, [bannerColor]);
 
   const handleConnect = async () => {
     if (!currentUser || connectionStatus !== 'IDLE') return;
@@ -144,28 +171,159 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
     }
   }
 
+  const handleBannerClick = () => bannerInputRef.current?.click()
+
+  const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !isOwner) return
+    setBannerUploading(true)
+    try {
+      const ext = file.name.split(".").pop()
+      const fileName = `banners/${user.username}_${Date.now()}.${ext}`
+      
+      let publicUrl = "";
+
+      const { data, error } = await supabase.storage.from("banners").upload(fileName, file, { upsert: true })
+      
+      if (error) {
+        const isConfigError = error.message?.toLowerCase().includes("security policy") || error.message?.includes("404")
+        if (isConfigError) {
+          publicUrl = URL.createObjectURL(file);
+        } else {
+          throw error
+        }
+      } else {
+        const { data: urlData } = supabase.storage.from("banners").getPublicUrl(data.path)
+        publicUrl = urlData.publicUrl;
+      }
+      
+      setBannerUrl(publicUrl)
+    } catch (err) {
+      console.error("Banner upload error:", err)
+    } finally {
+      setBannerUploading(false)
+      setShowBannerMenu(false)
+    }
+  }
+
+  const PRESET_COLORS = [
+    { name: 'Slate', value: '#0f172a' },
+    { name: 'Connect Blue', value: '#0A66C2' },
+    { name: 'Emerald', value: '#064e3b' },
+    { name: 'Purple', value: '#4c1d95' },
+    { name: 'Crimson', value: '#7f1d1d' },
+  ]
+
+  // Click outside logic for professional menus
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (addSectionRef.current && !addSectionRef.current.contains(event.target as Node)) {
+        setShowAddSection(false);
+      }
+      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+        setShowMoreMenu(false);
+      }
+      if (bannerMenuRef.current && !bannerMenuRef.current.contains(event.target as Node)) {
+        setShowBannerMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <>
       <div className="relative group/header animate-in fade-in slide-in-from-top-2 duration-500">
-        <div className="bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm relative z-10">
+        <div className="bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm relative z-20">
           
           {/* BANNER SECTION */}
-          <div className="relative h-64 bg-slate-100 divide-x divide-slate-200 flex items-center justify-center">
-            {user.bannerUrl ? (
-              <img src={user.bannerUrl} alt="Banner" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[3000ms]" />
+          <div 
+            className="relative h-64 flex items-center justify-center rounded-t-xl overflow-hidden group/banner"
+          >
+            {bannerUrl ? (
+              <img src={bannerUrl} alt="Banner" className="w-full h-full object-cover group-hover/banner:scale-105 transition-transform duration-[3000ms]" />
             ) : (
-              <div className="w-full h-full bg-slate-900 border-b border-slate-800" />
+              <div ref={bannerRef} className="w-full h-full border-b border-slate-800 transition-colors duration-1000" />
             )}
             
-             <div className="absolute top-6 right-6 flex items-center gap-3">
-                <button 
-                   onClick={() => setIsEditModalOpen(true)}
-                   aria-label="Edit introduction"
-                   className="p-3 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all active:scale-95"
-                >
-                   <PenLine className="h-5 w-5" />
-                </button>
-             </div>
+            {isOwner && (
+              <div className="absolute top-6 right-6 flex items-center gap-3 z-30" ref={bannerMenuRef}>
+                 <input 
+                   ref={bannerInputRef} 
+                   type="file" 
+                   id="banner-upload-input"
+                   title="Upload banner image"
+                   accept="image/*" 
+                   className="hidden" 
+                   onChange={handleBannerChange} 
+                   aria-label="Upload banner background image"
+                 />
+                 <div className="relative">
+                   <button 
+                      onClick={() => setShowBannerMenu(!showBannerMenu)}
+                      aria-label="Edit banner"
+                      className="p-3 rounded-xl bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-black/60 transition-all active:scale-95 flex items-center gap-2 group/bannerbtn"
+                   >
+                      <Camera className="h-5 w-5 group-hover/bannerbtn:scale-110 transition-transform" />
+                      <span className="text-[12px] font-bold pr-1">Edit Banner</span>
+                   </button>
+
+                   {showBannerMenu && (
+                     <div className="absolute top-full right-0 mt-3 w-64 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-dropdown z-50 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
+                       <div className="p-2 space-y-1">
+                         <button 
+                           onClick={handleBannerClick}
+                           className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group text-left rounded-xl"
+                         >
+                           <Camera className="w-4 h-4 text-slate-400 group-hover:text-primary" />
+                           <span className="text-[14px] font-bold text-slate-700 dark:text-slate-200">Upload Image</span>
+                         </button>
+                         
+                         <div className="h-px bg-slate-100 dark:bg-slate-800 my-2 mx-2" />
+                         
+                         <div className="px-4 py-2">
+                           <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Background Color</div>
+                           <div className="flex flex-wrap gap-2">
+                             {PRESET_COLORS.map((color) => {
+                                const presetClasses: Record<string, string> = {
+                                  '#0f172a': 'bg-slate-900',
+                                  '#0A66C2': 'bg-[#0A66C2]',
+                                  '#064e3b': 'bg-emerald-900',
+                                  '#4c1d95': 'bg-purple-900',
+                                  '#7f1d1d': 'bg-rose-900',
+                                };
+                                return (
+                               <button
+                                 key={color.value}
+                                 onClick={() => {
+                                   setBannerColor(color.value)
+                                   setBannerUrl(null)
+                                   setShowBannerMenu(false)
+                                 }}
+                                 title={`Set banner color to ${color.name}`}
+                                 aria-label={`Set banner color to ${color.name}`}
+                                 className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 active:scale-90 ${bannerColor === color.value ? 'border-primary shadow-lg' : 'border-transparent'}`}
+                                >
+                                  <div className={`w-full h-full rounded-full ${presetClasses[color.value] || 'bg-slate-500'}`} />
+                                </button>
+                              );
+                            })}
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   )}
+                 </div>
+
+                 <button 
+                    onClick={() => setIsEditModalOpen(true)}
+                    aria-label="Edit introduction"
+                    className="p-3 rounded-xl bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-black/60 transition-all active:scale-95"
+                 >
+                    <PenLine className="h-5 w-5" />
+                 </button>
+              </div>
+            )}
           </div>
 
           <div className="relative pt-24 pb-16 px-12">
@@ -205,8 +363,8 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                     </div>
                   )}
                 </button>
-                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-2xl border-4 border-white dark:border-slate-900 shadow-xl flex items-center justify-center">
-                   <ShieldCheck className="w-5 h-5 text-white" />
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary rounded-xl border-[3px] border-white dark:border-slate-900 shadow-lg flex items-center justify-center">
+                   <ShieldCheck className="w-4 h-4 text-white" />
                 </div>
               </div>
             </div>
@@ -258,93 +416,92 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
               </div>
 
               <div className="flex flex-wrap gap-4 pt-8 w-full xl:w-auto items-center">
-                 {isOwner ? (
-                   <>
-                     <button
-                       onClick={() => setIsEditModalOpen(true)}
-                       className="px-6 h-10 rounded-full bg-[#0A66C2] dark:bg-[#1B5E20] text-white font-bold text-[14px] hover:bg-[#004182] dark:hover:bg-green-700 transition-all flex items-center justify-center gap-2"
-                     >
-                       Open to
-                     </button>
+                  {isOwner ? (
+                    <>
+                      <button
+                        onClick={() => setIsEditModalOpen(true)}
+                        className="px-8 h-10 rounded-full bg-primary text-white font-bold text-[14px] hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 group/open"
+                      >
+                        <Plus className="w-4 h-4 text-white group-hover/open:rotate-90 transition-transform" />
+                        Open to
+                      </button>
+                      
                       <div className="relative" ref={addSectionRef}>
                         <button
                           onClick={() => setShowAddSection(!showAddSection)}
-                          className={`px-6 h-10 rounded-full border border-[#0A66C2] dark:border-green-600 font-bold text-[14px] transition-all flex items-center justify-center gap-2 ${
+                          aria-label="Add profile section"
+                          className={`px-6 h-10 rounded-full border-2 font-bold text-[14px] transition-all flex items-center justify-center gap-2 group/addbtn ${
                             showAddSection 
-                            ? "bg-blue-50 dark:bg-green-900/20 ring-2 ring-[#0A66C2]/20" 
-                            : "text-[#0A66C2] dark:text-green-500 hover:bg-blue-50 dark:hover:bg-green-900/10"
+                            ? "bg-primary text-white border-primary shadow-lg scale-105" 
+                            : "bg-white dark:bg-slate-900 border-primary text-primary hover:bg-primary/5 active:bg-primary/10 shadow-sm"
                           }`}
                         >
-                          Add profile section
-                          <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showAddSection ? "rotate-180" : ""}`} />
+                          Add section
+                          <ChevronDown className={`w-4 h-4 transition-all duration-500 ease-in-out ${showAddSection ? "rotate-180" : "text-primary group-hover/addbtn:translate-y-0.5"}`} />
                         </button>
 
                         {showAddSection && (
-                          <div className="absolute top-full left-0 mt-2 w-[320px] bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-[100] animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
-                            <div className="p-2 space-y-1">
-                              {/* CORE CATEGORY */}
-                              <div className="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                <Zap className="w-3 h-3" /> Core
+                          <div className="absolute top-full left-0 mt-3 w-[340px] bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-dropdown z-[100] animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
+                            <div className="p-3 space-y-1">
+                              <div className="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <Zap className="w-3 h-3 text-primary" /> Core Foundation
                               </div>
-                              <button className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
-                                  <GraduationCap className="w-4 h-4" />
+                              <button 
+                                onClick={() => {
+                                  setIsEducationModalOpen(true)
+                                  setShowAddSection(false)
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group rounded-xl"
+                              >
+                                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                                  <GraduationCap className="w-5 h-5" />
                                 </div>
                                 <div className="text-left">
-                                  <div className="text-[13px] font-bold text-slate-900 dark:text-slate-100">Add education</div>
-                                  <div className="text-[11px] text-slate-500 line-clamp-1">Showcase your academic background</div>
+                                  <div className="text-[14px] font-bold text-slate-900 dark:text-slate-100">Add education</div>
+                                  <div className="text-[11px] text-slate-500 font-medium">Academic background</div>
                                 </div>
                               </button>
-                              <button className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600">
-                                  <Briefcase className="w-4 h-4" />
+                              <button 
+                                onClick={() => {
+                                  setIsExperienceModalOpen(true)
+                                  setShowAddSection(false)
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group rounded-xl"
+                              >
+                                <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+                                  <Briefcase className="w-5 h-5" />
                                 </div>
                                 <div className="text-left">
-                                  <div className="text-[13px] font-bold text-slate-900 dark:text-slate-100">Add position</div>
-                                  <div className="text-[11px] text-slate-500 line-clamp-1">Highlight your professional roles</div>
+                                  <div className="text-[14px] font-bold text-slate-900 dark:text-slate-100">Add position</div>
+                                  <div className="text-[11px] text-slate-500 font-medium">Professional experience</div>
                                 </div>
                               </button>
 
-                              {/* RECOMMENDED */}
-                              <div className="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mt-2">
-                                <Star className="w-3 h-3" /> Recommended
+                              <div className="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mt-2">
+                                <Star className="w-3 h-3 text-amber-500" /> Professional Edge
                               </div>
-                              <button className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-orange-600">
-                                  <Award className="w-4 h-4" />
+                              <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group rounded-xl">
+                                <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center text-orange-600">
+                                  <Award className="w-5 h-5" />
                                 </div>
                                 <div className="text-left">
-                                  <div className="text-[13px] font-bold text-slate-900 dark:text-slate-100">Add licenses & certifications</div>
-                                  <div className="text-[11px] text-slate-500 line-clamp-1">Validate your expertise</div>
+                                  <div className="text-[14px] font-bold text-slate-900 dark:text-slate-100">Add certifications</div>
+                                  <div className="text-[11px] text-slate-500 font-medium">Validate your expertise</div>
                                 </div>
                               </button>
-                              <button className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600">
-                                  <FolderGit2 className="w-4 h-4" />
+                              <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group rounded-xl">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600">
+                                  <FolderGit2 className="w-5 h-5" />
                                 </div>
                                 <div className="text-left">
-                                  <div className="text-[13px] font-bold text-slate-900 dark:text-slate-100">Add projects</div>
-                                  <div className="text-[11px] text-slate-500 line-clamp-1">Showcase specific achievements</div>
-                                </div>
-                              </button>
-
-                              {/* ADDITIONAL */}
-                              <div className="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mt-2">
-                                <Plus className="w-3 h-3" /> Additional
-                              </div>
-                              <button className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-600">
-                                  <Trophy className="w-4 h-4" />
-                                </div>
-                                <div className="text-left">
-                                  <div className="text-[13px] font-bold text-slate-900 dark:text-slate-100">Add honors & awards</div>
-                                  <div className="text-[11px] text-slate-500 line-clamp-1">Share your formal recognition</div>
+                                  <div className="text-[14px] font-bold text-slate-900 dark:text-slate-100">Add projects</div>
+                                  <div className="text-[11px] text-slate-500 font-medium">Showcase achievements</div>
                                 </div>
                               </button>
                             </div>
-                            <div className="p-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 flex justify-center">
-                              <button className="text-[11px] font-black text-[#0A66C2] dark:text-green-500 uppercase tracking-widest hover:underline">
-                                View all options
+                            <div className="p-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800">
+                              <button className="w-full py-2 text-[11px] font-black text-primary uppercase tracking-widest hover:underline text-center">
+                                View more sections
                               </button>
                             </div>
                           </div>
@@ -353,34 +510,62 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                       <div className="relative" ref={moreMenuRef}>
                         <button
                           onClick={() => setShowMoreMenu(!showMoreMenu)}
-                          className={`px-6 h-10 rounded-full border font-bold text-[14px] transition-all flex items-center justify-center ${
+                          aria-label="More profile actions"
+                          className={`px-6 h-10 rounded-full border-2 font-bold text-[14px] transition-all flex items-center justify-center gap-2 ${
                             showMoreMenu
-                            ? "bg-slate-100 dark:bg-slate-800 border-slate-400 dark:border-slate-500 text-slate-900 dark:text-white"
-                            : "border-slate-400 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                            ? "bg-primary text-white border-primary shadow-lg scale-105"
+                            : "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"
                           }`}
                         >
                           More
+                          <MoreHorizontal className={`w-4 h-4 transition-transform duration-300 ${showMoreMenu ? "rotate-90" : ""}`} />
                         </button>
 
                         {showMoreMenu && (
-                          <div className="absolute top-full right-0 mt-2 w-[240px] bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-[100] animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
-                            <div className="p-2 space-y-1">
-                              <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group text-left">
+                          <div className="absolute top-full right-0 mt-3 w-[280px] bg-white dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-800 rounded-2xl shadow-dropdown z-[100] animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
+                            <div className="p-2.5 space-y-1">
+                              <button 
+                                onClick={() => {
+                                  const url = window.location.href;
+                                  navigator.clipboard.writeText(url);
+                                  toast.success("Profile link copied to clipboard! Share it in any message.");
+                                  setShowMoreMenu(false);
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all group text-left rounded-xl active:scale-[0.98]"
+                              >
                                 <Send className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
-                                <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200">Send profile in a message</span>
+                                <span className="text-[14px] font-bold text-slate-700 dark:text-slate-200">Send profile in a message</span>
                               </button>
-                              <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group text-left">
+                              <button 
+                                onClick={() => {
+                                  window.print();
+                                  setShowMoreMenu(false);
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all group text-left rounded-xl active:scale-[0.98]"
+                              >
                                 <FileDown className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
-                                <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200">Save to PDF</span>
+                                <span className="text-[14px] font-bold text-slate-700 dark:text-slate-200">Save to PDF</span>
                               </button>
-                              <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group text-left">
+                              <button 
+                                onClick={() => {
+                                  toast.info("AI Resume Builder is coming soon! Finalizing high-fidelity templates.");
+                                  setShowMoreMenu(false);
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all group text-left rounded-xl active:scale-[0.98]"
+                              >
                                 <FileText className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
-                                <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200">Build a resume</span>
+                                <span className="text-[14px] font-bold text-slate-700 dark:text-slate-200">Build a resume</span>
                               </button>
-                              <div className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2" />
-                              <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group text-left">
+                              <div className="h-px bg-slate-100 dark:bg-slate-800 my-2 mx-2" />
+                              <button 
+                                onClick={() => {
+                                  setIsInfoModalOpen(true);
+                                  setShowMoreMenu(false);
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all group text-left rounded-xl active:scale-[0.98]"
+                              >
                                 <Info className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
-                                <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200">About this profile</span>
+                                <span className="text-[14px] font-bold text-slate-700 dark:text-slate-200">About this profile</span>
                               </button>
                             </div>
                           </div>
@@ -425,6 +610,31 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
       </div>
 
       <IntroEditModal user={user} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />
+      
+      <ExperienceAddModal 
+        username={user.username} 
+        isOpen={isExperienceModalOpen} 
+        onClose={() => setIsExperienceModalOpen(false)} 
+      />
+      
+      <EducationAddModal 
+        username={user.username} 
+        isOpen={isEducationModalOpen} 
+        onClose={() => setIsEducationModalOpen(false)} 
+      />
+      
+      <AccomplishmentsAddModal 
+        username={user.username} 
+        isOpen={isAccomplishmentsModalOpen} 
+        onClose={() => setIsAccomplishmentsModalOpen(false)} 
+        initialType={accomplishmentType}
+      />
+
+      <ProfileInfoModal 
+        user={user} 
+        isOpen={isInfoModalOpen} 
+        onClose={() => setIsInfoModalOpen(false)} 
+      />
     </>
   )
 }

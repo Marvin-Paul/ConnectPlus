@@ -52,8 +52,9 @@ export async function POST(
         jobId: jobId,
         applicantId: user.id,
         status: "SUBMITTED",
-        profileSnapshotJson: profileSnapshot,
-        // We utilize the snapshot or specific fields for metadata
+        profileSnapshotJson: profileSnapshot || {},
+        screeningAnswers: screeningAnswers || {},
+        resumeUrl: resumeUrl || null,
       }
     });
 

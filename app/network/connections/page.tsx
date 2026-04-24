@@ -17,64 +17,76 @@ export default function ConnectionsPage() {
   const [activeConnectionMenuId, setActiveConnectionMenuId] = useState<string | null>(null);
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div className="max-w-6xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pro-fade">
       <aside className="lg:col-span-3">
         <NetworkSidebar />
       </aside>
 
       <main className="lg:col-span-9 space-y-6">
-        <div className="bg-white rounded-2xl border border-[#e0e0e0] shadow-sm overflow-hidden">
-           <div className="p-8 border-b border-[#e0e0e0] bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-border dark:border-slate-800 shadow-soft overflow-hidden">
+           {/* Header */}
+           <div className="p-6 md:p-8 border-b border-border dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                 <h1 className="text-3xl font-black text-slate-800 flex items-center gap-3 tracking-tighter">
-                    <Users className="w-8 h-8 text-[#0a66c2]" /> {connections.length} Connections
+                 <h1 className="text-2xl md:text-3xl font-bold text-foreground dark:text-white flex items-center gap-3 tracking-tight">
+                    <Users className="w-8 h-8 text-primary" /> {connections.length} Connections
                  </h1>
-                 <p className="text-sm text-[#666666] mt-1 font-medium">Manage your professional relationships and stay connected.</p>
+                 <p className="text-[14px] text-secondary/70 dark:text-slate-400 mt-1.5 font-medium">Manage your professional relationships and stay connected.</p>
               </div>
               <div className="flex items-center gap-2">
                  <div className="relative group">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[#0a66c2] transition-colors" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary group-focus-within:text-primary transition-colors" />
                     <input 
                       type="text" 
                       placeholder="Search connections..." 
-                      className="h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-[#0a66c2]/20 transition-all outline-none"
+                      className="h-10 pl-10 pr-4 rounded-xl border border-border dark:border-slate-700 bg-white dark:bg-slate-950 text-[14px] font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-foreground dark:text-slate-200"
                     />
                  </div>
-                 <button className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-400 hover:text-[#0a66c2] transition-colors shadow-sm">
+                 <button 
+                    aria-label="Filter connections"
+                    title="Filter connections"
+                    className="p-2.5 rounded-xl border border-border dark:border-slate-700 bg-white dark:bg-slate-950 text-secondary hover:text-primary transition-all shadow-sm active:scale-95"
+                 >
                     <Filter className="w-5 h-5" />
                  </button>
               </div>
            </div>
 
-           <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+           <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
               {connections.map((conn) => (
-                <div key={conn.id} className="p-6 rounded-3xl border border-slate-100 hover:shadow-xl hover:border-[#0a66c2]/20 transition-all group bg-white relative">
+                <div key={conn.id} className="p-6 rounded-[24px] border border-border dark:border-slate-800 hover:shadow-premium hover:border-primary/20 transition-all duration-300 group bg-white dark:bg-slate-900/50 relative">
                    <div className="flex gap-4 items-start">
                       <Link href={`/profile/${conn.name.toLowerCase().replace(/ /g, '-')}`} className="shrink-0 relative">
-                         <img src={conn.avatar} className="w-16 h-16 rounded-full border-2 border-white shadow-md object-cover group-hover:scale-105 transition-transform" alt="" />
+                         <img src={conn.avatar} className="w-16 h-16 rounded-2xl border border-border dark:border-slate-700 shadow-md object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
+                         <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white dark:border-slate-900 rounded-full shadow-sm" />
                       </Link>
                       <div className="flex-1 min-w-0">
-                         <Link href={`/profile/${conn.name.toLowerCase().replace(/ /g, '-')}`} className="text-[15px] font-black text-slate-800 hover:text-[#0a66c2] hover:underline transition-colors block truncate">
+                         <Link href={`/profile/${conn.name.toLowerCase().replace(/ /g, '-')}`} className="text-[16px] font-bold text-foreground dark:text-slate-100 hover:text-primary transition-colors block truncate">
                             {conn.name}
                          </Link>
-                         <p className="text-[11px] text-[#666666] font-medium leading-relaxed mt-0.5 line-clamp-2">{conn.headline}</p>
-                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Connected {conn.connectedTime}</p>
+                         <p className="text-[12px] text-secondary/80 dark:text-slate-400 font-medium leading-relaxed mt-1 line-clamp-1">{conn.headline}</p>
+                         <p className="text-[10px] text-secondary/50 dark:text-slate-500 font-bold uppercase tracking-widest mt-2">Connected {conn.connectedTime}</p>
                          
-                         <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-50">
+                         <div className="flex items-center gap-2 mt-5 pt-5 border-t border-border/50 dark:border-slate-800/50">
                             <Link 
                                href="/messaging"
-                               className="flex-1 flex items-center justify-center gap-2 h-9 rounded-full bg-[#0a66c2] text-white font-black text-xs hover:bg-[#004182] transition-all shadow-blue-100 shadow-lg tracking-widest"
+                               className="flex-1 h-9 rounded-full bg-primary text-white font-bold text-[11px] uppercase tracking-wider hover:bg-primary/90 transition-all shadow-md flex items-center justify-center gap-2 active:scale-95"
                             >
                                <MessageSquare className="w-3.5 h-3.5" /> Message
                             </Link>
-                            <button className="p-2.5 rounded-full border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all">
+                            <button 
+                                aria-label="Remove connection"
+                                title="Remove connection"
+                                className="p-2.5 rounded-full border border-border dark:border-slate-700 text-secondary/60 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all active:scale-90"
+                            >
                                <UserMinus className="w-4 h-4" />
                             </button>
                          </div>
                       </div>
                       <button
                         onClick={() => setActiveConnectionMenuId(conn.id)}
-                        className="p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+                        aria-label="More options"
+                        title="More options"
+                        className="p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity absolute top-4 right-4 text-secondary/40 hover:text-foreground dark:hover:text-white hover:bg-muted dark:hover:bg-slate-800"
                       >
                          <MoreHorizontal className="w-5 h-5" />
                       </button>
@@ -86,27 +98,35 @@ export default function ConnectionsPage() {
       </main>
 
       {activeConnectionMenuId && (
-        <div className="fixed inset-0 z-[140]">
+        <div className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center p-4">
           <button
             type="button"
             aria-label="Close connection options"
             onClick={() => setActiveConnectionMenuId(null)}
-            className="absolute inset-0 bg-black/20"
+            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] shadow-[0_-20px_60px_rgba(0,0,0,0.2)] border-t border-slate-100 py-2 animate-in slide-in-from-bottom-4 duration-200">
-            <div className="w-12 h-1.5 rounded-full bg-slate-300 mx-auto my-3" />
-            <button onClick={() => setActiveConnectionMenuId(null)} className="w-full text-left px-6 py-4 text-[18px] font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-              Message
-            </button>
-            <button
-              onClick={() => {
-                setConnections(prev => prev.filter(c => c.id !== activeConnectionMenuId));
-                setActiveConnectionMenuId(null);
-              }}
-              className="w-full text-left px-6 py-4 text-[18px] font-medium text-red-500 hover:bg-red-50 transition-colors"
-            >
-              Remove connection
-            </button>
+          <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[24px] shadow-premium border border-border dark:border-slate-800 py-3 animate-in slide-in-from-bottom-10 duration-300 overflow-hidden">
+            <div className="w-12 h-1.5 rounded-full bg-border dark:bg-slate-800 mx-auto mb-4" />
+            <div className="px-2">
+              <Link 
+                href="/messaging" 
+                onClick={() => setActiveConnectionMenuId(null)}
+                className="w-full text-left px-6 py-4 text-[16px] font-bold text-foreground dark:text-slate-200 hover:bg-muted dark:hover:bg-slate-800 rounded-xl transition-colors flex items-center gap-3"
+              >
+                <MessageSquare className="w-5 h-5 text-secondary" />
+                Message
+              </Link>
+              <button
+                onClick={() => {
+                  setConnections(prev => prev.filter(c => c.id !== activeConnectionMenuId));
+                  setActiveConnectionMenuId(null);
+                }}
+                className="w-full text-left px-6 py-4 text-[16px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors flex items-center gap-3"
+              >
+                <UserMinus className="w-5 h-5 text-red-500" />
+                Remove connection
+              </button>
+            </div>
           </div>
         </div>
       )}

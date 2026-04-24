@@ -32,8 +32,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased selection:bg-primary/10 selection:text-primary`} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <body className={`${inter.className} antialiased selection:bg-primary/10 selection:text-primary`}>
+        <ThemeProvider 
+          attribute="class" 
+          defaultTheme="system" 
+          enableSystem 
+          disableTransitionOnChange
+        >
           <LanguageProvider>
             <NextTopLoader 
               color="#0A66C2"
@@ -46,14 +51,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               speed={200}
               shadow="0 0 10px #0A66C2,0 0 5px #0A66C2"
             />
-            <Toaster position="top-center" richColors />
+            <Toaster position="top-center" richColors closeButton />
             <SplashScreen />
             <QueryProvider>
               <UserProvider>
                 <FeedProvider>
                   <NotificationProvider>
                     <TopNav />
-                    <main className="md:pt-[56px] min-h-screen">
+                    <main className="md:pt-[56px] min-h-screen relative">
                        {children}
                     </main>
                     <MobileBottomNav />

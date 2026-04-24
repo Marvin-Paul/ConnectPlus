@@ -40,19 +40,19 @@
 
   .dark {
     --background: 222 47% 4%; /* Near black with depth */
-    --foreground: 210 40% 98%; /* High contrast off-white */
+    --foreground: 0 0% 100%; /* Pure white for maximum visibility */
     
     --card: 222 47% 6%;
-    --card-foreground: 210 40% 98%;
+    --card-foreground: 0 0% 100%;
     
     --primary: 221 83% 45%; /* Slightly brighter primary for visibility on dark */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 215 25% 15%; 
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 215 20% 75%; /* Lighter secondary for visibility in dark mode */
+    --secondary-foreground: 222 47% 4%;
     
     --muted: 222 47% 10%;
-    --muted-foreground: 215 20% 65%;
+    --muted-foreground: 215 20% 85%; /* Brighter muted text for visibility */
     
     --accent: 28 50% 45%; 
     --accent-foreground: 0 0% 100%;
@@ -100,6 +100,27 @@
 /* Global Animations & Transitions */
 .animate-pro-fade {
   @apply animate-fade-in;
+}
+
+/* Staggered Animation Delays for High Fidelity Feeds */
+.stagger-0 { animation-delay: 0ms; }
+.stagger-1 { animation-delay: 100ms; }
+.stagger-2 { animation-delay: 200ms; }
+.stagger-3 { animation-delay: 300ms; }
+.stagger-4 { animation-delay: 400ms; }
+.stagger-5 { animation-delay: 500ms; }
+
+/* Dynamic Background Utilities */
+.bg-banner-custom {
+  background-color: var(--banner-bg, #0f172a);
+}
+
+.bg-preset-custom {
+  background-color: var(--preset-color, transparent);
+}
+
+.w-progress-custom {
+  width: var(--progress-width, 0%);
 }
 
 ::selection {

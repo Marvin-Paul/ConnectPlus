@@ -77,14 +77,14 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       </div>
 
       {/* Logic Side */}
-      <div className="flex items-center justify-center p-6 sm:p-12 relative overflow-hidden">
-        <div className="w-full max-w-[440px] bg-white p-10 rounded-3xl shadow-premium border border-border relative z-10 animate-pro-fade">
-           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/[0.02] rounded-bl-[120px] pointer-events-none" />
+      <div className="flex items-center justify-center p-6 sm:p-12 relative overflow-hidden bg-muted/20 dark:bg-[#05080a]">
+        <div className="w-full max-w-[480px] bg-white dark:bg-card/40 p-10 rounded-3xl shadow-premium border border-border dark:border-white/5 backdrop-blur-2xl relative z-10 animate-pro-fade">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[120px] pointer-events-none" />
           {children}
         </div>
         
         {/* Background Accents */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/[0.01] rounded-full blur-[120px] -z-0" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/[0.03] rounded-full blur-[120px] -z-0" />
       </div>
     </div>
   );

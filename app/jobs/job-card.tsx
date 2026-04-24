@@ -3,7 +3,7 @@
 import { Bookmark, X, Users, Briefcase, MapPin, CheckCircle2, Star, Sparkles, Clock, ShieldCheck, Zap, DollarSign, TrendingUp, ChevronRight, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { EasyApplyModal } from "@/components/jobs/easy-apply-modal";
+import { useRouter } from "next/navigation";
 
 const featuredJobs = [
   {
@@ -53,7 +53,7 @@ const featuredJobs = [
 export function JobCard() {
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [selectedJob, setSelectedJob] = useState<typeof featuredJobs[0] | null>(null);
-  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const router = useRouter();
 
   const toggleSave = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -63,31 +63,31 @@ export function JobCard() {
 
   return (
     <div className="relative">
-      <div className="bg-white rounded-[3rem] border border-slate-100 overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.04)] animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-white/50 backdrop-blur-xl">
+      <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.04)] animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl">
           <div className="flex items-center gap-4">
-             <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
-                <Sparkles className="w-5 h-5 text-[#1B5E20]" />
+             <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700">
+                <Sparkles className="w-5 h-5 text-[#1B5E20] dark:text-emerald-400" />
              </div>
              <div>
-                <h2 className="text-[12px] font-bold text-slate-900 uppercase tracking-wider">Recommended Positions</h2>
-                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">AI-powered market matching</p>
+                <h2 className="text-[12px] font-bold text-slate-900 dark:text-white uppercase tracking-wider">Recommended Positions</h2>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider mt-0.5">AI-powered market matching</p>
              </div>
           </div>
           <div className="hidden md:flex items-center gap-3">
-             <span className="text-[10px] font-bold text-[#1B5E20] bg-green-50/50 px-3 py-1 rounded-full uppercase tracking-wider border border-green-100/50">Verified Opportunities</span>
+             <span className="text-[10px] font-bold text-[#1B5E20] dark:text-emerald-400 bg-green-50/50 dark:bg-emerald-900/30 px-3 py-1 rounded-full uppercase tracking-wider border border-green-100/50 dark:border-emerald-800/50">Verified Opportunities</span>
           </div>
         </div>
         
-        <div className="divide-y divide-slate-50">
+        <div className="divide-y divide-slate-50 dark:divide-slate-800">
           {featuredJobs.map((job) => (
             <div 
               key={job.id} 
               onClick={() => setSelectedJob(job)}
-              className="p-8 hover:bg-slate-50/50 transition-all duration-500 cursor-pointer group relative"
+              className="p-8 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-all duration-500 cursor-pointer group relative"
             >
               <div className="flex flex-col md:flex-row gap-8">
-                <div className="w-16 h-16 rounded-2xl overflow-hidden border border-slate-100 shrink-0 bg-white p-2 shadow-sm group-hover:shadow-md transition-all duration-500">
+                <div className="w-16 h-16 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-800 p-2 shadow-sm group-hover:shadow-md transition-all duration-500">
                   <img src={job.logo} alt={job.company} className="w-full h-full object-contain rounded-xl" />
                 </div>
                 
@@ -95,14 +95,14 @@ export function JobCard() {
                   <div className="flex items-start justify-between gap-4">
                      <div className="space-y-1.5 flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                           <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider border border-blue-100">{job.match}</span>
+                           <span className="text-[10px] font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded uppercase tracking-wider border border-blue-100 dark:border-blue-800">{job.match}</span>
                            {job.isEasyApply && (
-                             <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded uppercase tracking-wider border border-emerald-100 flex items-center gap-1">
+                             <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded uppercase tracking-wider border border-emerald-100 dark:border-emerald-800 flex items-center gap-1">
                                 <Zap className="w-3 h-3 fill-current" /> Fast Apply
                              </span>
                            )}
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors leading-tight tracking-tight truncate">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-tight tracking-tight truncate">
                            {job.title}
                         </h3>
                         <div className="flex items-center gap-3">
@@ -110,14 +110,14 @@ export function JobCard() {
                              href={job.website} 
                              target="_blank" 
                              rel="noopener noreferrer" 
-                             className="text-sm font-semibold text-slate-700 hover:text-[#1B5E20] hover:underline transition-all" 
+                             className="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-[#1B5E20] dark:hover:text-emerald-400 hover:underline transition-all" 
                              onClick={(e) => e.stopPropagation()}
                            >
                              {job.company}
                            </a>
                            <ShieldCheck className="w-4 h-4 text-blue-500/80" />
-                           <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                           <p className="text-sm text-slate-500 font-medium flex items-center gap-1.5">
+                           <span className="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full" />
+                           <p className="text-sm text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5">
                              <MapPin className="w-3.5 h-3.5 text-slate-400" /> {job.location}
                            </p>
                         </div>
@@ -127,46 +127,46 @@ export function JobCard() {
                         <button 
                            onClick={(e) => toggleSave(job.id, e)}
                            aria-label={savedIds.includes(job.id) ? "Remove from saved jobs" : "Save job"}
-                           className={`w-12 h-12 rounded-xl transition-all border flex items-center justify-center active:scale-95 ${savedIds.includes(job.id) ? 'bg-[#1B5E20] text-white border-transparent' : 'bg-white text-slate-300 border-slate-200 hover:text-[#1B5E20] hover:border-[#1B5E20]/30'}`}
+                           className={`w-12 h-12 rounded-xl transition-all border flex items-center justify-center active:scale-95 ${savedIds.includes(job.id) ? 'bg-[#1B5E20] text-white border-transparent' : 'bg-white dark:bg-slate-800 text-slate-300 dark:text-slate-500 border-slate-200 dark:border-slate-700 hover:text-[#1B5E20] dark:hover:text-emerald-400 hover:border-[#1B5E20]/30'}`}
                         >
                           <Bookmark className={`h-5 w-5 ${savedIds.includes(job.id) ? 'fill-current' : ''}`} />
                         </button>
                         <button 
                           onClick={(e) => { e.stopPropagation(); setSelectedJob(job); }}
-                          className="hidden sm:flex h-12 px-8 rounded-xl bg-slate-900 text-white font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95 items-center gap-2"
+                          className="hidden sm:flex h-12 px-8 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-slate-100 transition-all active:scale-95 items-center gap-2"
                         >
                            View Details <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                      </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-x-8 gap-y-4 mt-6 pt-6 border-t border-slate-50">
+                  <div className="flex flex-wrap items-center gap-x-8 gap-y-4 mt-6 pt-6 border-t border-slate-50 dark:border-slate-800">
                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100 text-slate-400">
+                        <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 text-slate-400">
                            <Briefcase className="w-4 h-4" />
                         </div>
                         <div className="flex flex-col">
-                           <span className="text-[12px] font-bold text-slate-900 tracking-tight">{job.salary}</span>
-                           <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Est. Package</span>
+                           <span className="text-[12px] font-bold text-slate-900 dark:text-white tracking-tight">{job.salary}</span>
+                           <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">Est. Package</span>
                         </div>
                      </div>
 
                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100 text-slate-400">
+                        <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-slate-700 text-slate-400">
                            <Users className="w-4 h-4" />
                         </div>
                         <div className="flex flex-col">
-                           <span className="text-[12px] font-bold text-slate-900 tracking-tight">{job.applicants} Applicants</span>
-                           <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">In Review</span>
+                           <span className="text-[12px] font-bold text-slate-900 dark:text-white tracking-tight">{job.applicants} Applicants</span>
+                           <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">In Review</span>
                         </div>
                      </div>
 
                      <div className="flex items-center gap-3 ml-auto">
                         <div className="flex flex-col text-right">
-                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{job.posted}</span>
+                           <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{job.posted}</span>
                            <div className="flex items-center gap-1.5 justify-end mt-0.5">
                               <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                              <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Active Hiring</span>
+                              <span className="text-[9px] font-bold text-slate-300 dark:text-slate-600 uppercase tracking-widest">Active Hiring</span>
                            </div>
                         </div>
                      </div>
@@ -177,7 +177,7 @@ export function JobCard() {
           ))}
         </div>
         
-        <button className="w-full py-6 text-[11px] font-bold text-slate-400 hover:text-[#1B5E20] hover:bg-slate-50 transition-all border-t border-slate-50 uppercase tracking-widest bg-white">
+        <button className="w-full py-6 text-[11px] font-bold text-slate-400 dark:text-slate-500 hover:text-[#1B5E20] dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all border-t border-slate-50 dark:border-slate-800 uppercase tracking-widest bg-white dark:bg-slate-900">
           Explore comprehensive job market <TrendingUp className="w-3.5 h-3.5 inline ml-2" />
         </button>
       </div>
@@ -186,14 +186,14 @@ export function JobCard() {
       {selectedJob && (
         <>
           <div 
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] animate-in fade-in duration-300" 
+            className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md z-[100] animate-in fade-in duration-300" 
             onClick={() => setSelectedJob(null)} 
           />
-          <div className="fixed top-0 right-0 h-full w-full max-w-2xl bg-white z-[101] shadow-2xl border-l border-slate-100 flex flex-col p-0 transition-transform duration-500 animate-in slide-in-from-right-full">
+          <div className="fixed top-0 right-0 h-full w-full max-w-2xl bg-white dark:bg-slate-900 z-[101] shadow-2xl border-l border-slate-100 dark:border-slate-800 flex flex-col p-0 transition-transform duration-500 animate-in slide-in-from-right-full">
             <button 
               onClick={() => setSelectedJob(null)}
               aria-label="Close job details"
-              className="absolute top-8 left-[-60px] w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-900 shadow-xl border border-slate-100 hover:scale-110 active:scale-95 transition-all"
+              className="absolute top-8 left-[-60px] w-12 h-12 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center text-slate-900 dark:text-white shadow-xl border border-slate-100 dark:border-slate-800 hover:scale-110 active:scale-95 transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -225,40 +225,40 @@ export function JobCard() {
 
                 <div className="p-12 space-y-12 pb-32">
                    <div className="grid grid-cols-2 gap-6">
-                      <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100/50">
-                         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">Package Range</span>
+                      <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100/50 dark:border-slate-700/50">
+                         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 block mb-2">Package Range</span>
                          <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-bold text-slate-900 tracking-tight">{selectedJob.salary}</span>
-                            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">/ annum</span>
+                            <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{selectedJob.salary}</span>
+                            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">/ annum</span>
                          </div>
                       </div>
-                      <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-100/50">
-                         <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-800 block mb-2">Profile Match</span>
+                      <div className="p-6 rounded-2xl bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-100/50 dark:border-emerald-800/50">
+                         <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-800 dark:text-emerald-400 block mb-2">Profile Match</span>
                          <div className="flex items-baseline gap-2">
-                            <span className="text-xl font-bold text-emerald-900 tracking-tight uppercase">High Compatibility</span>
+                            <span className="text-xl font-bold text-emerald-900 dark:text-emerald-400 tracking-tight uppercase">High Compatibility</span>
                          </div>
                       </div>
                    </div>
 
                    <div className="space-y-6">
-                      <h3 className="text-[12px] font-bold uppercase tracking-widest text-slate-900 border-b border-slate-100 pb-4">Professional Benefits</h3>
+                      <h3 className="text-[12px] font-bold uppercase tracking-widest text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-4">Professional Benefits</h3>
                       <div className="flex flex-wrap gap-2.5">
                          {selectedJob.benefits.map(benefit => (
-                           <span key={benefit} className="px-5 py-2.5 bg-white border border-slate-100 rounded-xl text-[13px] font-semibold text-slate-700 shadow-sm flex items-center gap-3">
+                           <span key={benefit} className="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl text-[13px] font-semibold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-3">
                               <CheckCircle2 className="w-4 h-4 text-emerald-500" /> {benefit}
                            </span>
                          ))}
-                         <span className="px-5 py-2.5 bg-blue-50/50 border border-blue-100/50 rounded-xl text-[13px] font-semibold text-blue-800 flex items-center gap-3">
+                         <span className="px-5 py-2.5 bg-blue-50/50 dark:bg-blue-900/30 border border-blue-100/50 dark:border-blue-800/50 rounded-xl text-[13px] font-semibold text-blue-800 dark:text-blue-400 flex items-center gap-3">
                             <ShieldCheck className="w-4 h-4" /> Full Relocation Support
                          </span>
                       </div>
                    </div>
 
                    <div className="space-y-6">
-                      <h3 className="text-[12px] font-bold uppercase tracking-widest text-slate-900 border-b border-slate-100 pb-4">Technical Stack</h3>
+                      <h3 className="text-[12px] font-bold uppercase tracking-widest text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-4">Technical Stack</h3>
                        <div className="flex flex-wrap gap-2">
                           {['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'AWS', 'Docker'].map(tech => (
-                            <span key={tech} className="px-4 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                            <span key={tech} className="px-4 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
                                {tech}
                             </span>
                           ))}
@@ -266,25 +266,25 @@ export function JobCard() {
                    </div>
 
                     <div className="space-y-6">
-                       <h3 className="text-[12px] font-bold uppercase tracking-widest text-slate-900 border-b border-slate-100 pb-4">Corporate Mission</h3>
-                       <p className="text-[15px] text-slate-600 font-medium leading-relaxed">
+                       <h3 className="text-[12px] font-bold uppercase tracking-widest text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-4">Corporate Mission</h3>
+                       <p className="text-[15px] text-slate-600 dark:text-slate-400 font-medium leading-relaxed italic">
                           Join the {selectedJob.company} engineering team to solve complex architectural challenges within the African fintech ecosystem. We prioritize operational excellence, engineering rigors, and high-impact innovation.
                        </p>
                     </div>
                  </div>
               </div>
 
-             <div className="p-10 border-t border-slate-100 bg-white/90 backdrop-blur-xl flex flex-col gap-4">
+             <div className="p-10 border-t border-slate-100 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl flex flex-col gap-4">
                 <div className="flex items-center gap-3">
                    <button 
                      onClick={() => {
                         if (selectedJob.isEasyApply) {
-                          setIsApplyModalOpen(true);
+                          router.push(`/jobs/${selectedJob.id}/apply`);
                         } else {
                           window.open('https://linkedin.com', '_blank');
                         }
                      }}
-                     className="flex-1 h-14 bg-slate-950 text-white font-bold text-[11px] uppercase tracking-widest rounded-xl shadow-2xl shadow-slate-950/20 hover:bg-slate-800 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+                     className="flex-1 h-14 bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold text-[11px] uppercase tracking-widest rounded-xl shadow-2xl shadow-slate-950/20 dark:shadow-white/10 hover:bg-slate-800 dark:hover:bg-slate-100 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
                    >
                       {selectedJob.isEasyApply ? (
                         <span className="flex items-center gap-2 italic"><Zap className="w-3.5 h-3.5 fill-current" /> Fast Apply Now</span>
@@ -295,13 +295,13 @@ export function JobCard() {
                    </button>
                    <button 
                      aria-label={savedIds.includes(selectedJob?.id || '') ? "Remove from saved jobs" : "Save job"}
-                     className="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-emerald-700 hover:border-emerald-700/30 hover:shadow-lg transition-all active:scale-[0.95] group"
+                     className="w-14 h-14 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 hover:border-emerald-700/30 hover:shadow-lg transition-all active:scale-[0.95] group"
                    >
-                      <Bookmark className="w-5 h-5 group-hover:fill-emerald-700" />
+                      <Bookmark className="w-5 h-5 group-hover:fill-emerald-700 dark:group-hover:fill-emerald-400" />
                    </button>
                 </div>
-                <button className="w-full h-12 border border-slate-200 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-[0.98]">
-                   <MessageCircle className="w-3.5 h-3.5 text-emerald-700" />
+                <button className="w-full h-12 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-[0.98]">
+                   <MessageCircle className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                    Contact Hiring Lead
                 </button>
              </div>
@@ -309,19 +309,7 @@ export function JobCard() {
         </>
       )}
 
-      {/* Fast Apply Modal */}
-      {selectedJob && (
-        <EasyApplyModal 
-          isOpen={isApplyModalOpen}
-          onClose={() => setIsApplyModalOpen(false)}
-          job={{
-            id: selectedJob.id,
-            title: selectedJob.title,
-            company: selectedJob.company,
-            logo: selectedJob.logo
-          }}
-        />
-      )}
+      {/* Fast Apply Modal replaced by page navigation for premium feel */}
     </div>
   );
 }

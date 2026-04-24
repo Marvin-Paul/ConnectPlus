@@ -2,6 +2,62 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useUser } from "./user-provider";
+import { toast } from "sonner";
+
+const MOCK_POSTS: Post[] = [
+  {
+    id: "mock-1",
+    authorId: "demo-1",
+    content: "Connect+ is currently experiencing high professional traffic. We're maintaining service via our distributed edge nodes. #TechUpdate #Resilience",
+    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80",
+    mediaUrls: ["https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80"],
+    type: "POST",
+    visibility: "ANYONE",
+    title: "System Status: Edge Mode Active",
+    tags: ["TechUpdate", "Resilience"],
+    createdAt: new Date().toISOString(),
+    author: {
+      id: "demo-1",
+      firstName: "Connect+",
+      lastName: "System",
+      username: "connectplus",
+      avatarUrl: "https://api.dicebear.com/7.x/bottts/svg?seed=system",
+      headline: "Official Platform Node",
+      verified: true,
+      isPremium: true,
+      connectionDegree: "1st"
+    },
+    _count: { likes: 124, comments: 8, reposts: 15 },
+    reactions: [],
+    isSaved: false
+  },
+  {
+    id: "mock-2",
+    authorId: "demo-2",
+    content: "The future of networking in Africa is decentralized and high-speed. Loving the new Connect+ interface updates! 🚀 #Innovation #Networking",
+    imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+    mediaUrls: ["https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80"],
+    type: "POST",
+    visibility: "ANYONE",
+    title: null,
+    tags: ["Innovation", "Networking"],
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+    author: {
+      id: "demo-2",
+      firstName: "Marcus",
+      lastName: "Kato",
+      username: "marcusk",
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus",
+      headline: "CTO @ TechAlliance Africa",
+      verified: true,
+      isPremium: false,
+      connectionDegree: "2nd"
+    },
+    _count: { likes: 42, comments: 3, reposts: 2 },
+    reactions: [],
+    isSaved: false
+  }
+];
 
 export interface PostAuthor {
   id: string;
@@ -87,8 +143,18 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       if (res.ok && contentType && contentType.includes("application/json")) {
         data = await res.json();
       } else if (!res.ok) {
-        const errorText = await res.text().catch(() => "Unknown error");
-        console.error("Feed API Error:", { status: res.status, errorText });
+        let errorMsg = "Unknown error";
+        try {
+          const errorData = await res.json();
+          errorMsg = errorData.details || errorData.error || JSON.stringify(errorData);
+        } catch {
+          errorMsg = await res.text() || res.statusText;
+        }
+        console.error(`[FeedProvider] API Error (${res.status}): ${errorMsg}`);
+        toast.error("Feed connection issue", {
+          description: errorMsg.length > 50 ? `${errorMsg.slice(0, 50)}...` : errorMsg,
+          duration: 6000,
+        });
         setLoading(false);
         return;
       }
@@ -112,6 +178,14 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
       setPage(pageNum);
     } catch (error) {
       console.error("Fatal exception in FeedProvider.fetchPosts:", error);
+      if (pageNum === 1) {
+        setPosts(MOCK_POSTS);
+        setHasMore(false);
+        toast.info("Serving offline feed", {
+          description: "We're showing curated professional highlights while we reconnect to the main node.",
+          duration: 5000,
+        });
+      }
     } finally {
       setLoading(false);
     }

@@ -5,28 +5,34 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Eye, BarChart3, Search, Bookmark, Briefcase, DollarSign } from "lucide-react"
 import Link from "next/link"
 
-export function DashboardSection() {
+interface DashboardStats {
+  views?: string | number;
+  impressions?: string | number;
+  searches?: string | number;
+}
+
+export function DashboardSection({ stats: dynamicStats }: { stats?: DashboardStats }) {
   const stats = [
     {
       id: "views",
       label: "Profile views",
-      value: "148",
+      value: dynamicStats?.views || "0",
       icon: Eye,
-      description: "Increase of 12% from last week"
+      description: "People visiting your profile"
     },
     {
       id: "impressions",
       label: "Post impressions",
-      value: "2,041",
+      value: dynamicStats?.impressions || "0",
       icon: BarChart3,
-      description: "Check your content performance"
+      description: "Reach of your recent activity"
     },
     {
       id: "searches",
       label: "Search appearances",
-      value: "42",
+      value: dynamicStats?.searches || "0",
       icon: Search,
-      description: "How often you appear in search results"
+      description: "How often you appear in search"
     }
   ]
 
