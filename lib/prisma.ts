@@ -29,7 +29,7 @@ const createPrismaClient = () => {
       connectionString: url.toString(),
       max: 10, // Adjust based on your Supabase tier
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
+      connectionTimeoutMillis: 10000,
       ssl: {
         rejectUnauthorized: false
       }
