@@ -54,19 +54,17 @@ export function NetworkSidebar() {
            </div>
         </div>
         
-        <nav className="py-2 px-2">
+        <nav className="p-4 flex flex-wrap gap-2">
           {sidebarLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-slate-50 transition-all group/item"
+              className="h-10 px-4 flex items-center justify-center gap-2 rounded-xl bg-slate-50 text-slate-600 font-bold text-[13px] hover:bg-slate-100 hover:text-slate-900 transition-all active:scale-95 border border-slate-100 group"
             >
-              <div className="flex items-center gap-3">
-                <link.icon className={`h-4 w-4 transition-transform group-hover/item:scale-105 ${link.color} opacity-60 group-hover/item:opacity-100`} />
-                <span className="text-[13px] font-semibold text-slate-600 group-hover/item:text-slate-900 transition-colors">{link.label}</span>
-              </div>
+              <link.icon className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity`} />
+              <span>{link.label}</span>
               {link.count && (
-                <span className="text-[11px] font-medium text-slate-400 group-hover/item:text-[#1B5E20] transition-all">{link.count}</span>
+                <span className="ml-1 text-[11px] font-black text-[#1B5E20] bg-green-50/80 px-1.5 py-0.5 rounded-md">{link.count}</span>
               )}
             </Link>
           ))}

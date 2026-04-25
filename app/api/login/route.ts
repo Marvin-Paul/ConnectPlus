@@ -35,16 +35,20 @@ export async function POST(req: Request) {
       password: password,
     });
 
-    // If email login fails, try finding user by phone in Prisma to get the email
     if (authResponse.error && !identifier.includes('@')) {
-       const userWithPhone = await prisma.user.findFirst({
-         where: { phone: identifier },
+       const userRecord = await prisma.user.findFirst({
+         where: {
+           OR: [
+             { phone: identifier },
+             { username: identifier }
+           ]
+         },
          select: { email: true }
        });
 
-       if (userWithPhone) {
+       if (userRecord) {
          authResponse = await supabase.auth.signInWithPassword({
-           email: userWithPhone.email,
+           email: userRecord.email,
            password: password,
          });
        }
@@ -79,7 +83,7 @@ export async function POST(req: Request) {
            id: authUser.id,
            email: authUser.email!,
            name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || "User",
-           phone: authUser.phone || authUser.user_metadata?.phone || "",
+           phone: authUser.phone || authUser.user_metadata?.phone || null,
            passwordHash: 'AUTH_MANAGED_BY_SUPABASE',
            username: authUser.email?.split("@")[0].toLowerCase() + "_" + Math.floor(Math.random() * 1000),
          }

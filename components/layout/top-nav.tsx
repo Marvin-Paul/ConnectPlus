@@ -9,7 +9,7 @@ import { useNotifications } from "../providers/notification-provider";
 import { 
   Search, 
   ChevronDown, 
-  Grid3X3,
+  LayoutGrid,
   LogOut,
   Bell,
   MessageCircle,
@@ -75,10 +75,10 @@ export function TopNav() {
       <div className="mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 justify-between gap-4">
         
         {/* Left: Branding & Search */}
-        <div className="flex items-center gap-6 flex-1">
+        <div className="flex items-center gap-3 md:gap-6 flex-1">
           <Link href="/" className="shrink-0 flex items-center transition-transform active:scale-95 group">
-            <div className="h-[40px] w-[40px] flex items-center justify-center rounded-xl bg-primary text-white shadow-premium group-hover:rotate-6 transition-transform">
-               <span className="font-black text-xl tracking-tighter">C+</span>
+            <div className="h-[36px] w-[36px] md:h-[40px] md:w-[40px] flex items-center justify-center rounded-xl bg-primary text-white shadow-premium group-hover:rotate-6 transition-transform">
+               <span className="font-black text-lg md:text-xl tracking-tighter">C+</span>
             </div>
             <div className="hidden lg:flex flex-col ml-3">
               <span className="text-[18px] font-bold tracking-tight text-foreground leading-none">
@@ -91,27 +91,34 @@ export function TopNav() {
           </Link>
 
           {/* Search */}
-          <div className="flex-1 relative hidden md:block max-w-[480px]" ref={searchRef}>
+          <div className="flex-1 relative max-w-[480px]" ref={searchRef}>
               <form onSubmit={(e) => { e.preventDefault(); router.push(`/search?q=${searchQuery}`); }} className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-secondary group-focus-within:text-primary transition-colors" />
+                <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 md:h-4 md:w-4 text-secondary group-focus-within:text-primary transition-colors" />
                 <Input
-                  placeholder="Search network, jobs, articles..."
+                  placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-11 w-full bg-muted border-transparent text-[14px] pl-12 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary rounded-xl transition-all"
+                  className="h-9 md:h-11 w-full bg-muted border-transparent text-[13px] md:text-[14px] pl-9 md:pl-12 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary rounded-[10px] md:rounded-xl transition-all"
                 />
               </form>
           </div>
+
+          {/* Mobile Messaging Icon (Next to Search) */}
+          <Link href="/messaging" className="md:hidden relative flex items-center justify-center p-2 text-slate-500 hover:text-[#0A66C2] transition-colors active:scale-95">
+             <MessageCircle className="w-6 h-6 stroke-[2px]" />
+             {unreadCount > 0 && (
+               <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full" />
+             )}
+          </Link>
         </div>
 
         {/* Right: Navigation */}
         <nav className="flex items-center h-full">
           {[
-            { label: 'Home', icon: Home, href: '/', mobileHidden: false },
             { label: 'Network', icon: UsersIcon, href: '/network', mobileHidden: true },
             { label: 'Academy', icon: BookOpen, href: '/learning', mobileHidden: true },
             { label: 'Jobs', icon: Briefcase, href: '/jobs', mobileHidden: true },
-            { label: 'Messaging', icon: MessageCircle, href: '/messaging', mobileHidden: true },
+            { label: 'Messages', icon: MessageCircle, href: '/messaging', mobileHidden: true },
             { label: 'Notifications', icon: Bell, href: '/notifications', badge: true, mobileHidden: true },
           ].map((item) => (
             <Link 
@@ -207,7 +214,7 @@ export function TopNav() {
                      onClick={() => setActiveDropdown(activeDropdown === 'work' ? null : 'work')}
                      className={`flex flex-col items-center justify-center min-w-[64px] h-full gap-1 transition-all hover:bg-muted group ${activeDropdown === 'work' ? 'text-primary' : 'text-secondary'}`}
                   >
-                     <Grid3X3 className={`h-5 w-5 stroke-[2.5px] transition-transform group-hover:-translate-y-0.5 ${activeDropdown === 'work' ? 'text-primary' : 'group-hover:text-primary'}`} />
+                     <LayoutGrid className={`h-5 w-5 stroke-[2.5px] transition-transform group-hover:-translate-y-0.5 ${activeDropdown === 'work' ? 'text-primary' : 'group-hover:text-primary'}`} />
                      <div className="flex items-center gap-0.5">
                         <span className="text-[11px] font-bold tracking-wide uppercase">Work</span>
                         <ChevronDown className={`w-3 h-3 transition-transform ${activeDropdown === 'work' ? 'rotate-180' : ''}`} />

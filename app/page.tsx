@@ -67,13 +67,13 @@ function FeedContent() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="max-w-[1152px] mx-auto py-8 px-4 grid grid-cols-1 md:grid-cols-12 gap-8 relative">
+      <div className="max-w-[1152px] mx-auto py-8 px-4 flex flex-col md:grid md:grid-cols-12 gap-8 relative">
         
-        <aside className="hidden md:block md:col-span-4 lg:col-span-3 h-fit">
+        <aside className="w-full md:col-span-4 lg:col-span-3 h-fit order-1 md:order-none">
           <ProfileCard />
         </aside>
 
-        <main className="md:col-span-8 lg:col-span-6 space-y-4">
+        <main className="w-full md:col-span-8 lg:col-span-6 space-y-4 order-2 md:order-none">
           <div className="animate-fade-in">
              <CreatePost />
           </div>
@@ -151,20 +151,12 @@ function FeedContent() {
           </div>
         </main>
 
-        <aside className="hidden lg:block lg:col-span-3 h-fit sticky top-[72px]">
+        <aside className="w-full lg:col-span-3 h-fit md:sticky md:top-[72px] order-3 md:order-none">
           <NewsSidebar />
         </aside>
       </div>
 
-      {/* Mobile Floating Post Button */}
-      <div className="md:hidden fixed bottom-20 right-6 z-50">
-          <button 
-            onClick={() => setIsPostModalOpen(true)}
-            className="w-14 h-14 rounded-full bg-primary text-white shadow-premium flex items-center justify-center active:scale-90 transition-transform"
-          >
-            <Plus className="w-7 h-7 stroke-[3px]" />
-          </button>
-      </div>
+      {/* Mobile Floating Post Button removed since it is now in the bottom nav */}
 
       <PostModal 
         isOpen={isPostModalOpen}

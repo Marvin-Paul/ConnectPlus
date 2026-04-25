@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, ChevronDown, TrendingUp, Sparkles, MapPin, ExternalLink, ShieldCheck, Zap, BarChart3, Clock, Users, Check, Grid3X3 } from "lucide-react";
+import { Info, ChevronDown, TrendingUp, Sparkles, MapPin, ExternalLink, ShieldCheck, Zap, BarChart3, Clock, Users, Check } from "lucide-react";
 import Link from "next/link";
 
 const newsItems = [
@@ -57,23 +57,37 @@ export function NewsSidebar() {
       </div>
 
       {/* Footer */}
-      <footer className="px-2 py-6">
-         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mb-6">
-            {['About', 'Accessibility', 'Help', 'Privacy', 'Ad Choices', 'Business'].map((link) => (
-              <Link key={link} href="#" className="text-[12px] font-bold text-secondary hover:text-primary transition-colors">
-                {link}
+      <footer className="px-4 py-8 text-center bg-white dark:bg-slate-950 rounded-xl border border-border dark:border-slate-800 shadow-soft mt-6">
+         <div className="flex flex-col items-center gap-3 mb-6">
+            <div className="flex items-center gap-2">
+               <div className="h-6 w-6 rounded bg-primary flex items-center justify-center shadow-md">
+                  <span className="font-black text-xs text-white tracking-tighter leading-none">C+</span>
+               </div>
+               <span className="text-[14px] font-black text-foreground uppercase tracking-[0.15em]">Connect Plus</span>
+            </div>
+            <p className="text-xs text-secondary font-medium leading-relaxed px-4">
+              Empowering the African continent through professional networking, tech mentorship, and limitless opportunity.
+            </p>
+         </div>
+
+         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 mb-8">
+            {[
+              { label: 'About Us', href: '/about#about-us' },
+              { label: 'Our Mission', href: '/about#our-mission' },
+              { label: 'Careers', href: '/about#careers' },
+              { label: 'Privacy Policy', href: '/about#privacy-policy' },
+              { label: 'Terms of Service', href: '/about#terms-of-service' },
+              { label: 'Advertising', href: '/about#advertising' },
+              { label: 'Business Solutions', href: '/about#business-solutions' }
+            ].map((link) => (
+              <Link key={link.label} href={link.href} className="text-[10px] font-bold text-secondary hover:text-primary transition-colors uppercase tracking-widest">
+                {link.label}
               </Link>
             ))}
          </div>
 
-         <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center gap-2">
-               <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
-                  <Grid3X3 className="h-4 w-4 text-white" />
-               </div>
-               <span className="text-[13px] font-extrabold text-foreground uppercase tracking-widest">Connect Plus</span>
-            </div>
-            <p className="text-[11px] font-bold text-secondary/60">Connect Plus Corp &copy; 2026. All rights reserved.</p>
+         <div className="pt-6 border-t border-border/50 dark:border-slate-800/50">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary/60">Connect Plus Corp &copy; 2026</p>
          </div>
       </footer>
     </div>

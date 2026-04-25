@@ -21,7 +21,7 @@ export function MobileBottomNav() {
   const navItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/network", label: "Network", icon: Users },
-    { href: "/messaging", label: "Messages", icon: MessageCircle },
+    { onClick: () => setIsPostModalOpen(true), label: "Post", icon: PlusSquare },
     { href: "/notifications", label: "Alerts", icon: Bell, badge: unreadCount },
     { href: "/jobs", label: "Jobs", icon: Briefcase },
   ];

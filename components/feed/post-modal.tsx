@@ -165,48 +165,48 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
       >
         
         {/* Header */}
-        <div className="px-5 pt-5 pb-3 flex items-center justify-between border-b border-[#E5E7EB] dark:border-slate-800">
+        <div className="px-6 py-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
            <div className="flex items-center gap-4">
               <button 
                 onClick={onClose} 
                 disabled={isPosting}
                 title="Close"
-                className="p-1.5 -ml-1 rounded-full hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400 transition-colors disabled:opacity-50"
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 transition-all disabled:opacity-50"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
                <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 rounded-full border border-[#E5E7EB] dark:border-slate-800 overflow-hidden">
+                 <div className="w-11 h-11 rounded-full border-2 border-slate-100 dark:border-slate-700 overflow-hidden shadow-sm">
                    <img src={user.avatar} className="w-full h-full object-cover" alt="User avatar" />
                  </div>
                  <div className="flex flex-col">
+                    <h3 className="text-[15px] font-black text-slate-900 dark:text-slate-100 leading-tight">
+                       {user.name}
+                    </h3>
                     <button 
                       onClick={() => setVisibility(visibility === "ANYONE" ? "CONNECTIONS" : "ANYONE")}
-                      className="flex items-center gap-1.5 text-[14px] font-bold text-[#1F2937] dark:text-slate-100 hover:bg-[#F3F6F8] dark:hover:bg-slate-800 px-2 py-0.5 -ml-2 rounded-lg transition-all"
+                      className="flex items-center gap-1.5 mt-0.5 text-[11px] font-bold text-slate-500 hover:text-primary transition-colors bg-slate-50 hover:bg-primary/5 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700"
                     >
-                       {user.name}
-                       <ChevronDown className="w-4 h-4 text-[#6B7280] dark:text-slate-400" />
+                       {visibility === "ANYONE" ? <Globe className="w-3 h-3" /> : <Users className="w-3 h-3" />}
+                       <span className="uppercase tracking-wider">{visibility === "ANYONE" ? "Anyone" : "Connections"}</span>
+                       <ChevronDown className="w-3 h-3 opacity-50" />
                     </button>
-                    <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[#6B7280] dark:text-slate-500 px-px">
-                       {visibility === "ANYONE" ? <Globe className="w-3.5 h-3.5" /> : <Users className="w-3.5 h-3.5" />}
-                       <span>{visibility === "ANYONE" ? "Anyone" : "Connections only"}</span>
-                    </div>
                  </div>
               </div>
            </div>
            
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <button 
                 title="Schedule post" 
                 aria-label="Schedule post"
-                className="h-9 px-3 rounded-full hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400 flex items-center justify-center transition-colors"
+                className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
               >
-                 <Calendar className="w-6 h-6" />
+                 <Calendar className="w-4 h-4" />
               </button>
               <button 
                 onClick={handlePost}
                 disabled={(!content.trim() && images.length === 0) || isPosting || uploading}
-                className="h-9 px-6 rounded-full font-bold text-[14px] transition-all shadow-premium bg-primary text-white hover:bg-primary/90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 px-6 rounded-full font-black text-[13px] uppercase tracking-widest transition-all shadow-md bg-primary text-white hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:-translate-y-0 disabled:hover:shadow-none"
               >
                  {isPosting ? "Posting..." : "Post"}
               </button>

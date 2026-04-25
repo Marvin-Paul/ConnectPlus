@@ -8,7 +8,7 @@ import pg from "pg";
  * on serverless environments like Next.js.
  */
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const globalForPrisma = global as unknown as { prisma_v2: PrismaClient };
 
 const createPrismaClient = () => {
   const connectionString = process.env.DATABASE_URL;
@@ -19,12 +19,20 @@ const createPrismaClient = () => {
   }
 
   try {
+    // Parse the connection string to remove sslmode which overrides our ssl config
+    const url = new URL(connectionString);
+    url.searchParams.delete('sslmode');
+    url.searchParams.delete('sslaccept');
+
     // Configure pg pool for optimal connection handling
     const pool = new pg.Pool({ 
-      connectionString,
+      connectionString: url.toString(),
       max: 10, // Adjust based on your Supabase tier
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
+      ssl: {
+        rejectUnauthorized: false
+      }
     });
     
     const adapter = new PrismaPg(pool);
@@ -39,8 +47,8 @@ const createPrismaClient = () => {
   }
 };
 
-export const prisma = globalForPrisma.prisma || createPrismaClient();
+export const prisma = globalForPrisma.prisma_v2 || createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  globalForPrisma.prisma_v2 = prisma;
 }
