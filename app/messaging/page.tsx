@@ -220,22 +220,18 @@ export default function MessagingPage() {
         const data = await res.json();
         if (data.conversations?.length > 0) {
           setConversations(data.conversations);
-          setActiveChatId(data.conversations[0].id);
           setUsingMockData(false);
         } else {
           // No real conversations yet — use mock data
           setConversations(MOCK_CONVERSATIONS);
-          setActiveChatId(MOCK_CONVERSATIONS[0].id);
           setUsingMockData(true);
         }
       } else {
         setConversations(MOCK_CONVERSATIONS);
-        setActiveChatId(MOCK_CONVERSATIONS[0].id);
         setUsingMockData(true);
       }
     } catch {
       setConversations(MOCK_CONVERSATIONS);
-      setActiveChatId(MOCK_CONVERSATIONS[0].id);
       setUsingMockData(true);
     } finally {
       setLoadingConvos(false);
@@ -338,7 +334,7 @@ export default function MessagingPage() {
     return true;
   });
 
-  const activeChat = conversations.find((c) => c.id === activeChatId) ?? conversations[0];
+  const activeChat = activeChatId ? conversations.find((c) => c.id === activeChatId) : null;
 
   // ── Loading state ────────────────────────────────────────────────────────────
   if (userLoading || loadingConvos) {
@@ -418,142 +414,129 @@ export default function MessagingPage() {
 
       {/* ── Main Chat Window ───────────────────────────────────────────────── */}
       <main className={`flex-1 flex flex-col h-full bg-slate-50/20 relative ${activeChatId ? 'flex' : 'hidden md:flex'}`}>
-
-        {/* Chat Header */}
-        {activeChat && (
-          <div className="px-6 md:px-10 py-4 md:py-6 border-b border-slate-50 bg-white/95 backdrop-blur-sm shadow-sm flex items-center justify-between sticky top-0 z-20">
-            <div className="flex items-center gap-2 md:gap-5">
-              <button 
-                onClick={() => setActiveChatId(null)} 
-                className="md:hidden p-2 -ml-2 rounded-full hover:bg-slate-50 text-slate-400"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>
-              </button>
-              <div className="relative hidden md:block">
-                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-slate-50 shadow-xl">
-                  <AvatarDisplay avatar={activeChat.avatar} name={activeChat.name} />
-                </div>
-                {activeChat.isOnline && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
-                )}
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-[18px] font-bold text-slate-900 tracking-tight leading-none">{activeChat.name}</h3>
-                  {activeChat.isPremium && <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />}
-                </div>
-                <p className="text-[12px] text-slate-500 font-medium mt-1 leading-none">{activeChat.headline}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-0 md:gap-2">
-              <button className="hidden md:block p-3 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2]">
-                <Video className="w-5 h-5" />
-              </button>
-              <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
-                <Phone className="w-5 h-5" />
-              </button>
-              <button className="p-3.5 rounded-full hover:bg-slate-50 transition-all text-slate-400 hover:text-[#0a66c2] hover:scale-110 active:scale-95 shadow-sm">
-                <MoreVertical className="w-5 h-5" />
-              </button>
-            </div>
+        {!activeChat ? (
+          <div className="flex flex-col items-center justify-center h-full text-center p-8 opacity-60 hidden md:flex">
+             <MessageSquare className="w-16 h-16 text-slate-300 mb-4" />
+             <h3 className="text-lg font-bold text-slate-800">Your Messages</h3>
+             <p className="text-sm text-slate-500 font-medium max-w-[250px] mt-2">Select a conversation from the list to start messaging.</p>
           </div>
+        ) : (
+          <>
+            {/* Chat Header */}
+            <div className="px-4 md:px-6 py-3 border-b border-slate-100 bg-white/95 backdrop-blur-sm shadow-sm flex items-center justify-between sticky top-0 z-20">
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setActiveChatId(null)} 
+                  className="md:hidden p-1.5 -ml-1 rounded-full hover:bg-slate-100 text-slate-500"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div className="relative hidden md:block">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-100 shadow-sm">
+                    <AvatarDisplay avatar={activeChat.avatar} name={activeChat.name} size="sm" />
+                  </div>
+                  {activeChat.isOnline && (
+                    <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white" />
+                  )}
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-[15px] font-bold text-slate-900 tracking-tight leading-none">{activeChat.name}</h3>
+                    {activeChat.isPremium && <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />}
+                  </div>
+                  <p className="text-[11px] text-slate-500 font-medium mt-0.5 leading-none line-clamp-1">{activeChat.headline}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button className="hidden md:flex p-2 rounded-full hover:bg-slate-100 transition-all text-slate-500 hover:text-[#0a66c2]">
+                  <Video className="w-4 h-4" />
+                </button>
+                <button className="p-2 rounded-full hover:bg-slate-100 transition-all text-slate-500 hover:text-[#0a66c2]">
+                  <Phone className="w-4 h-4" />
+                </button>
+                <button className="p-2 rounded-full hover:bg-slate-100 transition-all text-slate-500">
+                  <MoreVertical className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Message Feed */}
+            <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 scrollbar-hide">
+              <div className="flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-slate-100 mb-6 shadow-sm">
+                <div className="w-16 h-16 rounded-[1rem] overflow-hidden mb-3 border border-slate-100 shadow-sm">
+                  <AvatarDisplay avatar={activeChat.avatar} name={activeChat.name} size="lg" />
+                </div>
+                <h4 className="text-[16px] font-bold text-slate-900 tracking-tight leading-none">{activeChat.name}</h4>
+                <p className="text-[12px] text-slate-500 font-medium max-w-sm mt-1.5 leading-relaxed">{activeChat.headline}</p>
+                 <Link href={`/profile/${activeChatId ? activeChatId : 'demo-user'}`} className="mt-4 px-4 py-1.5 rounded-full border border-slate-200 text-[#0A66C2] font-semibold text-[12px] hover:bg-blue-50 transition-all">
+                  View Profile
+                </Link>
+              </div>
+
+              {loadingMessages ? (
+                <div className="flex items-center justify-center py-6">
+                  <Loader2 className="w-5 h-5 text-[#0a66c2] animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {messages.map((msg, idx) => {
+                    const isPrevSame = idx > 0 && messages[idx - 1].sender === msg.sender;
+                    return (
+                      <div key={msg.id} className={`flex gap-3 ${msg.sender === "me" ? "flex-row-reverse" : ""}`}>
+                        {!isPrevSame ? (
+                          <div className="shrink-0 shadow-sm border border-slate-100 rounded-[1rem] overflow-hidden w-8 h-8">
+                            <AvatarDisplay avatar={msg.avatar} name={msg.name} size="sm" />
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 opacity-0 shrink-0" />
+                        )}
+                        <div className={`space-y-1 max-w-[75%] flex flex-col ${msg.sender === "me" ? "items-end" : "items-start"}`}>
+                          {!isPrevSame && (
+                            <div className={`flex items-baseline gap-2 mb-0.5 ${msg.sender === "me" ? "flex-row-reverse" : ""}`}>
+                              <span className="text-[11px] font-bold text-slate-800">{msg.name.replace(" (You)", "")}</span>
+                              <span className="text-[9px] font-semibold text-slate-400">{msg.time}</span>
+                            </div>
+                          )}
+                          <div className={`px-4 py-2.5 rounded-[1.2rem] shadow-sm text-[13px] leading-relaxed font-medium transition-all ${
+                            msg.sender === "me"
+                              ? "bg-[#0a66c2] text-white rounded-tr-sm"
+                              : "bg-white text-slate-700 rounded-tl-sm border border-slate-100"
+                          }`}>
+                            <p>{msg.text}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div ref={messagesEndRef} />
+                </div>
+              )}
+            </div>
+          </>
         )}
 
-        {/* Message Feed */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-10 py-6 md:py-10 space-y-6 md:space-y-10 scrollbar-hide">
-          {activeChat && (
-            <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl border border-slate-100 mb-8 shadow-sm">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden mb-4 border border-slate-100 shadow-sm">
-                <AvatarDisplay avatar={activeChat.avatar} name={activeChat.name} size="lg" />
-              </div>
-              <h4 className="text-[20px] font-bold text-slate-900 tracking-tight leading-none">{activeChat.name}</h4>
-              <p className="text-sm text-slate-500 font-medium max-w-sm mt-2 leading-relaxed">{activeChat.headline}</p>
-               <Link href={`/profile/${activeChatId ? activeChatId : 'demo-user'}`} className="mt-6 px-6 py-2 rounded-full border border-slate-200 text-[#0A66C2] font-semibold text-[13px] hover:bg-blue-50 transition-all">
-                View Profile
-              </Link>
-            </div>
-          )}
-
-          {/* Call / Video Announcement Banner (Simulated) */}
-          <div className="absolute top-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-             {/* We'll use a local state for this in a real app, for now it's just available in the header */}
-          </div>
-
-          {loadingMessages ? (
-            <div className="flex items-center justify-center py-10">
-              <Loader2 className="w-6 h-6 text-[#0a66c2] animate-spin" />
-            </div>
-          ) : (
-            <div className="space-y-12">
-              {messages.map((msg, idx) => {
-                const isPrevSame = idx > 0 && messages[idx - 1].sender === msg.sender;
-                return (
-                  <div key={msg.id} className={`flex gap-5 ${msg.sender === "me" ? "flex-row-reverse" : ""}`}>
-                    {!isPrevSame ? (
-                      <div className="shrink-0 shadow-lg border-2 border-white rounded-[1.5rem] overflow-hidden">
-                        <AvatarDisplay avatar={msg.avatar} name={msg.name} size="sm" />
-                      </div>
-                    ) : (
-                      <div className="w-10 h-10 opacity-0 shrink-0" />
-                    )}
-                    <div className={`space-y-1.5 max-w-[65%] flex flex-col ${msg.sender === "me" ? "items-end" : "items-start"}`}>
-                      {!isPrevSame && (
-                        <div className={`flex items-baseline gap-3 mb-1 ${msg.sender === "me" ? "flex-row-reverse" : ""}`}>
-                          <span className="text-[11px] font-black text-slate-800 uppercase tracking-widest opacity-80">{msg.name}</span>
-                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-40">{msg.time}</span>
-                        </div>
-                      )}
-                      <div className={`px-8 py-5 rounded-[2.5rem] shadow-xl text-[14px] leading-relaxed font-medium transition-all duration-500 hover:scale-[1.02] ${
-                        msg.sender === "me"
-                          ? "bg-slate-900 text-white rounded-tr-none shadow-slate-900/10"
-                          : "bg-white text-slate-700 rounded-tl-none border border-slate-50 shadow-slate-200/20"
-                      }`}>
-                        <p className="italic">{msg.text}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
-
         {/* Message Input */}
-        <div className="px-4 md:px-10 py-4 md:py-8 bg-white border-t border-slate-50">
-          <div className="relative flex items-end gap-2 md:gap-4 p-2 md:p-4 border border-slate-100 rounded-[2rem] md:rounded-[2.5rem] bg-slate-50/40 focus-within:bg-white focus-within:shadow-2xl focus-within:shadow-blue-900/5 focus-within:border-blue-200 transition-all duration-700 group">
-            <div className="flex items-center self-center gap-1.5 pl-2 opacity-40 group-focus-within:opacity-100 transition-opacity">
-              <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400"><Plus className="w-5 h-5" /></button>
-              <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400"><Mic className="w-5 h-5" /></button>
+        <div className="px-3 md:px-6 py-3 bg-white border-t border-slate-100">
+          <div className="relative flex items-end gap-2 p-1.5 border border-slate-200 rounded-[1.5rem] bg-slate-50 focus-within:bg-white focus-within:shadow-md focus-within:border-blue-300 transition-all group">
+            <div className="flex items-center self-center gap-0.5 pl-1 opacity-60 group-focus-within:opacity-100 transition-opacity">
+              <button className="p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-500"><Plus className="w-4 h-4 stroke-[2.5px]" /></button>
             </div>
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-              placeholder="Speak your professional mind..."
-              className="flex-1 min-h-[56px] py-4 border-none focus:ring-0 text-[14px] resize-none bg-transparent placeholder:text-slate-300 font-medium text-slate-800 leading-relaxed"
+              placeholder="Write a message..."
+              className="flex-1 min-h-[40px] max-h-[120px] py-2.5 px-2 border-none focus:ring-0 text-[13px] resize-none bg-transparent placeholder:text-slate-400 font-medium text-slate-800 leading-relaxed"
             />
-            <div className="flex items-center gap-1.5 pr-2">
-              <button className="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400 opacity-0 group-focus-within:opacity-100"><Smile className="w-5 h-5" /></button>
+            <div className="flex items-center gap-1 pr-1 self-end mb-1">
               <button
                 onClick={handleSend}
                 disabled={!inputText.trim() || sending}
-                className="p-4 rounded-full bg-slate-900 text-white hover:bg-blue-600 transition-all hover:scale-110 active:scale-90 disabled:opacity-20 shadow-2xl shadow-slate-900/20"
+                className="p-2.5 rounded-full bg-[#0a66c2] text-white hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-30 shadow-sm"
               >
-                {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <SendIcon className="w-5 h-5" />}
+                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <SendIcon className="w-4 h-4" />}
               </button>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between px-6 mt-4">
-            <div className="flex items-center gap-6">
-              {["Image", "Document", "Video", "Article"].map((label) => (
-                <button key={label} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-[#0a66c2] transition-colors">{label}</button>
-              ))}
-            </div>
-            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-[#1B5E20] opacity-40">
-              <ShieldCheck className="w-3.5 h-3.5" /> End-to-end professional integrity
             </div>
           </div>
         </div>

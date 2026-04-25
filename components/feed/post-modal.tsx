@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef } from "react";
 import { X, Image as ImageIcon, FileText, Calendar, Smile, Globe, Users, Briefcase, PlaySquare, Settings, Sparkles, PlusSquare, Camera, Loader2, Trash2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useFeed } from "../providers/feed-provider";
@@ -25,7 +23,6 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
   const [isRewriting, setIsRewriting] = useState(false);
   const { createPost } = useFeed();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const docFileInputRef = useRef<HTMLInputElement>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [postType, setPostType] = useState<"POST" | "POLL" | "DOCUMENT">("POST");
   const [pollOptions, setPollOptions] = useState(["", ""]);
@@ -83,19 +80,6 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
     }
   };
 
-  const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    const sizeInMB = (file.size / (1024 * 1024)).toFixed(1);
-    setDocumentFile({
-      name: file.name,
-      size: `${sizeInMB} MB`
-    });
-    setPostType("DOCUMENT");
-    setPostError(null);
-  };
-
   const removeImage = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
     setImages(newImages);
@@ -123,9 +107,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
   };
 
   const handlePost = async () => {
-    if (((!content.trim() && images.length === 0)) || isPosting) return;
-    if (content.length > 5000) return;
-
+    if ((!content.trim() && images.length === 0) || isPosting) return;
     setIsPosting(true);
     setPostError(null);
     try {
@@ -134,8 +116,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
       
       await createPost(content, finalizedImages[0] || undefined, {
         mediaUrls: finalizedImages,
-        visibility: visibility,
-        type: postType === "DOCUMENT" ? "ARTICLE" : "POST"
+        visibility: visibility
       });
       setContent("");
       setImages([]);
@@ -160,40 +141,20 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
     if (!content.trim() || isRewriting) return;
     setIsRewriting(true);
     
-    const strategies = [
-      {
-        name: "Strategic",
-        prefix: "Strategic Insight:",
-        suffix: "\n\nHow does this align with your team's long-term objectives? #Strategy #Leadership #BusinessGrowth",
-        prompt: (c: string) => `As we evaluate the current landscape, ${c.charAt(0).toLowerCase()}${c.slice(1)} remains a pivotal factor for success.`
-      },
-      {
-        name: "Editorial",
-        prefix: "Editorial Perspective:",
-        suffix: "\n\nI'm curious to hear how others in the industry are navigating this shift. #IndustryTrends #Innovation",
-        prompt: (c: string) => `The nuances of ${c.charAt(0).toLowerCase()}${c.slice(1)} deserve a closer look as we head into the next quarter.`
-      },
-      {
-        name: "Executive",
-        prefix: "Executive Summary:",
-        suffix: "\n\nKey takeaways for leadership teams. #ExecutiveInsights #ConnectPlus",
-        prompt: (c: string) => `Focusing on high-impact outcomes: ${c}. This represents a core opportunity for organizational excellence.`
-      }
+    // Simulate AI thinking
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const enhancements = [
+      "Optimized for professional impact: ",
+      "Editorial refinement: ",
+      "Key insight: "
     ];
     
-    const strategy = strategies[Math.floor(Math.random() * strategies.length)];
-    const polished = `${strategy.prefix} ${strategy.prompt(content)} ${strategy.suffix}`;
+    const prefix = enhancements[Math.floor(Math.random() * enhancements.length)];
+    const enhancedContent = `${prefix}${content} #ProfessionalInsights #ConnectPlus`;
     
-    // Animated typing effect
-    let i = 0;
-    const interval = setInterval(() => {
-      setContent(polished.slice(0, i));
-      i++;
-      if (i > polished.length) {
-        clearInterval(interval);
-        setIsRewriting(false);
-      }
-    }, 10);
+    setContent(enhancedContent);
+    setIsRewriting(false);
   };
 
   return (
@@ -204,56 +165,52 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
       >
         
         {/* Header */}
-        <div className="px-3 md:px-5 pt-5 pb-3 flex items-center justify-between border-b border-[#E5E7EB] dark:border-slate-800 gap-2">
-           <div className="flex items-center gap-2 md:gap-4 min-w-0">
+        <div className="px-6 py-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
+           <div className="flex items-center gap-4">
               <button 
                 onClick={onClose} 
                 disabled={isPosting}
-                aria-label="Close"
-                title="Discard post"
-                className="p-1.5 -ml-1 rounded-full hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400 transition-colors disabled:opacity-50 shrink-0"
+                title="Close"
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 transition-all disabled:opacity-50"
               >
-                <X className="w-5 h-5 md:w-6 md:h-6" />
+                <X className="w-5 h-5" />
               </button>
-               <div className="flex items-center gap-2 md:gap-3 min-w-0">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#E5E7EB] dark:border-slate-800 overflow-hidden shrink-0">
-                    <img src={user.avatar} className="w-full h-full object-cover" alt="User avatar" />
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                     <button 
-                       onClick={() => setVisibility(visibility === "ANYONE" ? "CONNECTIONS" : "ANYONE")}
-                       className="flex items-center gap-1 text-[13px] md:text-[14px] font-bold text-[#1F2937] dark:text-slate-100 hover:bg-[#F3F6F8] dark:hover:bg-slate-800 px-1.5 py-0.5 -ml-1.5 rounded-lg transition-all truncate"
-                     >
-                        <span className="truncate">{user.name}</span>
-                        <ChevronDown className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#6B7280] dark:text-slate-400 shrink-0" />
-                     </button>
-                     <div className="flex items-center gap-1.5 text-[11px] md:text-[12px] font-semibold text-[#6B7280] dark:text-slate-500 px-px">
-                        {visibility === "ANYONE" ? <Globe className="w-3 h-3 md:w-3.5 md:h-3.5" /> : <Users className="w-3 h-3 md:w-3.5 md:h-3.5" />}
-                        <span className="truncate">{visibility === "ANYONE" ? "Anyone" : "Connections"}</span>
-                     </div>
-                  </div>
-               </div>
+               <div className="flex items-center gap-3">
+                 <div className="w-11 h-11 rounded-full border-2 border-slate-100 dark:border-slate-700 overflow-hidden shadow-sm">
+                   <img src={user.avatar} className="w-full h-full object-cover" alt="User avatar" />
+                 </div>
+                 <div className="flex flex-col">
+                    <h3 className="text-[15px] font-black text-slate-900 dark:text-slate-100 leading-tight">
+                       {user.name}
+                    </h3>
+                    <button 
+                      onClick={() => setVisibility(visibility === "ANYONE" ? "CONNECTIONS" : "ANYONE")}
+                      className="flex items-center gap-1.5 mt-0.5 text-[11px] font-bold text-slate-500 hover:text-primary transition-colors bg-slate-50 hover:bg-primary/5 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700"
+                    >
+                       {visibility === "ANYONE" ? <Globe className="w-3 h-3" /> : <Users className="w-3 h-3" />}
+                       <span className="uppercase tracking-wider">{visibility === "ANYONE" ? "Anyone" : "Connections"}</span>
+                       <ChevronDown className="w-3 h-3 opacity-50" />
+                    </button>
+                 </div>
+              </div>
            </div>
            
-            <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
-              <div className={`text-[11px] md:text-[12px] font-bold ${content.length > 5000 ? 'text-red-500' : 'text-[#6B7280]/60'} tabular-nums`}>
-                 {content.length}<span className="hidden xs:inline">/5000</span>
-              </div>
+            <div className="flex items-center gap-3">
               <button 
                 title="Schedule post" 
                 aria-label="Schedule post"
-                className="h-8 md:h-9 px-2 md:px-3 rounded-full hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400 flex items-center justify-center transition-colors"
+                className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
               >
-                 <Calendar className="w-5 h-5 md:w-6 md:h-6" />
+                 <Calendar className="w-4 h-4" />
               </button>
               <button 
                 onClick={handlePost}
-                disabled={!content.trim() || isPosting || content.length > 5000}
-                className="h-8 md:h-9 px-4 md:px-6 rounded-full font-bold text-[13px] md:text-[14px] transition-all shadow-premium bg-primary text-white hover:bg-primary/90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={(!content.trim() && images.length === 0) || isPosting || uploading}
+                className="h-10 px-6 rounded-full font-black text-[13px] uppercase tracking-widest transition-all shadow-md bg-primary text-white hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:-translate-y-0 disabled:hover:shadow-none"
               >
-                 {isPosting ? 'Posting...' : 'Post'}
+                 {isPosting ? "Posting..." : "Post"}
               </button>
-            </div>
+           </div>
         </div>
 
         {/* Content */}
@@ -269,7 +226,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
            {postError && (
              <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between gap-3">
                <p className="text-[14px] font-semibold text-red-600">{postError}</p>
-               <button onClick={() => setPostError(null)} aria-label="Dismiss error" title="Dismiss error" className="p-1 text-red-400 hover:bg-red-100 rounded-full"><X className="w-4 h-4" /></button>
+               <button onClick={() => setPostError(null)} title="Dismiss error" className="p-1 text-red-400 hover:bg-red-100 rounded-full"><X className="w-4 h-4" /></button>
              </div>
            )}
             <textarea 
@@ -291,11 +248,7 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
 
            {images.length > 0 && !uploading && postType === "POST" && (
              <div className="relative rounded-xl overflow-hidden group mt-6 animate-in zoom-in-95 duration-500 shadow-lg border border-border">
-                {images[currentPreviewIndex].includes('video') || images[currentPreviewIndex].match(/\.(mp4|webm|ogg)$/i) || images[currentPreviewIndex].startsWith('data:video') ? (
-                  <video src={images[currentPreviewIndex]} controls className="w-full h-auto max-h-[400px] bg-black" />
-                ) : (
-                  <img src={images[currentPreviewIndex]} className="w-full h-auto object-cover max-h-[400px]" alt="" />
-                )}
+                <img src={images[currentPreviewIndex]} className="w-full h-auto object-cover max-h-[400px]" alt="" />
                 
                 {images.length > 1 && (
                   <>
@@ -382,18 +335,9 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
              ref={fileInputRef} 
              className="hidden" 
              multiple
-             accept="image/*,video/*" 
+             accept="image/*" 
              title="Upload media"
              onChange={handleImageUpload} 
-           />
-
-           <input 
-             type="file" 
-             ref={docFileInputRef} 
-             className="hidden" 
-             accept=".pdf,.doc,.docx,.ppt,.pptx" 
-             title="Upload document"
-             onChange={handleDocumentUpload} 
            />
         </div>
 
@@ -424,29 +368,21 @@ export function PostModal({ isOpen, onClose, user }: PostModalProps) {
                       <Camera className="w-7 h-7" />
                    </button>
                    <button 
-                     onClick={() => { setPostType("POST"); fileInputRef.current?.click(); }} 
-                     title="Add video" 
-                     aria-label="Add video"
-                     className="p-3 rounded-xl transition-all hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-secondary"
-                   >
-                      <PlaySquare className="w-7 h-7" />
-                   </button>
-                   <button 
-                     onClick={() => { docFileInputRef.current?.click(); }}
+                     onClick={() => { setPostType("DOCUMENT"); setDocumentFile({ name: "Q3_Strategy.pdf", size: "1.2 MB" }); }}
                      title="Add document" 
                      aria-label="Add document"
-                     className={`p-3 rounded-xl transition-all ${postType === "DOCUMENT" && documentFile ? 'bg-red-50 text-red-600' : 'hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400'}`}
+                     className={`p-3 rounded-xl transition-all ${postType === "DOCUMENT" ? 'bg-red-50 text-red-600' : 'hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400'}`}
                    >
-                      <FileText className="w-7 h-7" />
-                    </button>
-                    <button 
-                      onClick={() => setPostType("POLL")}
-                      title="Create poll" 
-                      aria-label="Create poll"
-                      className={`p-3 rounded-xl transition-all ${postType === "POLL" ? 'bg-green-50 text-green-600' : 'hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400'}`}
-                    >
-                      <Briefcase className="w-7 h-7" />
-                    </button>
+                     <FileText className="w-7 h-7" />
+                   </button>
+                   <button 
+                     onClick={() => setPostType("POLL")}
+                     title="Create poll" 
+                     aria-label="Create poll"
+                     className={`p-3 rounded-xl transition-all ${postType === "POLL" ? 'bg-green-50 text-green-600' : 'hover:bg-[#F3F6F8] dark:hover:bg-slate-800 text-[#6B7280] dark:text-slate-400'}`}
+                   >
+                     <Briefcase className="w-7 h-7" />
+                   </button>
                </div>
             </div>
          </div>

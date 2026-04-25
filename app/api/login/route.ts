@@ -26,34 +26,33 @@ export async function POST(req: Request) {
     }
 
     const { identifier, password } = validatedData.data;
-    let email = identifier;
 
-    // 2. Identify if identifier is email or phone
-    const isEmail = identifier.includes('@');
-    
-    if (!isEmail) {
-      // Try finding user by phone in Prisma to get the email
-      const userWithPhone = await prisma.user.findFirst({
-        where: { phone: identifier },
-        select: { email: true }
-      });
-
-      if (userWithPhone) {
-        email = userWithPhone.email;
-      } else {
-        // If not found in Prisma by phone, we can't proceed to Supabase with an email
-        return NextResponse.json(
-          { message: "Invalid email/phone or password" },
-          { status: 401 }
-        );
-      }
-    }
-
-    // 3. Authenticate with Supabase
-    const authResponse = await supabase.auth.signInWithPassword({
-      email: email,
+    // 2. Authenticate with Supabase
+    // Note: identifier could be email or phone. Supabase supports both but usually via different methods.
+    // We'll try as email first.
+    let authResponse = await supabase.auth.signInWithPassword({
+      email: identifier,
       password: password,
     });
+
+    if (authResponse.error && !identifier.includes('@')) {
+       const userRecord = await prisma.user.findFirst({
+         where: {
+           OR: [
+             { phone: identifier },
+             { username: identifier }
+           ]
+         },
+         select: { email: true }
+       });
+
+       if (userRecord) {
+         authResponse = await supabase.auth.signInWithPassword({
+           email: userRecord.email,
+           password: password,
+         });
+       }
+    }
 
     if (authResponse.error) {
       return NextResponse.json(
@@ -84,7 +83,7 @@ export async function POST(req: Request) {
            id: authUser.id,
            email: authUser.email!,
            name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || "User",
-           phone: authUser.phone || authUser.user_metadata?.phone || "",
+           phone: authUser.phone || authUser.user_metadata?.phone || null,
            passwordHash: 'AUTH_MANAGED_BY_SUPABASE',
            username: authUser.email?.split("@")[0].toLowerCase() + "_" + Math.floor(Math.random() * 1000),
          }

@@ -12,7 +12,6 @@ import {
   Hash, 
   Bookmark,
   ChevronDown,
-  ChevronRight,
   Zap,
   ShieldCheck,
   Globe,
@@ -35,8 +34,6 @@ const sidebarLinks = [
 export function NetworkSidebar() {
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'done'>('idle');
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showLess, setShowLess] = useState(false);
 
   const handleSync = () => {
     setSyncState('syncing');
@@ -45,81 +42,78 @@ export function NetworkSidebar() {
     }, 2500);
   };
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
-      setShowLess(!showLess);
-    }, 1500);
-  };
-
   return (
-    <div className="space-y-6 sticky top-24 animate-in fade-in slide-in-from-left-4 duration-1000 z-40">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-border dark:border-slate-800 overflow-hidden shadow-soft hover:shadow-premium transition-all duration-300 group/sidebar">
-        <div className="p-5 border-b border-border dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md">
+    <div className="space-y-6 sticky top-20 animate-in fade-in slide-in-from-left-4 duration-1000 z-40">
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow group/sidebar">
+        <div className="p-6 border-b border-slate-50 bg-slate-50/50 backdrop-blur-md">
            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center border border-border dark:border-slate-700 shadow-sm">
-                 <ShieldCheck className="h-4 w-4 text-primary" />
+              <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-slate-100 shadow-sm">
+                 <ShieldCheck className="h-4 w-4 text-[#1B5E20]" />
               </div>
-              <h2 className="text-[11px] font-bold text-foreground dark:text-white uppercase tracking-widest">Manage Network</h2>
+              <h2 className="text-[11px] font-bold text-slate-900 uppercase tracking-wider">Manage Network</h2>
            </div>
         </div>
         
-        <nav className="py-2 px-2">
+        <nav className="p-4 flex flex-wrap gap-2">
           {sidebarLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group/item"
+              className="h-10 px-4 flex items-center justify-center gap-2 rounded-xl bg-slate-50 text-slate-600 font-bold text-[13px] hover:bg-slate-100 hover:text-slate-900 transition-all active:scale-95 border border-slate-100 group"
             >
-              <div className="flex items-center gap-3">
-                <link.icon className={`h-4 w-4 transition-transform group-hover/item:scale-110 ${link.color} opacity-70 dark:opacity-50 group-hover/item:opacity-100 dark:group-hover/item:opacity-100`} />
-                <span className="text-[13px] font-semibold text-secondary dark:text-slate-400 group-hover/item:text-foreground dark:group-hover/item:text-white transition-colors">{link.label}</span>
-              </div>
+              <link.icon className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity`} />
+              <span>{link.label}</span>
               {link.count && (
-                <span className="text-[11px] font-bold text-secondary/40 dark:text-slate-500 group-hover/item:text-primary transition-all">{link.count}</span>
+                <span className="ml-1 text-[11px] font-black text-[#1B5E20] bg-green-50/80 px-1.5 py-0.5 rounded-md">{link.count}</span>
               )}
             </Link>
           ))}
         </nav>
 
         <button 
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-          className="w-full flex items-center justify-center gap-2 py-4 border-t border-border dark:border-slate-800 text-[10px] font-bold uppercase tracking-widest text-secondary/60 dark:text-slate-500 hover:text-foreground dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all disabled:opacity-70"
+          onClick={(e) => {
+            const btn = e.currentTarget;
+            btn.disabled = true;
+            btn.innerHTML = `Refreshing...`;
+            setTimeout(() => {
+              btn.innerHTML = `View Less`;
+              btn.disabled = false;
+            }, 1500);
+          }}
+          className="w-full flex items-center justify-center gap-2 py-4 border-t border-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all active:bg-slate-100 disabled:opacity-70"
         >
-          {isRefreshing ? "Refreshing..." : (showLess ? "View More" : "Show Less")}
-          <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${showLess ? "" : "rotate-180"}`} />
+          Show Less
+          <ChevronDown className="h-3 w-3 rotate-180" />
         </button>
       </div>
 
       {/* SYNC CTA */}
-      <div className="bg-slate-900 dark:bg-slate-950 rounded-2xl p-8 text-white relative overflow-hidden group/sync shadow-lg">
-         <div className="relative z-10 space-y-5">
+      <div className="bg-slate-900 rounded-2xl p-8 text-white relative overflow-hidden group/sync shadow-lg">
+         <div className="relative z-10 space-y-4">
             <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/5 backdrop-blur-xl group-hover/sync:scale-105 transition-transform">
-               <Globe className="w-6 h-6 text-primary-light" />
+               <Globe className="w-6 h-6 text-blue-400" />
             </div>
-            <div className="space-y-1.5">
-               <h3 className="text-[17px] font-bold tracking-tight">Sync Professional Contacts</h3>
-               <p className="text-[11px] text-white/50 font-medium leading-relaxed">Find professionals you already know across the network.</p>
+            <div className="space-y-1">
+               <h3 className="text-lg font-bold tracking-tight">Sync Professional Contacts</h3>
+               <p className="text-[11px] text-white/50 font-medium leading-relaxed">Find professionals you already know across the Connect+ network.</p>
             </div>
             <button 
                onClick={() => setIsSyncModalOpen(true)}
-               className="text-[11px] font-bold text-primary-light hover:text-white transition-all uppercase tracking-widest flex items-center gap-2"
+               className="text-[11px] font-bold text-blue-400 hover:text-blue-300 transition-all uppercase tracking-wider"
             >
-               Get Started <ChevronRight className="w-3.5 h-3.5" />
+               Get Started
             </button>
          </div>
-         <Zap className="absolute -bottom-6 -right-6 w-24 h-24 opacity-10 text-primary group-hover:scale-110 transition-transform duration-1000" />
+         <Zap className="absolute -bottom-6 -right-6 w-24 h-24 opacity-10 text-blue-400 group-hover:scale-110 transition-transform duration-1000" />
       </div>
 
       {/* Sync Ledger Modal */}
       {isSyncModalOpen && (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-[28px] w-full max-w-md border border-border dark:border-slate-800 shadow-premium overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="p-6 border-b border-border dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
-              <h2 className="text-[11px] font-bold text-foreground dark:text-white uppercase tracking-widest flex items-center gap-2">
-                <Globe className="w-4 h-4 text-primary" /> Import Contacts
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl w-full max-w-md border border-slate-200 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                <Globe className="w-4 h-4 text-blue-600" /> Import Contacts
               </h2>
               <button 
                 onClick={() => {
@@ -127,7 +121,7 @@ export function NetworkSidebar() {
                   setTimeout(() => setSyncState('idle'), 300);
                 }}
                 aria-label="Close modal"
-                className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-border dark:border-slate-700 flex items-center justify-center text-secondary hover:text-foreground dark:hover:text-white transition-all"
+                className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
                 disabled={syncState === 'syncing'}
               >
                 <X className="w-3.5 h-3.5" />
@@ -136,19 +130,19 @@ export function NetworkSidebar() {
             
             <div className="p-10 flex flex-col items-center text-center">
               {syncState === 'idle' && (
-                <div className="space-y-6 w-full animate-in fade-in slide-in-from-bottom-4">
-                  <div className="w-20 h-20 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center mx-auto border border-primary/20">
-                    <Users className="w-8 h-8 text-primary" />
+                <div className="space-y-6 w-full fade-in animate-in">
+                  <div className="w-20 h-20 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto">
+                    <Users className="w-8 h-8 text-blue-600" />
                   </div>
                   <div>
-                     <h3 className="text-xl font-bold text-foreground dark:text-white tracking-tight">Expand your connections</h3>
-                     <p className="text-[14px] text-secondary/70 dark:text-slate-400 font-medium leading-relaxed max-w-[280px] mx-auto mt-2">
-                       Securely sync your professional contact list to discover colleagues already on Connect+.
+                     <h3 className="text-lg font-bold text-slate-900 tracking-tight">Expand your connections</h3>
+                     <p className="text-[13px] text-slate-500 font-medium leading-relaxed max-w-[280px] mx-auto mt-2">
+                       Securely sync your professional contact list to discover colleagues and partners already on Connect+.
                      </p>
                   </div>
                   <button 
                     onClick={handleSync}
-                    className="w-full py-4 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-[12px] uppercase tracking-widest transition-all shadow-lg active:scale-95"
+                    className="w-full py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] uppercase tracking-widest transition-all mt-2"
                   >
                     Sync Contacts
                   </button>
@@ -156,27 +150,27 @@ export function NetworkSidebar() {
               )}
               
               {syncState === 'syncing' && (
-                <div className="space-y-6 w-full py-6 animate-in fade-in flex flex-col items-center">
+                <div className="space-y-6 w-full py-6 fade-in animate-in flex flex-col items-center">
                   <div className="relative w-24 h-24 flex items-center justify-center">
-                     <div className="w-full h-full rounded-full border-2 border-slate-100 dark:border-slate-800 border-t-primary animate-spin absolute inset-0" />
-                     <Globe className="w-8 h-8 text-primary animate-pulse relative z-10" />
+                     <div className="w-full h-full rounded-full border-2 border-slate-100 border-t-blue-600 animate-spin absolute inset-0" />
+                     <Globe className="w-8 h-8 text-blue-600 animate-pulse relative z-10" />
                   </div>
                   <div>
-                     <h3 className="text-base font-bold text-foreground dark:text-white tracking-tight">Analyzing network...</h3>
-                     <p className="text-[10px] text-secondary/40 dark:text-slate-500 font-bold uppercase tracking-widest mt-2">Connecting Nodes</p>
+                     <h3 className="text-base font-bold text-slate-900 tracking-tight">Analyzing network...</h3>
+                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Connecting Nodes</p>
                   </div>
                 </div>
               )}
 
               {syncState === 'done' && (
-                <div className="space-y-6 w-full animate-in fade-in zoom-in-95">
-                  <div className="w-20 h-20 rounded-2xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 flex items-center justify-center mx-auto shadow-sm">
-                    <ShieldCheck className="w-10 h-10 text-green-600 dark:text-green-500" />
+                <div className="space-y-6 w-full fade-in animate-in zoom-in-95">
+                  <div className="w-20 h-20 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto">
+                    <ShieldCheck className="w-10 h-10 text-emerald-600" />
                   </div>
                   <div>
-                     <h3 className="text-xl font-bold text-foreground dark:text-white tracking-tight">Sync Complete</h3>
-                     <p className="text-[14px] text-secondary/70 dark:text-slate-400 font-medium leading-relaxed max-w-[280px] mx-auto mt-2">
-                       <span className="text-green-700 dark:text-green-400 font-bold mr-1 bg-green-100 dark:bg-green-900/40 px-2.5 py-0.5 rounded-full text-[11px]">142</span> 
+                     <h3 className="text-lg font-bold text-slate-900 tracking-tight">Sync Complete</h3>
+                     <p className="text-[13px] text-slate-500 font-medium leading-relaxed max-w-[280px] mx-auto mt-2">
+                       <span className="text-[#1B5E20] font-bold mr-1 bg-emerald-100 px-2 py-0.5 rounded-full text-[10px]">142</span> 
                        new professional contacts found on Connect+.
                      </p>
                   </div>
@@ -185,7 +179,7 @@ export function NetworkSidebar() {
                       setIsSyncModalOpen(false);
                       setTimeout(() => setSyncState('idle'), 300);
                     }}
-                    className="w-full py-4 rounded-xl bg-slate-900 dark:bg-slate-950 text-white hover:bg-slate-800 font-bold text-[12px] uppercase tracking-widest transition-all shadow-lg active:scale-95"
+                    className="w-full py-4 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-bold text-[11px] uppercase tracking-widest transition-all mt-2"
                   >
                     Continue
                   </button>
