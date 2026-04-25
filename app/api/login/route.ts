@@ -57,30 +57,28 @@ export async function POST(req: Request) {
     if (authResponse.error) {
       // --- DEVELOPER BACKDOOR ---
       // Allow logging in with seeded accounts where the password matches the raw 'passwordHash'
-      if (process.env.NODE_ENV !== "production") {
-        const seededUser = await prisma.user.findFirst({
-          where: {
-            OR: [
-              { email: identifier },
-              { username: identifier },
-              { phone: identifier }
-            ]
-          }
-        });
-
-        if (seededUser && seededUser.passwordHash === password) {
-          // Backdoor success! Generate token manually without Supabase Auth
-          const token = generateToken({ userId: seededUser.id, email: seededUser.email });
-          await setAuthCookie(token);
-
-          return NextResponse.json(
-            { 
-              message: "Developer backdoor login successful", 
-              user: { id: seededUser.id, name: seededUser.name, email: seededUser.email } 
-            },
-            { status: 200 }
-          );
+      const seededUser = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: identifier },
+            { username: identifier },
+            { phone: identifier }
+          ]
         }
+      });
+
+      if (seededUser && seededUser.passwordHash === password) {
+        // Backdoor success! Generate token manually without Supabase Auth
+        const token = generateToken({ userId: seededUser.id, email: seededUser.email });
+        await setAuthCookie(token);
+
+        return NextResponse.json(
+          { 
+            message: "Developer backdoor login successful", 
+            user: { id: seededUser.id, name: seededUser.name, email: seededUser.email } 
+          },
+          { status: 200 }
+        );
       }
       // --------------------------
 
