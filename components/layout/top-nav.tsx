@@ -18,6 +18,15 @@ import {
   HelpCircle,
   ShieldCheck,
   Briefcase,
+  Home,
+  BookOpen,
+  Calendar,
+  FileText,
+  Megaphone,
+  Layout,
+  LayoutDashboard,
+  TrendingUp,
+  ChevronRight,
 } from "lucide-react";
 
 export function TopNav() {
@@ -30,7 +39,7 @@ export function TopNav() {
   const pathname = usePathname();
 
   const meRef = useRef<HTMLDivElement>(null);
-  const bizRef = useRef<HTMLButtonElement>(null);
+  const bizRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,11 +105,13 @@ export function TopNav() {
         </div>
 
         {/* Right: Navigation */}
-        <nav className="flex items-center gap-1 h-full">
+        <nav className="flex items-center h-full">
           {[
-            { label: 'Feed', icon: Grid3X3, href: '/', mobileHidden: false },
+            { label: 'Home', icon: Home, href: '/', mobileHidden: false },
             { label: 'Network', icon: UsersIcon, href: '/network', mobileHidden: true },
+            { label: 'Academy', icon: BookOpen, href: '/learning', mobileHidden: true },
             { label: 'Jobs', icon: Briefcase, href: '/jobs', mobileHidden: true },
+            { label: 'Messaging', icon: MessageCircle, href: '/messaging', mobileHidden: true },
             { label: 'Notifications', icon: Bell, href: '/notifications', badge: true, mobileHidden: true },
           ].map((item) => (
             <Link 
@@ -129,7 +140,7 @@ export function TopNav() {
           <div className="w-[1px] h-10 bg-border mx-2" />
 
           {!loading && user ? (
-            <div className="flex items-center gap-2 pl-4">
+            <div className="flex items-center gap-2 pl-4 h-full">
                <div className="flex items-center relative h-full" ref={meRef}>
                   <button 
                      onClick={() => setActiveDropdown(activeDropdown === 'me' ? null : 'me')}
@@ -142,44 +153,100 @@ export function TopNav() {
                          <span className="leading-none">{getUserInitials()}</span>
                        )}
                      </div>
-                     <span className="text-[11px] font-bold tracking-wide uppercase">Me</span>
+                     <div className="flex items-center gap-0.5">
+                        <span className="text-[11px] font-bold tracking-wide uppercase">Me</span>
+                        <ChevronDown className={`w-3 h-3 transition-transform ${activeDropdown === 'me' ? 'rotate-180' : ''}`} />
+                     </div>
                   </button>
 
                   {activeDropdown === 'me' && (
-                     <div className="absolute top-[calc(100%+4px)] right-0 w-[240px] bg-white dark:bg-slate-900 rounded-xl shadow-dropdown border border-border dark:border-slate-800 overflow-hidden animate-pro-fade z-[110]">
+                     <div className="absolute top-[calc(100%+4px)] right-0 w-[260px] bg-white dark:bg-slate-900 rounded-xl shadow-dropdown border border-border dark:border-slate-800 overflow-hidden animate-pro-fade z-[110]">
                        <div className="p-4 flex items-center gap-3 bg-muted/50 dark:bg-slate-800/50">
-                           <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-[14px] shadow-sm shrink-0 overflow-hidden">
+                           <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-[16px] shadow-sm shrink-0 overflow-hidden">
                               {user.avatarUrl ? <img src={user.avatarUrl} className="w-full h-full object-cover" alt="" /> : <span>{getUserInitials()}</span>}
                            </div>
                            <div className="min-w-0 pr-2">
                              <h4 className="font-bold text-foreground tracking-tight truncate leading-none text-[15px]">{user.firstName} {user.lastName}</h4>
-                             <Link href={`/profile/${user.username}`} onClick={() => setActiveDropdown(null)} className="text-[12px] text-primary font-bold hover:underline mt-1 block">View Profile</Link>
+                             <p className="text-[11px] text-secondary truncate mt-1">{user.headline || 'Professional Member'}</p>
+                             <Link href={`/profile/${user.username}`} onClick={() => setActiveDropdown(null)} className="text-[12px] text-primary font-bold hover:underline mt-2 block w-fit border border-primary px-2 py-0.5 rounded-full">View Profile</Link>
                            </div>
                        </div>
                        
                         <div className="px-2 py-2 border-t border-border/50">
-                            <div className="px-3 py-1.5 text-[11px] font-bold text-secondary/40 uppercase tracking-wider">Account Settings</div>
-                            <Link href="/settings" onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-semibold text-secondary hover:text-primary hover:bg-muted rounded-lg transition-all active:scale-[0.98]">
+                            <div className="px-3 py-1.5 text-[11px] font-black text-secondary/40 uppercase tracking-[0.1em]">Account & Privacy</div>
+                            <Link href="/settings" onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-semibold text-secondary hover:text-primary hover:bg-muted rounded-lg transition-all">
                                <Settings className="w-4 h-4" />
-                               Privacy & Settings
+                               Settings & Privacy
                             </Link>
-                            <Link href="/help" onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-semibold text-secondary hover:text-primary hover:bg-muted rounded-lg transition-all active:scale-[0.98]">
+                            <Link href="/help" onClick={() => setActiveDropdown(null)} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-semibold text-secondary hover:text-primary hover:bg-muted rounded-lg transition-all">
                                <HelpCircle className="w-4 h-4" />
-                               Help Center
+                               Help & Support
                             </Link>
                         </div>
 
-                        <div className="px-2 py-2 border-t border-border/50">
+                        <div className="px-2 py-2 border-t border-border/50 bg-muted/20">
                              <button 
                                 onClick={async () => { 
                                   await fetch("/api/logout", { method: "POST" }); 
                                   window.location.href = "/login"; 
                                 }}
-                                className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all active:scale-[0.98]"
+                                className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all"
                              >
                                 <LogOut className="w-4 h-4" />
                                 Sign Out
                              </button>
+                        </div>
+                     </div>
+                  )}
+               </div>
+
+               <div className="w-[1px] h-8 bg-border/60 mx-1" />
+
+               <div className="flex items-center relative h-full" ref={bizRef as any}>
+                  <button 
+                     onClick={() => setActiveDropdown(activeDropdown === 'work' ? null : 'work')}
+                     className={`flex flex-col items-center justify-center min-w-[64px] h-full gap-1 transition-all hover:bg-muted group ${activeDropdown === 'work' ? 'text-primary' : 'text-secondary'}`}
+                  >
+                     <Grid3X3 className={`h-5 w-5 stroke-[2.5px] transition-transform group-hover:-translate-y-0.5 ${activeDropdown === 'work' ? 'text-primary' : 'group-hover:text-primary'}`} />
+                     <div className="flex items-center gap-0.5">
+                        <span className="text-[11px] font-bold tracking-wide uppercase">Work</span>
+                        <ChevronDown className={`w-3 h-3 transition-transform ${activeDropdown === 'work' ? 'rotate-180' : ''}`} />
+                     </div>
+                  </button>
+
+                  {activeDropdown === 'work' && (
+                     <div className="absolute top-[calc(100%+4px)] right-0 w-[320px] bg-white dark:bg-slate-900 rounded-xl shadow-dropdown border border-border dark:border-slate-800 overflow-hidden animate-pro-fade z-[110]">
+                        <div className="p-4 border-b border-border/50">
+                           <h3 className="font-black text-[13px] uppercase tracking-wider text-foreground">Business Services</h3>
+                        </div>
+                        <div className="p-4 grid grid-cols-3 gap-4">
+                           {[
+                              { label: 'Learning', icon: BookOpen, href: '/learning', color: 'bg-green-50 text-green-600' },
+                              { label: 'Insights', icon: TrendingUp, href: '/business-suite', color: 'bg-blue-50 text-blue-600' },
+                              { label: 'Post Job', icon: Briefcase, href: '/jobs/post', color: 'bg-orange-50 text-orange-600' },
+                              { label: 'Advertise', icon: Megaphone, href: '/advertise', color: 'bg-purple-50 text-purple-600' },
+                              { label: 'Articles', icon: FileText, href: '/articles', color: 'bg-slate-50 text-slate-600' },
+                              { label: 'Events', icon: Calendar, href: '/events', color: 'bg-red-50 text-red-600' },
+                              { label: 'Suite', icon: LayoutDashboard, href: '/business-suite', color: 'bg-indigo-50 text-indigo-600' },
+                           ].map((biz) => (
+                              <Link 
+                                 key={biz.label} 
+                                 href={biz.href}
+                                 onClick={() => setActiveDropdown(null)}
+                                 className="flex flex-col items-center gap-2 group/biz"
+                              >
+                                 <div className={`w-12 h-12 rounded-xl ${biz.color} flex items-center justify-center shadow-sm group-hover/biz:scale-110 transition-transform`}>
+                                    <biz.icon className="w-5 h-5" />
+                                 </div>
+                                 <span className="text-[10px] font-bold text-secondary group-hover/biz:text-primary text-center leading-tight">{biz.label}</span>
+                              </Link>
+                           ))}
+                        </div>
+                        <div className="p-4 bg-muted/30 border-t border-border/50">
+                           <Link href="/business-suite" className="text-[12px] font-bold text-primary hover:underline flex items-center justify-between">
+                              Create a Company Page
+                              <ChevronRight className="w-3 h-3" />
+                           </Link>
                         </div>
                      </div>
                   )}

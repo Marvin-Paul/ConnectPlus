@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Home, Users, PlusSquare, Bell, Briefcase } from "lucide-react";
+import { Home, Users, PlusSquare, Bell, Briefcase, MessageCircle } from "lucide-react";
 import { PostModal } from "../feed/post-modal";
 import { useUser } from "../providers/user-provider";
 import { useNotifications } from "../providers/notification-provider";
@@ -20,9 +20,9 @@ export function MobileBottomNav() {
 
   const navItems = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/network", label: "My Network", icon: Users },
-    { label: "Post", icon: PlusSquare, onClick: () => setIsPostModalOpen(true) },
-    { href: "/notifications", label: "Notifications", icon: Bell, badge: unreadCount },
+    { href: "/network", label: "Network", icon: Users },
+    { href: "/messaging", label: "Messages", icon: MessageCircle },
+    { href: "/notifications", label: "Alerts", icon: Bell, badge: unreadCount },
     { href: "/jobs", label: "Jobs", icon: Briefcase },
   ];
 

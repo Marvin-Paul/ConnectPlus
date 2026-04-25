@@ -9,8 +9,11 @@ import { Globe } from "lucide-react";
 
 import { FeedProvider, useFeed } from "@/components/providers/feed-provider";
 import { PostSkeleton } from "@/components/feed/post-skeleton";
+import { PostModal } from "@/components/feed/post-modal";
+import { useUser } from "@/components/providers/user-provider";
 
 import { ArticleCard } from "@/components/feed/article-card";
+import { Plus } from "lucide-react";
 import { EventCard } from "@/components/feed/event-card";
 
 const MIXED_ARTICLES: any[] = [
@@ -37,7 +40,9 @@ const MIXED_EVENTS: any[] = [
 
 function FeedContent() {
   const { posts, loading, hasMore, fetchPosts } = useFeed();
+  const { user: contextUser } = useUser();
   const [sortOrder, setSortOrder] = useState<'recent' | 'top'>('recent');
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
 
   const sortedPosts = [...posts].sort((a, b) => {
@@ -150,6 +155,25 @@ function FeedContent() {
           <NewsSidebar />
         </aside>
       </div>
+
+      {/* Mobile Floating Post Button */}
+      <div className="md:hidden fixed bottom-20 right-6 z-50">
+          <button 
+            onClick={() => setIsPostModalOpen(true)}
+            className="w-14 h-14 rounded-full bg-primary text-white shadow-premium flex items-center justify-center active:scale-90 transition-transform"
+          >
+            <Plus className="w-7 h-7 stroke-[3px]" />
+          </button>
+      </div>
+
+      <PostModal 
+        isOpen={isPostModalOpen}
+        onClose={() => setIsPostModalOpen(false)}
+        user={{
+          name: contextUser ? `${contextUser.firstName} ${contextUser.lastName}` : "Professional User",
+          avatar: contextUser?.avatarUrl || "https://api.dicebear.com/7.x/initials/svg?seed=U"
+        }}
+      />
     </div>
   );
 }
