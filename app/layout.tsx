@@ -7,7 +7,6 @@ import { UserProvider } from "../components/providers/user-provider";
 import { FeedProvider } from "../components/providers/feed-provider";
 import { NotificationProvider } from "../components/providers/notification-provider";
 import { PulseGuide } from "../components/features/pulse-guide";
-import { Inter } from "next/font/google"; 
 import { SplashScreen } from "../components/ui/splash-screen";
 import { ThemeProvider } from "../components/providers/theme-provider";
 import { LanguageProvider } from "../components/providers/language-provider";
@@ -15,7 +14,6 @@ import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -32,7 +30,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased selection:bg-primary/10 selection:text-primary`}>
+      <body className="antialiased selection:bg-primary/10 selection:text-primary font-sans">
         <ThemeProvider 
           attribute="class" 
           defaultTheme="system" 
