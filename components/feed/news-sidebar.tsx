@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, ChevronDown, ChevronRight, TrendingUp, Sparkles, MapPin, ExternalLink, ShieldCheck, Zap, BarChart3, Clock, Users, Check, Grid3X3 } from "lucide-react";
+import { Info, ChevronDown, TrendingUp, Sparkles, MapPin, ExternalLink, ShieldCheck, Zap, BarChart3, Clock, Users, Check } from "lucide-react";
 import Link from "next/link";
 
 const newsItems = [
@@ -13,89 +13,81 @@ const newsItems = [
 
 export function NewsSidebar() {
   return (
-    <div className="space-y-6 sticky top-[84px] animate-pro-fade pb-12">
+    <div className="space-y-6 sticky top-[84px] animate-pro-fade pb-10">
       {/* Trending News */}
-      <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-2xl dark:shadow-none overflow-hidden backdrop-blur-xl group/sidebar transition-all duration-500 hover:border-emerald-500/20">
-        <div className="p-6 flex items-center justify-between border-b border-slate-50 dark:border-slate-800/50">
-           <h2 className="text-[11px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-[0.3em] flex items-center gap-2">
-             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-             Connect Plus News
-           </h2>
-           <Info className="h-4 w-4 text-slate-400 hover:text-emerald-500 transition-colors cursor-help" />
+      <div className="bg-white dark:bg-slate-950 rounded-xl border border-border dark:border-slate-800 shadow-soft overflow-hidden">
+        <div className="p-5 flex items-center justify-between border-b border-border/50 dark:border-slate-800/50">
+           <h2 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Connect Plus News</h2>
+           <Info className="h-4 w-4 text-secondary hover:text-primary transition-colors cursor-help" />
         </div>
         
-        <div className="flex flex-col py-2">
+        <div className="flex flex-col">
            {newsItems.map((item) => (
-              <div key={item.id} className="px-6 py-5 hover:bg-slate-50 dark:hover:bg-emerald-500/5 transition-all cursor-pointer group/news relative overflow-hidden">
-                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 opacity-0 group-hover/news:opacity-100 transition-opacity" />
-                 <div className="flex gap-4">
-                    <div className={`mt-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 group-hover/news:bg-emerald-500/10 transition-colors ${item.color}`}>
-                       <item.icon className="w-3.5 h-3.5" />
-                    </div>
-                    <div className="flex-1 space-y-1.5">
-                       <h3 className="text-[13px] font-black text-slate-800 dark:text-slate-100 leading-tight group-hover/news:text-emerald-600 dark:group-hover/news:text-emerald-400 transition-colors line-clamp-2">
-                          {item.title}
-                       </h3>
-                       <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-wider">
-                          <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {item.time}</span>
-                          <span className="w-1 h-1 bg-slate-200 dark:bg-slate-800 rounded-full" />
-                          <span className="flex items-center gap-1"><Users className="w-2.5 h-2.5" /> {item.readers}</span>
-                       </div>
-                    </div>
+              <div key={item.id} className="p-4 hover:bg-muted dark:hover:bg-slate-900 transition-all cursor-pointer group/news border-b border-border/30 dark:border-slate-800/30 last:border-0 border-l-4 border-l-transparent hover:border-l-primary">
+                 <h3 className="text-[14px] font-bold text-foreground leading-snug group-hover/news:text-primary transition-colors line-clamp-2">
+                    {item.title}
+                 </h3>
+                 <div className="flex items-center gap-2 mt-1.5 text-[10px] font-bold text-secondary/70 uppercase tracking-tight">
+                    <span>{item.time}</span>
+                    <span className="w-1 h-1 bg-border rounded-full" />
+                    <span>{item.readers}</span>
                  </div>
               </div>
            ))}
         </div>
         
-        <button className="w-full py-5 text-[10px] font-black text-slate-400 dark:text-slate-500 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all border-t border-slate-50 dark:border-slate-800/50 uppercase tracking-[0.2em] flex items-center justify-center gap-2 group/more">
-           View Full Catalog <ChevronDown className="h-3.5 w-3.5 group-hover/more:translate-y-0.5 transition-transform" />
+        <button className="w-full py-4 text-[11px] font-extrabold text-secondary dark:text-slate-500 hover:text-primary hover:bg-muted dark:hover:bg-slate-900 transition-all border-t border-border/50 dark:border-slate-800/50 uppercase tracking-widest">
+           Show more <ChevronDown className="h-4 w-4 inline ml-1" />
         </button>
       </div>
 
-      {/* Premium CTA - High Fidelity Redesign */}
-      <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group/premium border border-slate-800">
-         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 opacity-100" />
-         <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl group-hover/premium:bg-emerald-500/20 transition-all duration-1000" />
-         
-         <div className="relative z-10 space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 backdrop-blur-md">
-                 <Sparkles className="w-6 h-6 text-emerald-400" />
-              </div>
-              <div className="px-3 py-1 bg-amber-400/10 border border-amber-400/20 rounded-full text-[8px] font-black text-amber-400 uppercase tracking-widest">
-                Elite Growth
-              </div>
+      {/* Premium CTA */}
+      <div className="bg-primary rounded-xl p-8 text-white shadow-premium relative overflow-hidden group/ad">
+         <div className="relative z-10">
+            <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-6 backdrop-blur-md">
+               <Sparkles className="w-6 h-6 text-accent" />
             </div>
-            
-            <div className="space-y-2">
-              <h3 className="text-[20px] font-black tracking-tight leading-tight">Elevate your career <span className="text-emerald-400 italic underline decoration-emerald-500/30">Trajectory</span>.</h3>
-              <p className="text-[11px] text-slate-400 font-bold leading-relaxed">See who's viewed your profile and scale your network faster than the market average.</p>
-            </div>
-
-            <Link href="/premium" className="w-full py-4 rounded-2xl bg-white dark:bg-emerald-500 text-slate-900 dark:text-white font-black text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-emerald-500/10 flex items-center justify-center group/btn">
-              Try Premium Free <ChevronRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform" />
+            <h3 className="text-[18px] font-bold leading-tight mb-3">Elevate your career trajectory.</h3>
+            <p className="text-[12px] text-white/70 font-medium mb-6">See who's viewed your profile and scale your network faster.</p>
+            <Link href="/premium" className="w-full py-3 rounded-lg bg-accent text-white font-extrabold text-[12px] uppercase tracking-wider hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 flex items-center justify-center">
+              Try Premium Free
             </Link>
          </div>
+         <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
       </div>
 
-      {/* Footer - Professionalized */}
-      <footer className="px-6 py-6 space-y-8">
-         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-            {['About', 'Accessibility', 'Help', 'Privacy', 'Ad Choices', 'Business'].map((link) => (
-              <Link key={link} href="#" className="text-[10px] font-black text-slate-400 hover:text-emerald-500 uppercase tracking-widest transition-colors">
-                {link}
+      {/* Footer */}
+      <footer className="px-4 py-8 text-center bg-white dark:bg-slate-950 rounded-xl border border-border dark:border-slate-800 shadow-soft mt-6">
+         <div className="flex flex-col items-center gap-3 mb-6">
+            <div className="flex items-center gap-2">
+               <div className="h-6 w-6 rounded bg-primary flex items-center justify-center shadow-md">
+                  <span className="font-black text-xs text-white tracking-tighter leading-none">C+</span>
+               </div>
+               <span className="text-[14px] font-black text-foreground uppercase tracking-[0.15em]">Connect Plus</span>
+            </div>
+            <p className="text-xs text-secondary font-medium leading-relaxed px-4">
+              Empowering the African continent through professional networking, tech mentorship, and limitless opportunity.
+            </p>
+         </div>
+
+         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 mb-8">
+            {[
+              { label: 'About Us', href: '/about#about-us' },
+              { label: 'Our Mission', href: '/about#our-mission' },
+              { label: 'Careers', href: '/about#careers' },
+              { label: 'Privacy Policy', href: '/about#privacy-policy' },
+              { label: 'Terms of Service', href: '/about#terms-of-service' },
+              { label: 'Advertising', href: '/about#advertising' },
+              { label: 'Business Solutions', href: '/about#business-solutions' }
+            ].map((link) => (
+              <Link key={link.label} href={link.href} className="text-[10px] font-bold text-secondary hover:text-primary transition-colors uppercase tracking-widest">
+                {link.label}
               </Link>
             ))}
          </div>
 
-         <div className="flex flex-col items-center gap-6">
-            <div className="flex items-center gap-3">
-               <div className="h-8 w-8 rounded-xl bg-slate-900 dark:bg-white flex items-center justify-center shadow-lg">
-                  <Grid3X3 className="h-4.5 w-4.5 text-white dark:text-slate-900" />
-               </div>
-               <span className="text-[12px] font-black text-slate-900 dark:text-white uppercase tracking-[0.4em]">Connect Plus</span>
-            </div>
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Connect Plus Corp &copy; 2026. All rights reserved.</p>
+         <div className="pt-6 border-t border-border/50 dark:border-slate-800/50">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary/60">Connect Plus Corp &copy; 2026</p>
          </div>
       </footer>
     </div>

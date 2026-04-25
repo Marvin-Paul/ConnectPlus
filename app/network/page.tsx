@@ -9,15 +9,15 @@ import Link from "next/link";
 export default function NetworkPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="max-w-[1152px] mx-auto pt-8 px-4 grid grid-cols-1 md:grid-cols-12 gap-8 relative">
+      <div className="max-w-[1152px] mx-auto pt-8 px-4 flex flex-col md:grid md:grid-cols-12 gap-8 relative">
         
         {/* Sidebar */}
-        <aside className="hidden md:block md:col-span-4 lg:col-span-3 h-fit sticky top-[84px]">
+        <aside className="w-full md:col-span-4 lg:col-span-3 h-fit md:sticky md:top-[84px] order-1 md:order-none">
           <NetworkSidebar />
         </aside>
 
         {/* Main Content */}
-        <main className="md:col-span-8 lg:col-span-9 space-y-6 animate-pro-fade">
+        <main className="w-full md:col-span-8 lg:col-span-9 space-y-6 animate-pro-fade order-2 md:order-none">
            
            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-border dark:border-slate-800 p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-soft hover:shadow-premium transition-all duration-300">
               <div className="space-y-2">

@@ -48,7 +48,7 @@ export async function GET(request: Request) {
               name: fullName,
               firstName: firstName || fullName,
               lastName: lastName || "",
-              phone: authUser.phone || authUser.user_metadata?.phone || "",
+              phone: authUser.phone || authUser.user_metadata?.phone || null,
               passwordHash: 'AUTH_MANAGED_BY_SUPABASE',
               username: authUser.email?.split("@")[0].toLowerCase() + "_" + Math.floor(Math.random() * 1000),
               verified: true

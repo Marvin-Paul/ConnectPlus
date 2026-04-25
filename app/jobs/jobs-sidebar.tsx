@@ -44,27 +44,24 @@ export function JobsSidebar() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-1000">
       {/* Primary Navigation Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-2xl shadow-slate-200/40 dark:shadow-black/40 transition-all duration-500 hover:shadow-green-900/5">
-        <nav className="py-6">
+      <div className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-2xl shadow-slate-200/40 transition-all duration-500 hover:shadow-green-900/5">
+        <nav className="p-6 flex flex-wrap gap-3">
           {sidebarLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="flex items-center justify-between px-8 py-4 text-[13px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
+              className="h-11 px-5 flex items-center justify-center gap-2 rounded-2xl bg-slate-50 text-slate-500 font-black text-[11px] uppercase tracking-widest hover:bg-slate-100 hover:text-slate-800 transition-all active:scale-95 border border-slate-100 group"
             >
-              <div className="flex items-center gap-4">
-                <link.icon className="h-5 w-5 text-slate-300 dark:text-slate-600 group-hover:text-[#1B5E20] dark:group-hover:text-emerald-400 group-hover:scale-110 transition-all stroke-[2px]" />
-                <span className="group-hover:text-slate-800 dark:group-hover:text-white transition-colors">{link.label}</span>
-              </div>
-              <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+              <link.icon className="h-4 w-4 opacity-60 group-hover:text-[#1B5E20] group-hover:opacity-100 transition-all stroke-[2.5px]" />
+              <span>{link.label}</span>
             </Link>
           ))}
         </nav>
         
-        <div className="p-8 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-50 dark:border-slate-800">
+        <div className="p-8 bg-slate-50/50 border-t border-slate-50">
            <Link 
              href="/jobs/post"
-             className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-slate-800 dark:hover:bg-slate-100 transition-all shadow-xl shadow-slate-900/20 active:scale-95"
+             className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/20 active:scale-95"
            >
              <Zap className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
              Post a position
@@ -73,14 +70,14 @@ export function JobsSidebar() {
       </div>
 
       {/* PRECISION FILTERS SECTION */}
-      <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-2xl shadow-slate-200/40 dark:shadow-black/40 p-10 space-y-10">
+      <div className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-2xl shadow-slate-200/40 p-10 space-y-10">
          <div className="flex items-center gap-3">
-            <Filter className="w-5 h-5 text-[#1B5E20] dark:text-emerald-400" />
-            <h2 className="text-[14px] font-black text-slate-800 dark:text-white uppercase tracking-[0.3em]">Precision Filters</h2>
+            <Filter className="w-5 h-5 text-[#1B5E20]" />
+            <h2 className="text-[14px] font-black text-slate-800 uppercase tracking-[0.3em]">Precision Filters</h2>
          </div>
 
          <div className="space-y-6">
-            <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em] mb-4">Experience Level</h3>
+            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-4">Experience Level</h3>
             <div className="space-y-4">
                {experienceLevels.map((level) => (
                  <button 
@@ -88,10 +85,10 @@ export function JobsSidebar() {
                    onClick={() => toggleLevel(level.id)}
                    className="w-full flex items-center gap-4 group transition-all text-left outline-none"
                  >
-                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${selectedLevels.includes(level.id) ? 'bg-[#1B5E20] dark:bg-emerald-500 border-[#1B5E20] dark:border-emerald-500 shadow-lg' : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 group-hover:border-[#1B5E20]/30 dark:group-hover:border-emerald-400/30'}`}>
+                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${selectedLevels.includes(level.id) ? 'bg-[#1B5E20] border-[#1B5E20] shadow-lg shadow-green-100' : 'bg-white border-slate-100 group-hover:border-[#1B5E20]/30'}`}>
                        {selectedLevels.includes(level.id) && <Check className="w-3.5 h-3.5 text-white stroke-[3px]" />}
                     </div>
-                    <span className={`text-[15px] font-black tracking-tight transition-colors ${selectedLevels.includes(level.id) ? 'text-slate-800 dark:text-white' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200'}`}>
+                    <span className={`text-[15px] font-black tracking-tight transition-colors ${selectedLevels.includes(level.id) ? 'text-slate-800' : 'text-slate-500 group-hover:text-slate-700'}`}>
                        {level.label}
                     </span>
                  </button>
@@ -99,8 +96,8 @@ export function JobsSidebar() {
             </div>
          </div>
 
-         <div className="pt-8 border-t border-slate-50 dark:border-slate-800">
-            <button className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 dark:text-slate-600 hover:text-[#1B5E20] dark:hover:text-emerald-400 transition-colors">
+         <div className="pt-8 border-t border-slate-50">
+            <button className="w-full text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 hover:text-[#1B5E20] transition-colors">
                Clear all parameters
             </button>
          </div>
